@@ -70,12 +70,11 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['TypeScript', 'Three.js', 'WebGL', 'GLSL Shaders', 'Web Audio API'],
     metrics: 'Production Live · Real-time 3D Explosion',
-    previewImageUrl: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/touche-1.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80'
+      '/touche-1.png',
+      '/touche-2.png',
+      '/touche-3.png'
     ],
     color: '#00e5ff'
   },
@@ -90,12 +89,10 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['HTML', 'CSS Architecture', 'JavaScript', '3D Canvas', 'GSAP'],
     metrics: 'Kinetic Scrollytelling · Ambient Atmosphere',
-    previewImageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/lumina-2.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80'
+      '/lumina-2.png',
+      '/lumina-1.png'
     ],
     color: '#d4a373'
   },
@@ -110,12 +107,11 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['TypeScript', 'Next.js', 'Tailwind CSS', 'Lucide Icons'],
     metrics: 'Pet Healthcare · Responsive Clinic Platform',
-    previewImageUrl: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/amc-1.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?auto=format&fit=crop&w=1200&q=80'
+      '/amc-1.png',
+      '/amc-2.png',
+      '/amc-3.png'
     ],
     color: '#a7c957'
   },
@@ -150,12 +146,10 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['TypeScript', 'Three.js', 'WebGL', 'GLSL Shaders', 'Physics Math'],
     metrics: 'Real-time Caustics · Fluid Dynamics',
-    previewImageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/koi-1.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80'
+      '/koi-1.png',
+      '/koi-2.png'
     ],
     color: '#ff4d4d'
   },
@@ -170,12 +164,11 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['TypeScript', 'React', 'Next.js', 'Tailwind CSS', 'Vercel'],
     metrics: 'Production Live · Academic Portal',
-    previewImageUrl: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/universal-college-1.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=1200&q=80'
+      '/universal-college-1.png',
+      '/universal-college-2.png',
+      '/universal-college-3.png'
     ],
     color: '#3a86ff'
   },
@@ -190,12 +183,11 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['TypeScript', 'Next.js', 'Web Audio API', 'Tailwind CSS', 'Vercel'],
     metrics: 'Production Live · High-Aesthetic Music',
-    previewImageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/jimmy-1.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80'
+      '/jimmy-1.png',
+      '/jimmy-2.png',
+      '/jimmy-3.png'
     ],
     color: '#ffbe0b'
   },
@@ -210,12 +202,12 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['CSS Architecture', 'Vanilla JavaScript', 'SVG Graphics', 'Vercel'],
     metrics: 'Production Live · Zero-Latency HUD',
-    previewImageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/wraith-1.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=1200&q=80'
+      '/wraith-1.png',
+      '/wraith-2.png',
+      '/wraith-3.png',
+      '/wraith-4.png'
     ],
     color: '#00ff66'
   },
@@ -230,12 +222,11 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['CSS Architecture', 'JavaScript', 'Responsive Design', 'Vercel'],
     metrics: 'Production Live · Tour Ticketing Platform',
-    previewImageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/amit-1.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1469488865564-c2de10f69f96?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80'
+      '/amit-1.png',
+      '/amit-2.png',
+      '/amit-3.png'
     ],
     color: '#fb5607'
   },
@@ -250,22 +241,24 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['CSS Architecture', 'Vanilla JavaScript', 'SVG Micro-Interactions', 'Vercel'],
     metrics: 'Production Live · Monastic Aesthetics',
-    previewImageUrl: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80',
+    previewImageUrl: '/adieu-1.png',
     galleryImages: [
-      'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1200&q=80'
+      '/adieu-1.png',
+      '/adieu-2.png'
     ],
     color: '#e2d8ce'
   }
 };
 
+// Repositories hidden from the carousel until screenshots/assets are provided
+const HIDDEN_REPOS = new Set(['varun-sir-portfolio', 'boosit-showcase-poc-1']);
+
 /**
- * SHOWCASE_PROJECTS: strictly generated from repo.json
- * Nothing else is in this array!
+ * SHOWCASE_PROJECTS: strictly generated from repo.json (excluding hidden repos)
  */
-export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawRepos.map((repo) => {
+export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawRepos
+  .filter(repo => !HIDDEN_REPOS.has(repo.name))
+  .map((repo) => {
   const meta = REPO_METADATA_MAP[repo.name] || {
     title: repo.name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
     category: `${(repo.language || 'SOFTWARE').toUpperCase()} // REPOSITORY`,
@@ -273,7 +266,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawRepos.map((repo) => {
     highlights: [
       `Official repository: ${repo.full_name}`,
       `Primary language: ${repo.language || 'TypeScript'}`,
-      `Branch: ${repo.default_branch}`
+      `Branch: ${(repo as any).default_branch || 'main'}`
     ],
     techStack: [repo.language || 'TypeScript', 'Git', 'Vercel'].filter(Boolean),
     metrics: repo.homepage ? 'Production Live' : 'Open Source Repository',
@@ -288,7 +281,8 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawRepos.map((repo) => {
   const year = repo.created_at ? new Date(repo.created_at).getFullYear().toString() : '2026';
   const client = repo.full_name ? repo.full_name.split('/')[0] : 'OCIMoh';
   const isLive = Boolean(repo.homepage);
-  const liveUrl = repo.homepage || repo.html_url;
+  const githubUrl = (repo as any).html_url || `https://github.com/${repo.full_name}`;
+  const liveUrl = repo.homepage || githubUrl;
 
   return {
     id: String(repo.id),
@@ -303,7 +297,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawRepos.map((repo) => {
     techStack: meta.techStack,
     metrics: meta.metrics,
     liveUrl: liveUrl,
-    githubUrl: repo.html_url,
+    githubUrl: githubUrl,
     previewImageUrl: meta.previewImageUrl,
     galleryImages: meta.galleryImages,
     color: meta.color,

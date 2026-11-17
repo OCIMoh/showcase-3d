@@ -1,15 +1,14 @@
 /**
- * Mathias Adolfsson '26 Portfolio — Main Application Bootstrap
- * Single Persistent WebGL Scene Architecture (Codrops Feature)
+ * Application Bootstrap & Routing Host
  * 
  * - html & body are fixed with zero document scroll
  * - Single full-screen 3D scene handles both Carousel and 3D Barrel Gallery Case Studies
- * - URL routes (/ and /projects/<slug>) drive scene states with browser history
+ * - Host router manages browser history state via popstate and onNavigate
  */
 
 import './style/main.css';
 import { CustomCursor } from './engine/cursor';
-import { MathiasCylinderEngine } from './engine/mathiasCylinderEngine';
+import { CylinderCarouselEngine } from './engine/cylinder/engine';
 import { SHOWCASE_PROJECTS } from './data/showcaseProjects';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,24 +26,42 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 3. Initialize Single Persistent 3D WebGL Engine
-  new MathiasCylinderEngine({
+  const engine = new CylinderCarouselEngine({
     container: viewMount,
     projects: SHOWCASE_PROJECTS,
     initialSlug,
     onNavigate: (newPath) => {
+      if (window.location.pathname !== newPath) {
+        window.history.pushState({ path: newPath }, '', newPath);
+      }
       if (newPath === '/') {
-        document.title = 'Mathias Adolfsson — Creative Engineer & WebGL Developer';
+        document.title = 'Creative Engineer — 3D Interactive Portfolio';
       } else {
         const slug = newPath.split('/').filter(Boolean).pop();
         const p = SHOWCASE_PROJECTS.find(item => item.slug === slug);
-        document.title = p ? `${p.title.split('—')[0].trim()} — Mathias Adolfsson` : 'Case Study — Mathias Adolfsson';
+        document.title = p ? `${p.title.split('—')[0].trim()} — Case Study` : 'Case Study — Portfolio';
       }
     }
   });
 
-  // 4. Bind interactive cursor triggers
+  // 4. Host History Router Adapter (handles browser back/forward buttons)
+  window.addEventListener('popstate', () => {
+    const curPath = window.location.pathname;
+    if (curPath.startsWith('/projects/') || curPath.startsWith('/project/')) {
+      const slug = curPath.split('/').filter(Boolean).pop();
+      const found = SHOWCASE_PROJECTS.find(p => p.slug === slug);
+      if (found) {
+        engine.openProject(found, window.innerWidth / 2, window.innerHeight / 2);
+      }
+    } else if (engine.heroOpenAmount > 0.5) {
+      engine.closeProject();
+    }
+  });
+
+  // 5. Bind interactive cursor triggers
   cursor.bindInteractive(document.querySelectorAll('a, button'), 'EXPLORE');
-  cursor.bindInteractive(document.querySelectorAll('.ma-case-overlay__back'), 'REEL');
-  cursor.bindInteractive(document.querySelectorAll('.ma-sound-toggle'), 'AUDIO');
+  cursor.bindInteractive(document.querySelectorAll('.ma-case-close-btn'), 'CLOSE');
+  cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link'), 'VISIT');
+  cursor.bindInteractive(document.querySelectorAll('.ma-case-sound-btn, .ma-sound-toggle'), 'AUDIO');
   cursor.bindInteractive(document.querySelectorAll('.ma-about-link'), 'ABOUT');
 });

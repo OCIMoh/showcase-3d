@@ -182,163 +182,180 @@
 }
 
 /* --------------------------------------------------------------------------
-   In-Situ Case Study 3D Barrel Gallery Overlay
+   In-Situ Case Study 3D Barrel Gallery Overlay (Mathias Adolfsson Exact Match)
    -------------------------------------------------------------------------- */
+.ma-minimal-header.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity 0.4s var(--ease-expo-out), transform 0.4s var(--ease-expo-out);
+}
+
 .ma-case-overlay {
   position: fixed;
   inset: 0;
   z-index: 60;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.45s var(--ease-expo-out);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ma-case-overlay.is-open {
   opacity: 1;
 }
 
-.ma-case-overlay__bar {
+/* Left Side Meta Info */
+.ma-case-info {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: clamp(28px, 4vw, 52px);
+  left: clamp(28px, 4vw, 56px);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: clamp(20px, 3vh, 36px) clamp(24px, 3.5vw, 48px);
-  background: linear-gradient(to bottom, rgba(8, 8, 8, 0.9) 0%, rgba(8, 8, 8, 0) 100%);
+  flex-direction: column;
+  gap: 3px;
+  pointer-events: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(13px, 1.05vw, 15px);
+  font-weight: 500;
+  line-height: 1.35;
+  color: #121212;
+  letter-spacing: -0.01em;
 }
 
-.ma-case-overlay__back {
-  display: inline-flex;
+.ma-case-info__cat {
+  color: #121212;
+}
+
+.ma-case-info__role {
+  color: #121212;
+}
+
+.ma-case-info__agency {
+  color: #121212;
+}
+
+/* Right Side Actions (View / Code) */
+.ma-case-actions {
+  position: absolute;
+  top: clamp(28px, 4vw, 52px);
+  right: clamp(28px, 4vw, 56px);
+  display: flex;
   align-items: center;
-  gap: 8px;
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.85);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
+  gap: 20px;
+  pointer-events: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 500;
+}
+
+.ma-case-view-link,
+.ma-case-code-link {
+  color: #121212;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ma-case-view-link:hover,
+.ma-case-code-link:hover {
+  opacity: 0.6;
+}
+
+/* Bottom Left Sound Button (Square with circle) */
+.ma-case-sound-btn {
+  position: absolute;
+  bottom: clamp(24px, 3.5vw, 44px);
+  left: clamp(28px, 4vw, 56px);
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: rgba(30, 30, 30, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   pointer-events: auto;
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.ma-case-overlay__back:hover {
-  color: #ffffff;
-  transform: translateX(-3px);
-}
-
-.ma-case-overlay__brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.ma-case-overlay__name {
-  color: #ffffff;
-}
-
-.ma-case-overlay__sep {
-  color: rgba(255, 255, 255, 0.25);
-}
-
-.ma-case-overlay__client {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.ma-case-overlay__actions {
-  display: flex;
-  gap: 12px;
-  pointer-events: auto;
-}
-
-.ma-case-launch-btn,
-.ma-case-github-btn {
-  padding: 6px 14px;
-  border-radius: 9999px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-decoration: none;
   transition: all 0.2s ease;
 }
 
-.ma-case-launch-btn {
-  background: #ffffff;
-  color: #080808;
+.ma-case-sound-btn:hover {
+  background: rgba(30, 30, 30, 0.7);
+  transform: scale(1.05);
 }
 
-.ma-case-launch-btn:hover {
-  background: #e0e0e0;
+.ma-case-sound-btn.is-muted {
+  opacity: 0.5;
 }
 
-.ma-case-github-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-}
-
-.ma-case-github-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.ma-case-overlay__footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: clamp(20px, 3vh, 32px) clamp(24px, 3.5vw, 48px);
-  background: linear-gradient(to top, rgba(8, 8, 8, 0.9) 0%, rgba(8, 8, 8, 0) 100%);
-}
-
-.ma-case-meta {
-  display: flex;
-  gap: 18px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.ma-case-meta__metrics {
-  color: var(--color-accent-cyan);
-}
-
+/* Bottom Center Navigation (← Project Title →) */
 .ma-case-nav {
+  position: absolute;
+  bottom: clamp(24px, 3.5vw, 44px);
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 16px;
   pointer-events: auto;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 6px 18px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .ma-case-nav__btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  padding: 8px 16px;
-  border-radius: 9999px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  background: none;
+  border: none;
+  color: #121212;
   cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .ma-case-nav__btn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.3);
+  opacity: 0.55;
+  transform: scale(1.1);
+}
+
+.ma-case-nav__title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(14px, 1.1vw, 15px);
+  font-weight: 500;
+  color: #121212;
+  letter-spacing: -0.01em;
+}
+
+/* Bottom Right Close Button [✕] */
+.ma-case-close-btn {
+  position: absolute;
+  bottom: clamp(24px, 3.5vw, 44px);
+  right: clamp(28px, 4vw, 56px);
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: rgba(30, 30, 30, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.2s ease;
+}
+
+.ma-case-close-btn:hover {
+  background: rgba(30, 30, 30, 0.7);
+  transform: scale(1.05);
 }
 
 /* --------------------------------------------------------------------------
@@ -501,3 +518,17 @@
   .ma-case-meta { flex-direction: column; gap: 4px; }
   .ma-about__grid { grid-template-columns: 1fr; }
 }
+
+/* Visually-hidden accessible catalog for screen readers and SEO */
+.ma-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
