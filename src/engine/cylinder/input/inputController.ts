@@ -122,8 +122,8 @@ export class InputController {
     };
 
     const onWheel = (e: WheelEvent) => {
-      // Input Scoping: If About drawer is open, let it scroll natively!
-      if (this.callbacks.isAboutOpen()) {
+      // Input Scoping: If About drawer or Case Study is open, let them scroll natively!
+      if (this.callbacks.isAboutOpen() || this.callbacks.isCaseStudyOpen()) {
         return;
       }
 
@@ -134,7 +134,7 @@ export class InputController {
         target === this.wrapper ||
         (target !== null && target.classList.contains('ma-cylinder-root'));
 
-      if (!isCanvasOrRoot && !this.callbacks.isCaseStudyOpen()) {
+      if (!isCanvasOrRoot) {
         return;
       }
 

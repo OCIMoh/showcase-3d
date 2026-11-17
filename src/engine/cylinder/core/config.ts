@@ -93,9 +93,9 @@ export const DEFAULT_CONFIG: Readonly<CylinderConfig> = {
 };
 
 export const DEFAULT_BRAND: Readonly<BrandConfig> = {
-  brandLine1: 'OCIMOH',
+  brandLine1: 'Showcase-3D',
   brandLine2: 'Creative Engineer',
-  badge: 'OCIMOH // CREATIVE ENGINEER',
+  badge: 'Showcase-3D // CREATIVE ENGINEER',
   aboutHeadline: 'CURVED CYLINDRICAL CAROUSEL & 3D INTERACTIVE ENGINE',
   aboutBio: 'Creative engineering studio specializing in WebGL, procedural 3D graphics, dynamic GLSL shaders, and tactile digital experiences.',
   githubUrl: 'https://github.com/OCIMoh'

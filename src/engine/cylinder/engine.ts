@@ -244,8 +244,8 @@ export class CylinderCarouselEngine {
       },
       onArrowKey: (key) => {
         if (this.heroOpenAmount > 0.5) {
-          if (key === 'ArrowDown') this.galleryTargetPos -= 0.6;
-          if (key === 'ArrowUp') this.galleryTargetPos += 0.6;
+          if (key === 'ArrowRight' || key === 'ArrowDown') this.navigateNextProject();
+          if (key === 'ArrowLeft' || key === 'ArrowUp') this.navigatePrevProject();
         } else {
           if (key === 'ArrowRight') this.targetPos -= this.config.spacing;
           if (key === 'ArrowLeft') this.targetPos += this.config.spacing;
@@ -347,18 +347,6 @@ export class CylinderCarouselEngine {
       reducedMotion: this.prefersReducedMotion
     }, this.numIndices);
 
-    if (this.activeProject) {
-      this.galleryPass.render({
-        activeProject: this.activeProject,
-        galleryPos: this.galleryPos,
-        galleryVelocity: this.galleryVelocity,
-        galleryCurve: this.galleryCurve,
-        heroOpenAmount: this.heroOpenAmount,
-        meshAspect: cfg.cardAspect,
-        reducedMotion: this.prefersReducedMotion
-      }, this.numIndices);
-    }
-
     this.rafId = requestAnimationFrame(this.tick);
   }
 
@@ -443,21 +431,21 @@ export class CylinderCarouselEngine {
       this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
       return;
     }
-    const curGallery = this.galleryPos;
-    gsap.to(this, {
-      galleryPos: curGallery + 1.2,
-      duration: 0.35,
-      ease: 'power2.in',
-      onComplete: () => {
-        this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
-        this.galleryPos = -1.2;
-        gsap.to(this, {
-          galleryPos: 0,
-          duration: 0.5,
-          ease: 'expo.out'
-        });
-      }
-    });
+    const bentoEl = this.overlay.bentoGridEl;
+    if (bentoEl) {
+      gsap.to(bentoEl, {
+        opacity: 0,
+        y: 15,
+        duration: 0.22,
+        ease: 'power2.in',
+        onComplete: () => {
+          this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
+          gsap.fromTo(bentoEl, { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.35, ease: 'expo.out' });
+        }
+      });
+    } else {
+      this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
+    }
   }
 
   private snapToNearestCard(): void {

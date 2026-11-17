@@ -107,7 +107,7 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     ],
     techStack: ['TypeScript', 'Next.js', 'Tailwind CSS', 'Lucide Icons'],
     metrics: 'Pet Healthcare · Responsive Clinic Platform',
-    previewImageUrl: '/amc-1.png',
+    previewImageUrl: '/amc-2.png',
     galleryImages: [
       '/amc-1.png',
       '/amc-2.png',

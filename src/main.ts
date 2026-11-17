@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5. Bind interactive cursor triggers
   cursor.bindInteractive(document.querySelectorAll('a, button'), 'EXPLORE');
   cursor.bindInteractive(document.querySelectorAll('.ma-case-close-btn'), 'CLOSE');
-  cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link'), 'VISIT');
+  cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link, .ma-bento-btn'), 'VISIT');
   cursor.bindInteractive(document.querySelectorAll('.ma-case-sound-btn, .ma-sound-toggle'), 'AUDIO');
   cursor.bindInteractive(document.querySelectorAll('.ma-about-link'), 'ABOUT');
 });
