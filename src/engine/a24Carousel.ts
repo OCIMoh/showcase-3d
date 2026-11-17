@@ -219,8 +219,19 @@ export class A24CinemaCarousel {
             <span class="a24-edge-safety">SAFETY FILM</span>
           </div>
 
-          <!-- Anamorphic Jar Stage with Atmospheric Light -->
+          <!-- Anamorphic Jar Stage with Atmospheric Light & 35mm Terroir Scene Projection -->
           <div class="a24-frame__stage">
+            <div class="a24-frame__scene-bg">
+              <img 
+                class="a24-frame__scene-img" 
+                src="${prod.sceneUrl || prod.jarUrl}" 
+                alt="${prod.title}" 
+                loading="${idx < 3 ? 'eager' : 'lazy'}" 
+                decoding="async" 
+                draggable="false"
+              />
+              <div class="a24-frame__scene-vignette"></div>
+            </div>
             <div class="a24-frame__projector-beam" aria-hidden="true"></div>
             <img 
               class="a24-frame__jar-img" 

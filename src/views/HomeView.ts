@@ -12,6 +12,7 @@
  */
 
 import { PRODUCTS, Product } from '../data/products';
+import { SHOWCASE_PROJECTS } from '../data/showcaseProjects';
 import { AgrumeaCarousel } from '../engine/carousel';
 import { WebglLiquidCarousel } from '../engine/webglCarousel';
 import { ElasticDeckCarousel } from '../engine/deckCarousel';
@@ -22,6 +23,23 @@ import { A24CinemaCarousel } from '../engine/a24Carousel';
 import { AristideSlatsCarousel } from '../engine/aristideCarousel';
 
 type CarouselMode = 'incline' | 'liquid' | 'deck' | 'activetheory' | 'split' | 'orbital' | 'a24' | 'aristide';
+
+interface ModeThemeConfig {
+  theme: string;
+  headerTheme: 'dark' | 'light';
+  bodyClass: string;
+}
+
+const MODE_THEMES: Record<CarouselMode, ModeThemeConfig> = {
+  incline: { theme: 'parchment', headerTheme: 'light', bodyClass: 'theme-parchment' },
+  deck: { theme: 'parchment', headerTheme: 'light', bodyClass: 'theme-parchment' },
+  liquid: { theme: 'amber', headerTheme: 'dark', bodyClass: 'theme-amber' },
+  activetheory: { theme: 'cyber', headerTheme: 'dark', bodyClass: 'theme-cyber' },
+  split: { theme: 'stone', headerTheme: 'light', bodyClass: 'theme-stone' },
+  orbital: { theme: 'astrolabe', headerTheme: 'dark', bodyClass: 'theme-astrolabe' },
+  a24: { theme: 'cinema', headerTheme: 'dark', bodyClass: 'theme-cinema' },
+  aristide: { theme: 'minimal', headerTheme: 'dark', bodyClass: 'theme-minimal' },
+};
 
 export function createHomeView(): HTMLElement {
   const container = document.createElement('div');
@@ -87,6 +105,24 @@ export function createHomeView(): HTMLElement {
     }
     stage.innerHTML = '';
     currentMode = mode;
+    try {
+      window.history.replaceState(null, '', `#${mode}`);
+    } catch {
+      // Safe fallback
+    }
+
+    // Apply Dynamic Carousel Theme to body & header
+    const config = MODE_THEMES[mode];
+    document.body.dataset.carouselTheme = config.theme;
+    Object.values(MODE_THEMES).forEach(cfg => {
+      document.body.classList.remove(cfg.bodyClass);
+    });
+    document.body.classList.add(config.bodyClass);
+
+    const siteHeader = document.querySelector<HTMLElement>('#siteHeader');
+    if (siteHeader) {
+      siteHeader.dataset.headerTheme = config.headerTheme;
+    }
 
     // Update active button state
     container.querySelectorAll('.carousel-mode-dock__btn').forEach(btn => {
@@ -147,13 +183,9 @@ export function createHomeView(): HTMLElement {
         });
       }
     } else if (mode === 'liquid') {
-      // 2. WebGL Liquid & Chromatic Aberration Mode
+      // 2. WebGL Liquid & Chromatic Aberration Mode (Amber Terroir glow)
       stage.innerHTML = `
         <div class="webgl-stage" style="position:absolute; inset:0; overflow:hidden;">
-          <!-- Subtle atmospheric burgundy backdrop -->
-          <div class="jar-slider__shape-layer" style="opacity:0.45; transform: translate3d(-50%, 0, 0);" aria-hidden="true">
-            <img class="jar-slider__shape-image" src="/images/home/back-slider-home.svg" width="1407" height="601" alt="" decoding="async">
-          </div>
           <div id="webglMount" style="position:absolute; inset:0;"></div>
         </div>
       `;
@@ -169,7 +201,7 @@ export function createHomeView(): HTMLElement {
       stage.innerHTML = `
         <div class="deck-stage" style="position:absolute; inset:0; overflow:hidden;">
           <!-- Subtle atmospheric burgundy backdrop -->
-          <div class="jar-slider__shape-layer" style="opacity:0.45; transform: translate3d(-50%, 0, 0);" aria-hidden="true">
+          <div class="jar-slider__shape-layer" style="opacity:0.35; transform: translate3d(-50%, 0, 0);" aria-hidden="true">
             <img class="jar-slider__shape-image" src="/images/home/back-slider-home.svg" width="1407" height="601" alt="" decoding="async">
           </div>
           <div id="deckMount" style="position:absolute; inset:0;"></div>
@@ -183,13 +215,9 @@ export function createHomeView(): HTMLElement {
         onSelectProduct: navigateToProduct
       });
     } else if (mode === 'activetheory') {
-      // 4. Active Theory 3D Spatial Ribbon Mode
+      // 4. Active Theory 3D Spatial Ribbon Mode (Pure Obsidian Cyber Void)
       stage.innerHTML = `
         <div class="activetheory-stage" style="position:absolute; inset:0; overflow:hidden;">
-          <!-- Subtle atmospheric burgundy backdrop -->
-          <div class="jar-slider__shape-layer" style="opacity:0.35; transform: translate3d(-50%, 0, 0);" aria-hidden="true">
-            <img class="jar-slider__shape-image" src="/images/home/back-slider-home.svg" width="1407" height="601" alt="" decoding="async">
-          </div>
           <div id="atMount" style="position:absolute; inset:0;"></div>
         </div>
       `;
@@ -197,17 +225,12 @@ export function createHomeView(): HTMLElement {
       const atMount = stage.querySelector<HTMLElement>('#atMount')!;
       activeEngine = new ActiveTheoryCarousel({
         container: atMount,
-        products: PRODUCTS,
-        onSelectProduct: navigateToProduct
+        projects: SHOWCASE_PROJECTS
       });
     } else if (mode === 'split') {
-      // 5. Bi-Directional Counter-Motion Editorial Split Mode
+      // 5. Bi-Directional Counter-Motion Editorial Split Mode (Stone & Monochrome)
       stage.innerHTML = `
         <div class="split-stage" style="position:absolute; inset:0; overflow:hidden;">
-          <!-- Subtle atmospheric burgundy backdrop -->
-          <div class="jar-slider__shape-layer" style="opacity:0.25; transform: translate3d(-50%, 0, 0);" aria-hidden="true">
-            <img class="jar-slider__shape-image" src="/images/home/back-slider-home.svg" width="1407" height="601" alt="" decoding="async">
-          </div>
           <div id="splitMount" style="position:absolute; inset:0;"></div>
         </div>
       `;
@@ -219,13 +242,9 @@ export function createHomeView(): HTMLElement {
         onSelectProduct: navigateToProduct
       });
     } else if (mode === 'orbital') {
-      // 6. Off-Screen Orbital Sundial Arc Mode (Hermès / B&O)
+      // 6. Off-Screen Orbital Sundial Arc Mode (Celestial Astrolabe Cosmos)
       stage.innerHTML = `
         <div class="orbital-mount-stage" style="position:absolute; inset:0; overflow:hidden;">
-          <!-- Subtle atmospheric burgundy backdrop -->
-          <div class="jar-slider__shape-layer" style="opacity:0.25; transform: translate3d(-50%, 0, 0);" aria-hidden="true">
-            <img class="jar-slider__shape-image" src="/images/home/back-slider-home.svg" width="1407" height="601" alt="" decoding="async">
-          </div>
           <div id="orbitalMount" style="position:absolute; inset:0;"></div>
         </div>
       `;
@@ -276,9 +295,13 @@ export function createHomeView(): HTMLElement {
     });
   });
 
-  // Mount default mode immediately
+  // Mount mode: check URL hash or query param, default to 'activetheory' for portfolio showcase
+  const validModes: CarouselMode[] = ['incline', 'liquid', 'deck', 'activetheory', 'split', 'orbital', 'a24', 'aristide'];
+  const hashMode = window.location.hash.replace('#', '') as CarouselMode;
+  const initialMode = validModes.includes(hashMode) ? hashMode : 'activetheory';
+
   setTimeout(() => {
-    mountMode('incline');
+    mountMode(initialMode);
   }, 0);
 
   return container;
