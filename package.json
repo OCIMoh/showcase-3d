@@ -1,7 +1,8 @@
 {
-  "name": "agrumea-farm-template",
+  "name": "mathias-adolfsson-portfolio",
   "private": true,
   "version": "1.0.0",
+  "description": "Interactive 3D Curved Cylindrical WebGL Portfolio Replicating Showcase-3D (Codrops Feature)",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,4 +18,3 @@
     "vite": "^6.0.1"
   }
 }
-

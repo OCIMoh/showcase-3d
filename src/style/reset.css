@@ -1,4 +1,4 @@
-/* Modern CSS Reset & Canvas Isolation */
+/* Modern CSS Reset & Minimal Fixed Viewport Setup */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -7,14 +7,17 @@
 
 html, body {
   width: 100%;
-  min-height: 100%;
-  background-color: var(--color-white);
-  color: var(--color-text);
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bc, #080808);
+  color: var(--tc, #f7f7f7);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
-  overflow-x: hidden;
+  -webkit-user-select: none;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 img, svg, canvas {
@@ -34,4 +37,3 @@ button {
   cursor: pointer;
   outline: none;
 }
-

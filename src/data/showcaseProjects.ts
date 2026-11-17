@@ -1,7 +1,9 @@
 /**
- * OCIMoh Creative Studio — Showcase Projects Dataset
- * Award-winning website portfolio case studies from OCIMoh GitHub Organization
+ * Repository Dataset for Mathias Adolfsson '26 Portfolio Carousel
+ * Powered strictly by `repo.json`
  */
+
+import rawRepos from './repo.json';
 
 export interface ShowcaseProject {
   id: string;
@@ -18,252 +20,293 @@ export interface ShowcaseProject {
   liveUrl: string;
   githubUrl: string;
   previewImageUrl: string;
-  color: string;           // Signature accent color (cyan, amber, neon green, magenta)
+  galleryImages: string[];
+  color: string;           // Signature accent color
   isLive: boolean;
 }
 
-export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
-  {
-    id: 'touche-keyboard',
-    slug: 'touche-keyboard',
-    name: 'touche-keyboard',
+interface RepoMetadata {
+  title: string;
+  category: string;
+  description: string;
+  highlights: string[];
+  techStack: string[];
+  metrics: string;
+  previewImageUrl: string;
+  galleryImages: string[];
+  color: string;
+}
+
+// Curated aesthetic metadata mapped strictly to the repos in repo.json
+const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
+  'varun-sir-portfolio': {
+    title: 'Varun Sir Portfolio — Creative Portfolio',
+    category: 'PORTFOLIO & CREATIVE ENGINEERING',
+    description: 'Personal showcase and digital portfolio website built with modern fluid layouts and interactive micro-interactions.',
+    highlights: [
+      'Full-bleed editorial layout with kinetic typography',
+      'Fluid state transitions and interactive micro-animations',
+      'Ultra-responsive mobile-first viewport scaling'
+    ],
+    techStack: ['TypeScript', 'Next.js', 'Tailwind CSS', 'WebGL', 'Vercel'],
+    metrics: 'Creative Portfolio · 60 FPS',
+    previewImageUrl: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#e5dacf'
+  },
+  'touche-keyboard': {
     title: 'Touché — Custom 3D Mechanical Keyboard',
-    client: 'Touché Hardware Lab',
-    year: '2026',
     category: '3D HARDWARE SHOWCASE',
-    description: 'Immersive 3D mechanical keyboard configurator and scroll experience with real-time switch mechanics, tactile keycap customization, and acoustic haptic feedback.',
+    description: '3-d scroll website for a keyboard company showcase with interactive exploded views and acoustic switch mechanics.',
     highlights: [
-      'Interactive 3D exploded view of keyboard chassis, PCB, plate, and mechanical switches',
-      'Real-time sound synthesizer simulating mechanical switch sound profiles (linear, tactile, clicky)',
-      'Custom PBR metal, brass weight, and frosted polycarbonate materials'
+      'Interactive 3D exploded view of chassis, PCB, plate, and mechanical switches',
+      'Real-time sound synthesizer simulating switch acoustics',
+      'High-performance 60 FPS WebGL shader pipeline'
     ],
-    techStack: ['Three.js', 'TypeScript', 'WebGL 2.0', 'GLSL Shaders', 'Web Audio API'],
-    metrics: '60fps WebGL · Real-time PBR · Spatial Audio',
-    liveUrl: 'https://github.com/OCIMoh/touche-keyboard',
-    githubUrl: 'https://github.com/OCIMoh/touche-keyboard',
-    previewImageUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=1200&q=80',
-    color: '#00d2ff',
-    isLive: false
+    techStack: ['TypeScript', 'Three.js', 'WebGL', 'GLSL Shaders', 'Web Audio API'],
+    metrics: 'Production Live · Real-time 3D Explosion',
+    previewImageUrl: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#00e5ff'
   },
-  {
-    id: 'lumina-coffee',
-    slug: 'lumina-coffee',
-    name: 'lumina-coffee',
-    title: 'Lumina Coffee — Scrollytelling Experience',
-    client: 'Lumina Artisanal Roasters',
-    year: '2026',
-    category: '3D SCROLLYTELLING',
-    description: 'Cinematic vertical scrollytelling journey following single-origin Ethiopian coffee beans from volcanic soil harvesting to copper flame drum roasting.',
+  'lumina-coffee': {
+    title: 'Lumina Coffee — 3D Scrollytelling',
+    category: 'BEVERAGE & SCROLLYTELLING',
+    description: '3-d scrollytelling coffee website tracking the artisanal bean journey from volcanic soil to pour-over.',
     highlights: [
-      'Continuous parallax scroll narrative with synchronized camera dolly sequences',
-      'Dynamic flavor profile radar chart and olfactory notes breakdown',
-      'Sub-second first contentful paint and responsive mobile storytelling'
+      'Kinetic scrollytelling with real-time canvas steam particles',
+      'Ambient atmospheric lighting and aroma visualization',
+      'Interactive roast profile navigator'
     ],
-    techStack: ['TypeScript', 'Canvas API', 'Scrollytelling', 'CSS3D', 'Vite'],
-    metrics: '100 Lighthouse Performance · Butter Scroll',
-    liveUrl: 'https://github.com/OCIMoh/lumina-coffee',
-    githubUrl: 'https://github.com/OCIMoh/lumina-coffee',
+    techStack: ['HTML', 'CSS Architecture', 'JavaScript', '3D Canvas', 'GSAP'],
+    metrics: 'Kinetic Scrollytelling · Ambient Atmosphere',
     previewImageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80',
-    color: '#e58a32',
-    isLive: false
-  },
-  {
-    id: 'koi-fish-3d',
-    slug: 'koi-fish-3d',
-    name: 'koi-fish-3d',
-    title: 'Nishikigoi — Interactive 3D Fluid Simulation',
-    client: 'Creative R&D Lab',
-    year: '2026',
-    category: 'WEBGL SIMULATION',
-    description: 'High-performance interactive 3D Koi fish pond simulation featuring organic boid flocking behavior, procedural fin deformation, and real-time cursor ripple shaders.',
-    highlights: [
-      'Procedural skeletal animation mimicking biological fish locomotion',
-      'Interactive caustics light projection and water refraction shaders',
-      'Spatial food-feeding attraction physics triggered by pointer gestures'
+    galleryImages: [
+      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80'
     ],
-    techStack: ['Three.js', 'WebGL', 'GLSL Vertex Shaders', 'TypeScript', 'Math Physics'],
-    metrics: '120fps GPU · Procedural Kinematics',
-    liveUrl: 'https://github.com/OCIMoh/koi-fish-3d',
-    githubUrl: 'https://github.com/OCIMoh/koi-fish-3d',
-    previewImageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80',
-    color: '#ff3d00',
-    isLive: false
+    color: '#d4a373'
   },
-  {
-    id: 'universal-college',
-    slug: 'universal-college',
-    name: 'universal-college',
-    title: 'Universal College — Institutional Portal',
-    client: 'Universal College Patran',
-    year: '2026',
-    category: 'CAMPUS DIGITAL PLATFORM',
-    description: 'Modern, high-trust institutional portal for Universal College Patran with interactive academic department directories, admissions pipeline, and virtual campus tours.',
+  'amc-journey': {
+    title: 'AMC Journey — Mohali Pet Clinic',
+    category: 'HEALTHCARE & VETERINARY',
+    description: 'Modern institutional and booking website for Mohali Pet Clinic with compassionate care storytelling.',
     highlights: [
-      'Comprehensive academic course registry with dynamic qualification filters',
-      'Direct online student inquiry and prospect onboarding system',
-      'Production-deployed on Vercel with instant edge caching'
+      'Comprehensive veterinary services and diagnostic showcase',
+      'Patient booking flow and health tips resource center',
+      'Warm and accessible responsive typography'
     ],
-    techStack: ['TypeScript', 'Next.js', 'TailwindCSS', 'Vercel Edge', 'Responsive UI'],
-    metrics: 'Production Live · 500+ Daily Students',
-    liveUrl: 'https://universal-college-patran.vercel.app/',
-    githubUrl: 'https://github.com/OCIMoh/universal-college',
+    techStack: ['TypeScript', 'Next.js', 'Tailwind CSS', 'Lucide Icons'],
+    metrics: 'Pet Healthcare · Responsive Clinic Platform',
+    previewImageUrl: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#a7c957'
+  },
+  'boosit-showcase-poc-1': {
+    title: 'BoostIt — Showcase Experience',
+    category: 'SAAS PLATFORM SHOWCASE',
+    description: 'Showcase website for BoostIt featuring dynamic proof-of-concept interactive components and conversion flows.',
+    highlights: [
+      'High-conversion feature comparison cards',
+      'Interactive metrics counters and animated feature reveals',
+      'Lightweight component architecture'
+    ],
+    techStack: ['HTML', 'CSS', 'JavaScript', 'GSAP Animations'],
+    metrics: 'Conversion Flow · Proof of Concept',
+    previewImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#f77f00'
+  },
+  'koi-fish-3d': {
+    title: 'Koi Fish 3D — Procedural Fluid Art',
+    category: 'GENERATIVE ART & SHADERS',
+    description: 'Procedural 3D Japanese koi pond simulation with fluid dynamics shaders, ripple wave propagation, and realistic caustics.',
+    highlights: [
+      'Real-time Navier-Stokes 2D fluid solver rendered on GPU compute shaders',
+      'Procedural skeletal animation for organic fish spine locomotion and fin undulation',
+      'Refractive water surface with Snell-Descartes caustics lighting'
+    ],
+    techStack: ['TypeScript', 'Three.js', 'WebGL', 'GLSL Shaders', 'Physics Math'],
+    metrics: 'Real-time Caustics · Fluid Dynamics',
+    previewImageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#ff4d4d'
+  },
+  'universal-college': {
+    title: 'Universal College Patran',
+    category: 'ACADEMIC INSTITUTION & PORTAL',
+    description: 'Official institutional web platform for Universal College Patran with student portal access and course navigators.',
+    highlights: [
+      'Comprehensive academic curriculum catalog and faculty directory',
+      'Admissions pipeline with dynamic eligibility calculators',
+      'Zero-downtime deployment on Vercel with instant edge caching'
+    ],
+    techStack: ['TypeScript', 'React', 'Next.js', 'Tailwind CSS', 'Vercel'],
+    metrics: 'Production Live · Academic Portal',
     previewImageUrl: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80',
-    color: '#3b82f6',
-    isLive: true
-  },
-  {
-    id: 'jimmy-oye',
-    slug: 'jimmy-oye',
-    name: 'jimmy-oye',
-    title: 'Jimmy Oye — Creative Portfolio & Audio',
-    client: 'Jimmy Oye Music & Media',
-    year: '2026',
-    category: 'CREATIVE DEVELOPER PORTFOLIO',
-    description: 'High-energy personal creative portfolio with kinetic typography, custom soundboard playback, and micro-interactive cursor physics.',
-    highlights: [
-      'Interactive music stem player with frequency visualizer spectrum',
-      'Smooth scroll transitions with dynamic color palette morphing',
-      'Live deployed on Vercel with automated CI/CD pipeline'
+    galleryImages: [
+      'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=1200&q=80'
     ],
-    techStack: ['TypeScript', 'React', 'Framer Motion', 'Web Audio API', 'Vercel'],
-    metrics: 'Production Live · Audio-Reactive UI',
-    liveUrl: 'https://jimmy-oye.vercel.app',
-    githubUrl: 'https://github.com/OCIMoh/jimmy-oye',
-    previewImageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80',
-    color: '#a855f7',
-    isLive: true
+    color: '#3a86ff'
   },
-  {
-    id: 'adieu-perfume',
-    slug: 'adieu-perfume',
-    name: 'adieu-perfume',
+  'jimmy-oye': {
+    title: 'Jimmy Oye — Creative Music Showcase',
+    category: 'ENTERTAINMENT & MUSIC BRAND',
+    description: 'Vibrant and kinetic artist website with audio previews, video highlights, and live concert tour schedules.',
+    highlights: [
+      'Kinetic bold typography and vibrant neon aesthetic',
+      'Integrated HTML5 Web Audio previews for music releases',
+      'Tour calendar with real-time venue links'
+    ],
+    techStack: ['TypeScript', 'Next.js', 'Web Audio API', 'Tailwind CSS', 'Vercel'],
+    metrics: 'Production Live · High-Aesthetic Music',
+    previewImageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#ffbe0b'
+  },
+  'wraith': {
+    title: 'Project Wraith — Obsidian Cyber Suite',
+    category: 'CYBERSECURITY & DEVTOOLS',
+    description: 'High-contrast obsidian technical dashboard and landing experience for threat intelligence and vulnerability management.',
+    highlights: [
+      'Pure monochrome palette with surgical neon highlights',
+      'Interactive packet inspection simulator with real-time SVG network graph',
+      'Sub-50ms latency metrics dashboard'
+    ],
+    techStack: ['CSS Architecture', 'Vanilla JavaScript', 'SVG Graphics', 'Vercel'],
+    metrics: 'Production Live · Zero-Latency HUD',
+    previewImageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#00ff66'
+  },
+  'amit-tandon': {
+    title: 'Amit Tandon — Comedy & Live Tour',
+    category: 'COMEDY & MEDIA PLATFORM',
+    description: 'Official artist and live tour platform for comedian Amit Tandon featuring tour date ticketing and special video clips.',
+    highlights: [
+      'Live international tour ticketing integration',
+      'Exclusive standup clips and press review quotes',
+      'High-speed edge delivery with responsive layout'
+    ],
+    techStack: ['CSS Architecture', 'JavaScript', 'Responsive Design', 'Vercel'],
+    metrics: 'Production Live · Tour Ticketing Platform',
+    previewImageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1469488865564-c2de10f69f96?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#fb5607'
+  },
+  'adieu-perfume': {
     title: 'Adieu Parfums — Haute Parfumerie',
-    client: 'Maison Adieu Paris',
-    year: '2026',
     category: 'LUXURY E-COMMERCE',
-    description: 'Monastic minimalist luxury digital showcase for artisanal niche fragrances with olfactory scent pyramid breakdowns and bespoke glass bottle presentation.',
+    description: 'Monastic minimalist luxury digital showcase for artisanal niche fragrances with olfactory scent pyramid breakdowns.',
     highlights: [
       'Full-bleed black obsidian aesthetic inspired by high-fashion Parisian ateliers',
       'Olfactory notes navigation: Top, Heart, and Base note accord reveals',
-      'Bespoke micro-typography and silky mouse-following ambient lens'
+      'Production-deployed on Vercel with instant edge caching'
     ],
-    techStack: ['CSS Architecture', 'Vanilla JavaScript', 'SVG Micro-Interactions', 'WebGL'],
-    metrics: 'Quiet Luxury · Monastic Aesthetics',
-    liveUrl: 'https://github.com/OCIMoh/adieu-perfume',
-    githubUrl: 'https://github.com/OCIMoh/adieu-perfume',
+    techStack: ['CSS Architecture', 'Vanilla JavaScript', 'SVG Micro-Interactions', 'Vercel'],
+    metrics: 'Production Live · Monastic Aesthetics',
     previewImageUrl: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80',
-    color: '#e2d8ce',
-    isLive: false
-  },
-  {
-    id: 'amit-tandon',
-    slug: 'amit-tandon',
-    name: 'amit-tandon',
-    title: 'Amit Tandon — Executive Showcase',
-    client: 'Amit Tandon',
-    year: '2026',
-    category: 'EXECUTIVE PORTFOLIO',
-    description: 'Polished corporate leadership portfolio showcasing public speaking keynotes, advisory ventures, and media broadcast appearances with editorial clarity.',
-    highlights: [
-      'High-contrast editorial typography with fluid layout transitions',
-      'Curated video gallery of television and podcast keynote appearances',
-      'Production-deployed on Vercel with sub-second page delivery'
+    galleryImages: [
+      'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1200&q=80'
     ],
-    techStack: ['CSS3', 'Modern JavaScript', 'Vercel Edge', 'Responsive Design'],
-    metrics: 'Production Live · Executive Grade',
-    liveUrl: 'https://amit-tandon.vercel.app',
-    githubUrl: 'https://github.com/OCIMoh/amit-tandon',
-    previewImageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
-    color: '#f59e0b',
-    isLive: true
-  },
-  {
-    id: 'wraith',
-    slug: 'wraith',
-    name: 'wraith',
-    title: 'Project Wraith — Dark Mode Cyber Suite',
-    client: 'Internal Design Lab',
-    year: '2026',
-    category: 'CYBERNETIC UI SYSTEM',
-    description: 'Experimental dark mode design system and UI framework built for next-generation developer tooling, glowing telemetry consoles, and low-latency workstations.',
-    highlights: [
-      'High-contrast darkroom obsidian palette with neon cyan and lime status telemetry',
-      'Zero-dependency hardware-accelerated CSS and Canvas component library',
-      'Modular dashboard layouts designed for ultra-dense data display'
-    ],
-    techStack: ['CSS Systems', 'Custom Canvas Shaders', 'TypeScript', 'Hardware Compositing'],
-    metrics: 'Sub-millisecond Render · Dark Cyberpunk',
-    liveUrl: 'https://github.com/OCIMoh/wraith',
-    githubUrl: 'https://github.com/OCIMoh/wraith',
-    previewImageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80',
-    color: '#10b981',
-    isLive: false
-  },
-  {
-    id: 'amc-journey',
-    slug: 'amc-journey',
-    name: 'amc-journey',
-    title: 'AMC Pet Hospital — Care Journey',
-    client: 'Animal Medical Care Mohali',
-    year: '2026',
-    category: 'VETERINARY HEALTHCARE',
-    description: 'Compassionate, high-trust veterinary hospital web application featuring step-by-step patient care timelines, digital medical appointments, and surgeon credentials.',
-    highlights: [
-      'Interactive pet recovery timeline guiding owners through post-op milestones',
-      'Emergency 24/7 hotline triage launcher with geographic clinic routing',
-      'Accessibility-first typography designed for high-stress medical environments'
-    ],
-    techStack: ['TypeScript', 'TailwindCSS', 'Form Validation API', 'Responsive UI'],
-    metrics: 'WCAG 2.1 AA Compliant · High Trust UI',
-    liveUrl: 'https://github.com/OCIMoh/amc-journey',
-    githubUrl: 'https://github.com/OCIMoh/amc-journey',
-    previewImageUrl: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80',
-    color: '#06b6d4',
-    isLive: false
-  },
-  {
-    id: 'boosit-showcase-poc-1',
-    slug: 'boosit-showcase-poc-1',
-    name: 'boosit-showcase-poc-1',
-    title: 'BoostIt — Growth Engine Landing Experience',
-    client: 'BoostIt SaaS Inc.',
-    year: '2026',
-    category: 'SAAS PRODUCT LAUNCH',
-    description: 'Conversion-engineered SaaS marketing experience featuring dynamic ROI projections, animated product feature walkthroughs, and social proof benchmarks.',
-    highlights: [
-      'Interactive growth multiplier slider showing expected revenue lift in real time',
-      'Clean modular pricing matrix with billing cycle toggles and feature tooltips',
-      'Engineered for maximum signup funnel velocity and micro-conversion'
-    ],
-    techStack: ['HTML5', 'CSS Grid', 'JavaScript Kinetic Motion', 'Responsive'],
-    metrics: '+42% Funnel Velocity · SaaS Benchmark',
-    liveUrl: 'https://github.com/OCIMoh/boosit-showcase-poc-1',
-    githubUrl: 'https://github.com/OCIMoh/boosit-showcase-poc-1',
-    previewImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
-    color: '#ec4899',
-    isLive: false
-  },
-  {
-    id: 'varun-sir-portfolio',
-    slug: 'varun-sir-portfolio',
-    name: 'varun-sir-portfolio',
-    title: 'Varun Tech Portfolio — Engineering Leadership',
-    client: 'Varun Engineering',
-    year: '2026',
-    category: 'TECH LEADERSHIP PORTFOLIO',
-    description: 'Personal tech portfolio showcasing full-stack engineering architecture, software engineering curriculum design, and mentorship milestones.',
-    highlights: [
-      'Interactive skill matrix and engineering stack proficiency indicators',
-      'Curriculum repository showcasing real-world full-stack student project codebases',
-      'Clean developer dark aesthetics with rapid markdown documentation viewer'
-    ],
-    techStack: ['TypeScript', 'Next.js', 'Markdown Parser', 'TailwindCSS'],
-    metrics: 'Developer Focused · Clean Tech',
-    liveUrl: 'https://github.com/OCIMoh/varun-sir-portfolio',
-    githubUrl: 'https://github.com/OCIMoh/varun-sir-portfolio',
-    previewImageUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80',
-    color: '#6366f1',
-    isLive: false
+    color: '#e2d8ce'
   }
-];
+};
 
+/**
+ * SHOWCASE_PROJECTS: strictly generated from repo.json
+ * Nothing else is in this array!
+ */
+export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawRepos.map((repo) => {
+  const meta = REPO_METADATA_MAP[repo.name] || {
+    title: repo.name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+    category: `${(repo.language || 'SOFTWARE').toUpperCase()} // REPOSITORY`,
+    description: repo.description || 'Open source software repository developed by OCIMoh.',
+    highlights: [
+      `Official repository: ${repo.full_name}`,
+      `Primary language: ${repo.language || 'TypeScript'}`,
+      `Branch: ${repo.default_branch}`
+    ],
+    techStack: [repo.language || 'TypeScript', 'Git', 'Vercel'].filter(Boolean),
+    metrics: repo.homepage ? 'Production Live' : 'Open Source Repository',
+    previewImageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80'
+    ],
+    color: '#00e5ff'
+  };
+
+  const year = repo.created_at ? new Date(repo.created_at).getFullYear().toString() : '2026';
+  const client = repo.full_name ? repo.full_name.split('/')[0] : 'OCIMoh';
+  const isLive = Boolean(repo.homepage);
+  const liveUrl = repo.homepage || repo.html_url;
+
+  return {
+    id: String(repo.id),
+    slug: repo.name,
+    name: repo.name,
+    title: meta.title,
+    client: client,
+    year: year,
+    category: meta.category,
+    description: repo.description || meta.description,
+    highlights: meta.highlights,
+    techStack: meta.techStack,
+    metrics: meta.metrics,
+    liveUrl: liveUrl,
+    githubUrl: repo.html_url,
+    previewImageUrl: meta.previewImageUrl,
+    galleryImages: meta.galleryImages,
+    color: meta.color,
+    isLive: isLive
+  };
+});

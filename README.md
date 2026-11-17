@@ -1,41 +1,33 @@
-# Agrumêa Farm Template (Vite + TypeScript)
+# Showcase-3D — Creative Engineer & WebGL Portfolio
 
-An Awwwards-caliber website template replicating the physics, interactive momentum carousel, 3D cylindrical canvas projection, and kinetic sweep transitions of **Agrumêa Farm** (by Studio K95, winner of Awwwards Site of the Day and Developer Award).
-
-Populated with **curated stock assets** (Unsplash commercial-safe photography) and **editorial Latin/Italian placeholder copy**.
+An award-winning interactive 3D WebGL portfolio replication inspired by **Showcase-3D's Portfolio** (as featured on Codrops).
 
 ---
 
-## 🌟 Key Features
+## 🌟 Key Architecture & Capabilities
 
-1. **2D Rigid-Body Fruit Physics Engine (`src/engine/physics.ts`):**
-   - Impulse-based kinematics modeling gravity, mass, friction, and restitution.
-   - Low elasticity ($0.32$) for natural organic fruit settling.
-   - Pointer dragging, velocity throwing, and radial explosive blast on click.
-   - Header toggle button (`🍋 Fruit Physics`) to trigger the fruit sandbox anytime.
+1. **Native WebGL 3D Cylindrical Reel (`src/engine/mathiasCylinderEngine.ts`):**
+   - **Zero external 3D libraries** — pure, ultra-fast native WebGL shaders and math.
+   - **32-segment curved cylinder quad meshes** conforming dynamically to a radius of 6.8 units with realistic barrel curvature.
+   - **Delta-based infinite rotation loop** allowing endless fluid scrubbing in both directions without hard boundaries or jumps.
+   - **Dual-card 50/50 centered resting alignment** with natural spring physics and velocity fling momentum.
+   - **Dynamic UI Texture Compositing** using high-resolution offscreen HTML5 canvas compositors.
+   - **Subtle harmonic Web Audio tick feedback** on carousel card transitions.
 
-2. **Straight Horizontal & Angled Marquee Carousel (`src/engine/carousel.ts`):**
-   - Decoupled LERP momentum accumulator:
-     $$\text{currentX} \mathrel{+}= (\text{targetX} - \text{currentX}) \times 0.085$$
-   - Infinite closed-modulo wrap-around track.
-   - **3D Cylindrical Label Canvas Projection:** Each jar renders an HTML5 `<canvas>` that projects the label using horizontal sinusoidal UV compression and bilateral ambient occlusion shadows as the jar rotates in real time.
-   - Synchronized rotating typographic seal badge (`#sliderBadge`).
-   - Multiplane mouse parallax depth.
+2. **Dedicated Standalone Project Pages (`src/views/ProjectView.ts`):**
+   - Clicking any project card navigates directly to a dedicated showcase page (`/project/:slug`).
+   - Rich technical metadata: Client / Repository, Year, Category, Performance Benchmark.
+   - Full-width hero media display with live status badge.
+   - Architectural and engineering highlights breakdown.
+   - Technical stack tags.
+   - Next / Previous project continuous navigation.
 
-3. **Virtual Smooth Scrolling & Magnetic Cursor:**
-   - Powered by **Lenis** smooth scroll.
-   - Contextual pill cursor adapting to hover targets (`DRAG`, `DISCOVER`, `CLICK`, `EXPLORE`).
+3. **Smooth SPA Router & Dark Page Transitions (`src/router/router.ts`):**
+   - Client-side pushState SPA routing between Home (`/`) and Project Showcase (`/project/:slug`).
+   - Seamless, dark sweep page transition (`#080808`) maintaining immersion.
 
-4. **Lightweight SPA Router (`src/router/router.ts`):**
-   - Client-side navigation with Studio K95's signature orange sweep wipe transition (`--ease-don-expo`).
-   - Pre-configured routes:
-     - `/` — Hero Carousel & Fruit Physics Loader
-     - `/dispensa` — Filterable Pantry Grid
-     - `/dispensa/:slug` — Product Detail & Ingredients Showcase
-     - `/produzione` — Heritage & Craft Process
-     - `/experience` — Orchard Tasting & Workshops
-     - `/chi-siamo` — Generational Story
-     - `/contatti` — Minimalist Contact Page & Sicilian Live Clock
+4. **Interactive Studio About Modal:**
+   - In-situ bio, technical disciplines, open-source repositories, and GitHub/social links accessible from the top-right "About" trigger.
 
 ---
 
@@ -45,51 +37,16 @@ Populated with **curated stock assets** (Unsplash commercial-safe photography) a
 ```bash
 npm run dev
 ```
-Starts Vite dev server at `http://localhost:3000` with instant Hot Module Replacement (HMR).
+Starts the Vite dev server with instant Hot Module Replacement (HMR).
 
 ### 2. Production Build
 ```bash
 npm run build
 ```
-Type-checks TypeScript and compiles an optimized, minified production bundle in `dist/` (~17.2 kB gzipped total).
+Type-checks TypeScript and compiles a minified, high-performance production bundle in `dist/`.
 
 ### 3. Local Preview
 ```bash
 npm run preview
 ```
-
----
-
-## 📁 Project Structure
-
-```text
-├── index.html                  # Main HTML shell
-├── package.json                # Dependencies & scripts
-├── tsconfig.json               # TypeScript configuration
-├── vite.config.ts              # Vite configuration
-├── src/
-│   ├── main.ts                 # Bootstrap router, cursor, scroll
-│   ├── style/
-│   │   ├── variables.css       # Studio K95 colors, eases, tokens
-│   │   ├── reset.css           # Modern CSS reset
-│   │   ├── cursor.css          # Magnetic pill cursor
-│   │   ├── transitions.css     # Sweep wipe panel animations
-│   │   └── main.css            # Component & layout styles
-│   ├── data/
-│   │   ├── products.ts         # Stock product catalog & Unsplash URLs
-│   │   └── navigation.ts       # Navigation routes
-│   ├── engine/
-│   │   ├── physics.ts          # 2D rigid-body fruit physics engine
-│   │   ├── carousel.ts         # Marquee carousel & cylindrical canvas projection
-│   │   ├── scroll.ts           # Lenis virtual smooth scroll
-│   │   └── cursor.ts           # Contextual magnetic cursor
-│   ├── router/
-│   │   └── router.ts           # SPA router with page transitions
-│   └── views/
-│       ├── HomeView.ts         # Home view
-│       ├── CatalogView.ts      # Catalog grid with category filter
-│       ├── ProductDetailView.ts# Product detail view
-│       ├── StoryView.ts        # Heritage & production timeline
-│       └── ContactView.ts      # Contact view with live CET clock
-└── dist/                       # Compiled production build
-```
+Previews the production build locally.
