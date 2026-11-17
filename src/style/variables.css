@@ -1,0 +1,69 @@
+/**
+ * Design Tokens & Motion Variables
+ * Authentic Agrumêa Farm & Studio K95 Design System
+ */
+
+:root {
+  /* Authentic Sicilian Palette */
+  --color-orange: #e94e1b;
+  --color-orange-glow: rgba(233, 78, 27, 0.28);
+  --color-yellow: #f39200;
+  --color-border: #762530;          /* Deep Sicilian Burgundy / Wine */
+  --color-white: #fdf3eb;           /* Warm bone parchment */
+  --color-parchment-dark: #f2e2d4;
+  --color-parchment-deep: #e8d3c1;
+  --color-text: #261612;
+  --color-text-muted: #7d6b64;
+
+  /* Authentic Typography (Adobe Typekit IvyMode / IvyStyle Sans + fallbacks) */
+  --font-serif: "ivymode", "Cinzel", "Iowan Old Style", "Bodoni MT", Georgia, serif;
+  --font-sans: "ivystyle-sans", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Studio K95 Signature Easing Curves */
+  --ease-don-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-don-power: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-premium: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Carousel Kinematics & Alignment (10deg incline) */
+  --jar-marquee-angle: 10deg;
+  --jar-circle-rotation: 0deg;
+  --jar-marquee-top: 55%;
+  --jar-marquee-w: 100vw;
+  --jar-marquee-h: 560px;
+  --jar-item-w: 200px;
+  --jar-item-h: 320px;
+
+  /* Intro State */
+  --jar-shape-intro-opacity: 1;
+  --jar-shape-intro-y: 0px;
+  --jar-badge-intro-opacity: 1;
+  --jar-badge-intro-y: 0px;
+  --jar-badge-intro-rotation: -18deg;
+
+  /* Dynamic Multiplane Mouse Parallax */
+  --jar-parallax-x: 0px;
+  --jar-parallax-y: 0px;
+
+  /* Header & UI Dimensions */
+  --header-brand-width: 151px;
+  --header-pad-y: 28px;
+  --text-small: 12px;
+  --page-transition-duration: 1.1s;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --jar-marquee-top: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-pad-y: 18px;
+    --jar-marquee-top: 48%;
+    --jar-item-w: 160px;
+    --jar-item-h: 260px;
+  }
+}

@@ -1,0 +1,86 @@
+/* --------------------------------------------------------------------------
+   Luxury Contextual Cursor (Minimal Dot -> Expanded Interactive Pill)
+   -------------------------------------------------------------------------- */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transform: translate3d(-100px, -100px, 0);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.custom-cursor.is-visible {
+  opacity: 1;
+}
+
+/* Minimalist 6px Elegant Center Dot (Default State) */
+.cursor-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-border);
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s var(--ease-soft), opacity 0.2s ease, background-color 0.2s ease;
+}
+
+/* Luxury Interactive Pill (Hidden by default, expands on hover/drag) */
+.cursor-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-orange);
+  color: var(--color-white);
+  padding: 8px 18px;
+  border-radius: 999px;
+  box-shadow: 0 10px 25px var(--color-orange-glow);
+  transform: translate(-50%, -50%) scale(0.4);
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s var(--ease-soft), opacity 0.22s var(--ease-soft), background-color 0.2s ease;
+}
+
+.cursor-diamond {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-yellow);
+  transform: rotate(45deg);
+}
+
+/* When hovering over jars or interactive targets */
+.custom-cursor.is-hovering .cursor-dot {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+}
+
+.custom-cursor.is-hovering .cursor-pill {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* When actively grabbing / dragging the carousel */
+.custom-cursor.is-grabbing .cursor-pill {
+  transform: translate(-50%, -50%) scale(0.92);
+  background-color: var(--color-border);
+}
+
+/* Completely suppress custom cursor on touchscreens and tablets */
+@media (hover: none) and (pointer: coarse) {
+  .custom-cursor {
+    display: none !important;
+  }
+}
