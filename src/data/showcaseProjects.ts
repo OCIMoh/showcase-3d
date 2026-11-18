@@ -1,9 +1,9 @@
 /**
- * Repository Dataset for Mathias Adolfsson '26 Portfolio Carousel
- * Powered strictly by `repo.json`
+ * Projects Dataset for Mathias Adolfsson '26 Portfolio Carousel
+ * Powered strictly by `projects.json`
  */
 
-import rawRepos from './repo.json';
+import rawProjects from './projects.json';
 
 export interface ShowcaseProject {
   id: string;
@@ -187,7 +187,8 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
     galleryImages: [
       '/jimmy-1.png',
       '/jimmy-2.png',
-      '/jimmy-3.png'
+      '/jimmy-3.png',
+      '/jimmy-4.png'
     ],
     color: '#ffbe0b'
   },
@@ -254,9 +255,9 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
 const HIDDEN_REPOS = new Set(['varun-sir-portfolio', 'boosit-showcase-poc-1']);
 
 /**
- * SHOWCASE_PROJECTS: strictly generated from repo.json (excluding hidden repos)
+ * SHOWCASE_PROJECTS: strictly generated from projects.json (excluding hidden repos)
  */
-export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawRepos
+export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawProjects
   .filter(repo => !HIDDEN_REPOS.has(repo.name))
   .map((repo) => {
   const meta = REPO_METADATA_MAP[repo.name] || {
