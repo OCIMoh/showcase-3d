@@ -431,7 +431,12 @@ export class CylinderCarouselEngine {
   /**
    * Opens the full 3D case study view for the requested project.
    */
-  public openProject(proj: ShowcaseProject, clientX = window.innerWidth / 2, clientY = window.innerHeight / 2): void {
+  public openProject(
+    proj: ShowcaseProject,
+    clientX = window.innerWidth / 2,
+    clientY = window.innerHeight / 2,
+    direction: 'next' | 'prev' | 'none' = 'none'
+  ): void {
     const projIdx = this.projects.findIndex(p => p.slug === proj.slug);
     if (projIdx === -1) return;
 
@@ -457,7 +462,7 @@ export class CylinderCarouselEngine {
     this.galleryEntrance = 0.0;
 
     this.onNavigate?.(`/projects/${proj.slug}`);
-    this.overlay.updateCaseStudy(proj);
+    this.overlay.updateCaseStudy(proj, direction);
     this.overlay.setCaseStudyOpen(true);
     this.arcHud.setVisible(false);
 
@@ -484,7 +489,12 @@ export class CylinderCarouselEngine {
    * Closes the active case study view and restores the 3D oval carousel.
    */
   public closeProject(): void {
-    this.synth.playTone(380, 'sine', 0.05, 0.07);
+    // Dual-tone mechanical latch sound
+    this.synth.playTone(420, 'sine', 0.03, 0.05);
+    setTimeout(() => {
+      this.synth.playTone(320, 'sine', 0.03, 0.04);
+    }, 60);
+
     this.onNavigate?.('/');
     this.overlay.setCaseStudyOpen(false);
     this.arcHud.setVisible(true);
@@ -512,6 +522,7 @@ export class CylinderCarouselEngine {
     if (!this.activeProject) return;
     const curIdx = this.projects.findIndex(p => p.slug === this.activeProject?.slug);
     const nextIdx = (curIdx + 1) % this.projects.length;
+    this.synth.playTone(680, 'sine', 0.03, 0.04);
     this.animateProjectSwitch(this.projects[nextIdx], 'next');
   }
 
@@ -519,12 +530,13 @@ export class CylinderCarouselEngine {
     if (!this.activeProject) return;
     const curIdx = this.projects.findIndex(p => p.slug === this.activeProject?.slug);
     const prevIdx = (curIdx - 1 + this.projects.length) % this.projects.length;
+    this.synth.playTone(520, 'sine', 0.03, 0.04);
     this.animateProjectSwitch(this.projects[prevIdx], 'prev');
   }
 
   private animateProjectSwitch(nextProject: ShowcaseProject, direction: 'next' | 'prev' = 'next'): void {
     if (this.prefersReducedMotion) {
-      this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
+      this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2, direction);
       return;
     }
     // "Previous and next swap galleries sideways. The new one slides in from a screen-width away as the old one leaves, and the hero behind them switches instantly, so there’s never a gap."
@@ -538,7 +550,7 @@ export class CylinderCarouselEngine {
       duration: 0.28,
       ease: 'power2.in',
       onComplete: () => {
-        this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
+        this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2, direction);
         this.galleryOffsetX = slideInDist;
         this.galleryEntrance = 0.0;
         gsap.to(this, {
