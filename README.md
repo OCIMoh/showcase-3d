@@ -1,4 +1,4 @@
-# Showcase-3D — Creative Engineer & WebGL Portfolio
+# Showcase-3D — Studio & WebGL Portfolio
 
 An award-winning interactive 3D WebGL portfolio replication inspired by **Showcase-3D's Portfolio** (as featured on Codrops).
 

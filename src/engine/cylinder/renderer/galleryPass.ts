@@ -13,6 +13,8 @@ export interface GalleryDrawParams {
   galleryPos: number;
   galleryVelocity: number;
   galleryCurve: number;
+  galleryEntrance: number;
+  galleryOffsetX?: number;
   heroOpenAmount: number;
   meshAspect: number;
   reducedMotion: boolean;
@@ -49,7 +51,10 @@ export class GalleryPass {
 
     const gTextures = this.textureManager.getGalleryTextures(params.activeProject);
     const numG = gTextures.length;
-    const gSpacing = cfg.gallerySpacing;
+
+    // Entrance spacing: "arrives fully curved, with doubled gaps and zero opacity, and relaxes into place"
+    const entranceSpacingMult = 1.0 + (1.0 - params.galleryEntrance);
+    const gSpacing = cfg.gallerySpacing * entranceSpacingMult;
     const galLoopHeight = numG * gSpacing;
 
     // Gallery pass uniforms guaranteed set (zeroed hero backdrop and click bulge)
@@ -66,13 +71,17 @@ export class GalleryPass {
     gl.uniform1f(u.uAspect, params.meshAspect);
     gl.uniform1f(u.uReducedMotion, params.reducedMotion ? 1.0 : 0.0);
 
+    const offsetX = params.galleryOffsetX ?? 0;
+
     for (let g = 0; g < numG; g++) {
       let wrappedY = (g * gSpacing + params.galleryPos) % galLoopHeight;
       wrappedY = ((wrappedY % galLoopHeight) + galLoopHeight) % galLoopHeight;
       if (wrappedY > galLoopHeight / 2) wrappedY -= galLoopHeight;
 
       const distY = Math.abs(wrappedY);
-      const gOpacity = clamp(1.0 - distY / (galLoopHeight * 0.48), 0.0, 1.0) * params.heroOpenAmount;
+      const gOpacity = clamp(1.0 - distY / (galLoopHeight * 0.48), 0.0, 1.0) *
+                       params.heroOpenAmount *
+                       clamp(params.galleryEntrance * 1.35, 0.0, 1.0);
       if (gOpacity < 0.01) continue;
 
       gl.uniform1f(u.uMeshOffsetY, wrappedY);
@@ -80,7 +89,7 @@ export class GalleryPass {
       gl.uniform1f(u.uDimFactor, 1.0);
 
       mat4Identity(this.modelMat);
-      mat4Translate(this.modelMat, this.modelMat, [0, wrappedY, 1.2]);
+      mat4Translate(this.modelMat, this.modelMat, [offsetX, wrappedY, 1.2]);
       gl.uniformMatrix4fv(u.uModel, false, this.modelMat);
 
       gl.activeTexture(gl.TEXTURE0);

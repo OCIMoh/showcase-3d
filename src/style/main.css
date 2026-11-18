@@ -47,7 +47,7 @@
 
 /* --------------------------------------------------------------------------
    Ultra-Minimalist Top Header
-   Brand: Showcase-3D / Creative Engineer
+   Brand: Showcase-3D / Studio
    Right: SOUND ON/OFF + About Link
    -------------------------------------------------------------------------- */
 .ma-minimal-header {
@@ -204,30 +204,11 @@
   opacity: 1;
 }
 
-/* ==========================================================================
-   Case Study Overlay & Native Bento Grid Symmetry
-   ========================================================================== */
 
-.ma-case-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
 
-.ma-case-overlay.is-open {
-  opacity: 1;
-  pointer-events: auto;
-  background: rgba(245, 243, 236, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-/* Sticky Top Navigation Bar */
+/* Sticky / Absolute Top Navigation Bar */
 .ma-case-topbar {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -236,15 +217,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 105;
-  pointer-events: auto;
-  background: linear-gradient(180deg, rgba(245, 243, 236, 0.96) 65%, rgba(245, 243, 236, 0) 100%);
+  z-index: 65;
+  pointer-events: none;
 }
 
 .ma-case-info {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  pointer-events: auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: clamp(13px, 1.05vw, 15px);
   font-weight: 500;
@@ -258,7 +239,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.55);
 }
 
 .ma-case-info__role {
@@ -274,6 +255,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  pointer-events: auto;
 }
 
 .ma-case-view-link {
@@ -296,377 +278,9 @@
   transform: translateY(-1px);
 }
 
-/* Native Scrollable Bento Grid Body */
-.ma-case-scroll {
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: clamp(96px, 12vh, 120px) clamp(24px, 4vw, 64px) clamp(110px, 14vh, 140px);
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  z-index: 101;
-}
-
-.ma-case-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-.ma-case-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.ma-case-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 9999px;
-}
-.ma-case-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-/* Bento Grid Architecture */
-.ma-bento-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(16px, 1.8vw, 24px);
-  max-width: 1380px;
-  margin: 0 auto;
-}
-
-.ma-bento-card {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.07);
-  border-radius: 24px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
-  padding: clamp(24px, 2.5vw, 36px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
-}
-
-.ma-bento-card:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
-}
-
-/* Card 1: Hero Showcase (7 cols) */
-.ma-bento-card--hero {
-  grid-column: span 7;
-  min-height: 480px;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.ma-bento-card__badge-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 12px;
-}
-
-.ma-bento-badge {
-  font-family: monospace;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  padding: 6px 14px;
-  border-radius: 9999px;
-}
-
-.ma-bento-badge--cat {
-  background: rgba(0, 0, 0, 0.05);
-  color: #121212;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.ma-bento-badge--live {
-  background: rgba(0, 255, 102, 0.12);
-  color: #0d8a3d;
-  border: 1px solid rgba(0, 255, 102, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ma-live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #00cc55;
-  box-shadow: 0 0 8px #00cc55;
-}
-
-.ma-bento-hero-img-wrap {
-  width: 100%;
-  height: 100%;
-  min-height: 360px;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #0c0d12;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  display: flex;
-}
-
-.ma-bento-hero-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ma-bento-card--hero:hover .ma-bento-hero-img {
-  transform: scale(1.02);
-}
-
-/* Card 2: Meta Narrative (5 cols) */
-.ma-bento-card--meta {
-  grid-column: span 5;
-  justify-content: space-between;
-  gap: 20px;
-  background: #ffffff;
-}
-
-.ma-bento-kicker {
-  font-family: monospace;
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.45);
-  letter-spacing: 0.1em;
-}
-
-.ma-bento-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(28px, 2.6vw, 40px);
-  font-weight: 700;
-  color: #121212;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
-  margin: 0;
-}
-
-.ma-bento-desc {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(15px, 1.1vw, 17px);
-  color: rgba(0, 0, 0, 0.72);
-  line-height: 1.65;
-  margin: 0;
-}
-
-.ma-bento-cta-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: auto;
-}
-
-.ma-bento-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 28px;
-  border-radius: 9999px;
-  font-family: monospace;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ma-bento-btn--primary {
-  background: #121212;
-  color: #ffffff;
-}
-
-.ma-bento-btn--primary:hover {
-  background: #2a2a2a;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.ma-bento-metric-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: monospace;
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.55);
-  padding-top: 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.ma-bento-metric-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent, #3a86ff);
-}
-
-/* Row 2: 3 Symmetrical Feature Cards (4 cols each) */
-.ma-bento-card--feature {
-  grid-column: span 4;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 16px;
-  padding: clamp(20px, 2vw, 28px);
-}
-
-.ma-bento-feature-check {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #f5c518;
-  color: #121212;
-  font-weight: 700;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.ma-bento-feature-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.ma-bento-feature-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(16px, 1.2vw, 18px);
-  font-weight: 600;
-  color: #121212;
-  line-height: 1.35;
-  margin: 0;
-}
-
-.ma-bento-feature-sub {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 13px;
-  color: rgba(0, 0, 0, 0.48);
-}
-
-/* Row 3: Gallery & Specs */
-.ma-bento-card--gallery {
-  grid-column: span 7;
-}
-
-.ma-bento-gallery-grid {
-  display: grid;
-  gap: 16px;
-  width: 100%;
-}
-
-.ma-bento-gallery-grid--1 {
-  grid-template-columns: 1fr;
-}
-
-.ma-bento-gallery-grid--2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.ma-bento-gallery-grid--3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.ma-bento-gallery-item {
-  border-radius: 16px;
-  overflow: hidden;
-  background: #0c0d12;
-  aspect-ratio: 16 / 10;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  display: flex;
-}
-
-.ma-bento-gallery-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ma-bento-gallery-item:hover img {
-  transform: scale(1.04);
-}
-
-.ma-bento-card--specs {
-  grid-column: span 5;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.ma-bento-card--full {
-  grid-column: span 12;
-}
-
-.ma-bento-specs-title {
-  font-family: monospace;
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.5);
-  letter-spacing: 0.08em;
-  margin: 0;
-}
-
-.ma-bento-chips-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 8px 0 auto;
-}
-
-.ma-bento-chip {
-  background: rgba(0, 0, 0, 0.04);
-  color: #121212;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  font-family: monospace;
-  font-size: 12px;
-  font-weight: 600;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.ma-bento-panels-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.ma-bento-mini-panel {
-  background: rgba(0, 0, 0, 0.025);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.ma-mini-label {
-  font-family: monospace;
-  font-size: 10px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.45);
-  letter-spacing: 0.06em;
-}
-
-.ma-mini-val {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: #121212;
-}
-
 /* Bottom Left Sound Button (Square with circle) */
 .ma-case-sound-btn {
-  position: fixed;
+  position: absolute;
   bottom: clamp(24px, 3.5vw, 44px);
   left: clamp(28px, 4vw, 56px);
   width: 44px;
@@ -682,7 +296,7 @@
   justify-content: center;
   cursor: pointer;
   pointer-events: auto;
-  z-index: 105;
+  z-index: 65;
   transition: all 0.2s ease;
 }
 
@@ -697,7 +311,7 @@
 
 /* Bottom Center Navigation (← Project Title →) */
 .ma-case-nav {
-  position: fixed;
+  position: absolute;
   bottom: clamp(24px, 3.5vw, 44px);
   left: 50%;
   transform: translateX(-50%);
@@ -712,7 +326,7 @@
   border-radius: 9999px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  z-index: 105;
+  z-index: 65;
 }
 
 .ma-case-nav__btn {
@@ -742,7 +356,7 @@
 
 /* Bottom Right Close Button [✕] */
 .ma-case-close-btn {
-  position: fixed;
+  position: absolute;
   bottom: clamp(24px, 3.5vw, 44px);
   right: clamp(28px, 4vw, 56px);
   width: 44px;
@@ -758,7 +372,7 @@
   justify-content: center;
   cursor: pointer;
   pointer-events: auto;
-  z-index: 105;
+  z-index: 65;
   transition: all 0.2s ease;
 }
 
@@ -767,20 +381,13 @@
   transform: scale(1.05);
 }
 
-/* Responsive adjustments */
-@media (max-width: 1080px) {
-  .ma-bento-card--hero { grid-column: span 12; min-height: 380px; }
-  .ma-bento-card--meta { grid-column: span 12; }
-  .ma-bento-card--feature { grid-column: span 12; }
-  .ma-bento-card--gallery { grid-column: span 12; }
-  .ma-bento-card--specs { grid-column: span 12; }
-}
-
-@media (max-width: 640px) {
-  .ma-bento-panels-row { grid-template-columns: 1fr; }
-  .ma-bento-gallery-grid--2, .ma-bento-gallery-grid--3 { grid-template-columns: 1fr; }
+@media (max-width: 768px) {
   .ma-case-topbar { padding: 0 20px; }
-  .ma-case-scroll { padding: 90px 16px 120px; }
+  .ma-case-info { font-size: 13px; }
+  .ma-case-info__agency { display: none; }
+  .ma-case-sound-btn { left: 20px; bottom: 20px; }
+  .ma-case-close-btn { right: 20px; bottom: 20px; }
+  .ma-case-nav { bottom: 20px; padding: 6px 14px; gap: 10px; }
 }
 
 /* --------------------------------------------------------------------------

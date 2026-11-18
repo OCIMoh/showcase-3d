@@ -82,6 +82,10 @@ export class CylinderCarouselEngine {
   private galleryTargetPos = 0;
   private galleryVelocity = 0;
   private galleryCurve = 0;
+  private galleryScrollCurve = 0;
+  private galleryEntrance = 1.0;
+  private galleryOffsetX = 0;
+  private lastGalleryCardIdx?: number;
 
   private projMat: Mat4 = mat4Create();
   private viewMat: Mat4 = mat4Create();
@@ -244,8 +248,10 @@ export class CylinderCarouselEngine {
       },
       onArrowKey: (key) => {
         if (this.heroOpenAmount > 0.5) {
-          if (key === 'ArrowRight' || key === 'ArrowDown') this.navigateNextProject();
-          if (key === 'ArrowLeft' || key === 'ArrowUp') this.navigatePrevProject();
+          if (key === 'ArrowDown') this.galleryTargetPos -= 0.6;
+          if (key === 'ArrowUp') this.galleryTargetPos += 0.6;
+          if (key === 'ArrowRight') this.navigateNextProject();
+          if (key === 'ArrowLeft') this.navigatePrevProject();
         } else {
           if (key === 'ArrowRight') this.targetPos -= this.config.spacing;
           if (key === 'ArrowLeft') this.targetPos += this.config.spacing;
@@ -288,7 +294,13 @@ export class CylinderCarouselEngine {
 
     const prevPos = this.pos;
     this.pos = damp(this.pos, this.targetPos, cfg.dampMotion, dt);
+    if (Math.abs(this.targetPos - this.pos) < 0.0001) {
+      this.pos = this.targetPos;
+    }
     this.velocity = (this.pos - prevPos) * (1.0 / (dt * 60.0));
+    if (Math.abs(this.velocity) < 0.0001) {
+      this.velocity = 0;
+    }
 
     const tiltTargetXNow = this.heroOpenAmount > 0.5 ? 0 : this.tiltTargetX;
     const tiltTargetYNow = this.heroOpenAmount > 0.5 ? 0 : this.tiltTargetY;
@@ -306,8 +318,30 @@ export class CylinderCarouselEngine {
     if (this.heroOpenAmount > 0.05) {
       const prevGalPos = this.galleryPos;
       this.galleryPos = damp(this.galleryPos, this.galleryTargetPos, cfg.dampGallery, dt);
+      if (Math.abs(this.galleryTargetPos - this.galleryPos) < 0.0001) {
+        this.galleryPos = this.galleryTargetPos;
+      }
       this.galleryVelocity = (this.galleryPos - prevGalPos) * (1.0 / (dt * 60.0));
-      this.galleryCurve = Math.min(1.0, Math.abs(this.galleryVelocity) * 2.2);
+      if (Math.abs(this.galleryVelocity) < 0.0001) {
+        this.galleryVelocity = 0;
+      }
+
+      // Smooth scroll curvature: follows scroll speed, flat at rest
+      const targetScrollCurve = this.prefersReducedMotion
+        ? 0.0
+        : Math.min(1.0, Math.abs(this.galleryVelocity) * 1.8);
+
+      // Smoothly damp the scroll curve with continuous inertia so it eases into and out of curvature
+      this.galleryScrollCurve = damp(this.galleryScrollCurve, targetScrollCurve, cfg.dampMotion, dt);
+      if (this.galleryScrollCurve < 0.0005 && targetScrollCurve === 0) {
+        this.galleryScrollCurve = 0;
+      }
+
+      // Entrance second curve: arrives fully curved (1.0) with doubled gaps, and relaxes into place (0.0)
+      const entranceCurve = this.prefersReducedMotion ? 0.0 : (1.0 - this.galleryEntrance);
+
+      // Combined curvature passed to the barrel cylinder shader
+      this.galleryCurve = Math.max(this.galleryScrollCurve, entranceCurve);
     }
 
     // Arc HUD Scrubber
@@ -347,6 +381,31 @@ export class CylinderCarouselEngine {
       reducedMotion: this.prefersReducedMotion
     }, this.numIndices);
 
+    if (this.activeProject) {
+      this.galleryPass.render({
+        activeProject: this.activeProject,
+        galleryPos: this.galleryPos,
+        galleryVelocity: this.galleryVelocity,
+        galleryCurve: this.galleryCurve,
+        galleryEntrance: this.galleryEntrance,
+        galleryOffsetX: this.galleryOffsetX,
+        heroOpenAmount: this.heroOpenAmount,
+        meshAspect: cfg.cardAspect,
+        reducedMotion: this.prefersReducedMotion
+      }, this.numIndices);
+
+      if (this.heroOpenAmount > 0.5 && this.galleryEntrance > 0.75) {
+        const entranceSpacingMult = 1.0 + (1.0 - this.galleryEntrance);
+        const gSpacing = cfg.gallerySpacing * entranceSpacingMult;
+        const numG = 4;
+        const currentCardIdx = Math.floor((((-this.galleryPos / gSpacing) % numG) + numG) % numG);
+        if (this.lastGalleryCardIdx !== undefined && this.lastGalleryCardIdx !== currentCardIdx) {
+          this.synth.playTone(540 + currentCardIdx * 40, 'sine', 0.02, 0.025);
+        }
+        this.lastGalleryCardIdx = currentCardIdx;
+      }
+    }
+
     this.rafId = requestAnimationFrame(this.tick);
   }
 
@@ -374,6 +433,9 @@ export class CylinderCarouselEngine {
 
     this.galleryPos = 0;
     this.galleryTargetPos = 0;
+    this.galleryScrollCurve = 0;
+    this.galleryOffsetX = 0;
+    this.galleryEntrance = 0.0;
 
     this.onNavigate?.(`/projects/${proj.slug}`);
     this.overlay.updateCaseStudy(proj);
@@ -388,6 +450,15 @@ export class CylinderCarouselEngine {
       duration: this.prefersReducedMotion ? 0.3 : 1.45,
       ease: this.prefersReducedMotion ? 'power1.out' : 'expo.out'
     });
+
+    // "The entrance uses a second curve. The gallery arrives fully curved, with doubled gaps and zero opacity, and relaxes into place."
+    // "Just before the hero lands, the gallery starts coming in on top."
+    gsap.to(this, {
+      galleryEntrance: 1.0,
+      duration: this.prefersReducedMotion ? 0.3 : 1.15,
+      delay: this.prefersReducedMotion ? 0 : 0.28,
+      ease: 'power2.out'
+    });
   }
 
   /**
@@ -401,12 +472,18 @@ export class CylinderCarouselEngine {
 
     gsap.killTweensOf(this);
     gsap.to(this, {
+      galleryEntrance: 0.0,
+      duration: this.prefersReducedMotion ? 0.2 : 0.4,
+      ease: 'power2.in'
+    });
+    gsap.to(this, {
       heroOpenAmount: 0.0,
       duration: this.prefersReducedMotion ? 0.3 : 1.25,
       ease: this.prefersReducedMotion ? 'power1.out' : 'expo.out',
       onComplete: () => {
         this.activeHeroIndex = -1;
         this.activeProject = null;
+        this.galleryOffsetX = 0;
         this.snapToNearestCard();
       }
     });
@@ -416,36 +493,43 @@ export class CylinderCarouselEngine {
     if (!this.activeProject) return;
     const curIdx = this.projects.findIndex(p => p.slug === this.activeProject?.slug);
     const nextIdx = (curIdx + 1) % this.projects.length;
-    this.animateProjectSwitch(this.projects[nextIdx]);
+    this.animateProjectSwitch(this.projects[nextIdx], 'next');
   }
 
   private navigatePrevProject(): void {
     if (!this.activeProject) return;
     const curIdx = this.projects.findIndex(p => p.slug === this.activeProject?.slug);
     const prevIdx = (curIdx - 1 + this.projects.length) % this.projects.length;
-    this.animateProjectSwitch(this.projects[prevIdx]);
+    this.animateProjectSwitch(this.projects[prevIdx], 'prev');
   }
 
-  private animateProjectSwitch(nextProject: ShowcaseProject): void {
+  private animateProjectSwitch(nextProject: ShowcaseProject, direction: 'next' | 'prev' = 'next'): void {
     if (this.prefersReducedMotion) {
       this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
       return;
     }
-    const bentoEl = this.overlay.bentoGridEl;
-    if (bentoEl) {
-      gsap.to(bentoEl, {
-        opacity: 0,
-        y: 15,
-        duration: 0.22,
-        ease: 'power2.in',
-        onComplete: () => {
-          this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
-          gsap.fromTo(bentoEl, { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.35, ease: 'expo.out' });
-        }
-      });
-    } else {
-      this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
-    }
+    // "Previous and next swap galleries sideways. The new one slides in from a screen-width away as the old one leaves, and the hero behind them switches instantly, so there’s never a gap."
+    const slideOutDist = direction === 'next' ? -8.5 : 8.5;
+    const slideInDist = -slideOutDist;
+
+    gsap.killTweensOf(this);
+    gsap.to(this, {
+      galleryOffsetX: slideOutDist,
+      galleryEntrance: 0.0,
+      duration: 0.28,
+      ease: 'power2.in',
+      onComplete: () => {
+        this.openProject(nextProject, window.innerWidth / 2, window.innerHeight / 2);
+        this.galleryOffsetX = slideInDist;
+        this.galleryEntrance = 0.0;
+        gsap.to(this, {
+          galleryOffsetX: 0,
+          galleryEntrance: 1.0,
+          duration: 0.65,
+          ease: 'power3.out'
+        });
+      }
+    });
   }
 
   private snapToNearestCard(): void {

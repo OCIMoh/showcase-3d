@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.pushState({ path: newPath }, '', newPath);
       }
       if (newPath === '/') {
-        document.title = 'Creative Engineer — 3D Interactive Portfolio';
+        document.title = 'Studio — 3D Interactive Portfolio';
       } else {
         const slug = newPath.split('/').filter(Boolean).pop();
         const p = SHOWCASE_PROJECTS.find(item => item.slug === slug);

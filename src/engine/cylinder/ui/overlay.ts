@@ -1,5 +1,5 @@
 /**
- * DOM Overlay Management: Minimal Header, Bento Grid Case Study, Accessible SEO Nav
+ * DOM Overlay Management: Minimal Header, In-Situ 3D Barrel HUD Overlay, Accessible SEO Nav
  */
 
 import { BrandConfig } from '../core/config';
@@ -21,8 +21,6 @@ export class OverlayComponent {
   public soundToggleBtn: HTMLButtonElement;
   public caseSoundBtn: HTMLButtonElement;
   public accessibleNavEl: HTMLElement;
-  public caseScrollEl: HTMLElement;
-  public bentoGridEl: HTMLElement;
 
   private catEl: HTMLElement;
   private roleEl: HTMLElement;
@@ -53,9 +51,9 @@ export class OverlayComponent {
         </div>
       </header>
 
-      <!-- Case Study Overlay with Native Scrollable Bento Grid -->
+      <!-- Case Study In-Situ 3D Barrel HUD Overlay -->
       <div class="ma-case-overlay" id="maCaseOverlay" aria-hidden="true">
-        <!-- Sticky Top Navigation Bar -->
+        <!-- Top Navigation Bar -->
         <div class="ma-case-topbar">
           <div class="ma-case-info">
             <div class="ma-case-info__cat" id="maCaseCat"></div>
@@ -65,13 +63,6 @@ export class OverlayComponent {
 
           <div class="ma-case-actions" id="maCaseActions">
             <a href="#" target="_blank" rel="noopener noreferrer" class="ma-case-view-link" id="maCaseViewLink">View Live Site ↗</a>
-          </div>
-        </div>
-
-        <!-- Scrollable Bento Grid Body -->
-        <div class="ma-case-scroll" id="maCaseScroll">
-          <div class="ma-bento-grid" id="maCaseBento">
-            <!-- Dynamically populated with raw DOM elements -->
           </div>
         </div>
 
@@ -129,8 +120,6 @@ export class OverlayComponent {
     this.soundToggleBtn = this.root.querySelector('#maSoundToggle')!;
     this.caseSoundBtn = this.root.querySelector('#maCaseSoundBtn')!;
     this.accessibleNavEl = this.root.querySelector('.ma-sr-only')!;
-    this.caseScrollEl = this.root.querySelector('#maCaseScroll')!;
-    this.bentoGridEl = this.root.querySelector('#maCaseBento')!;
 
     this.catEl = this.root.querySelector('#maCaseCat')!;
     this.roleEl = this.root.querySelector('#maCaseRole')!;
@@ -157,121 +146,6 @@ export class OverlayComponent {
       this.viewLink.href = proj.liveUrl;
       this.viewLink.style.display = proj.isLive ? 'inline-block' : 'none';
     }
-
-    // Scroll back to top when opening or switching projects
-    if (this.caseScrollEl) {
-      this.caseScrollEl.scrollTop = 0;
-    }
-
-    // Render Raw DOM Bento Grid
-    this.renderBentoGrid(proj);
-  }
-
-  private renderBentoGrid(proj: ShowcaseProject): void {
-    const heroImg = proj.previewImageUrl || proj.galleryImages?.[0] || '';
-    const secondaryImgs = (proj.galleryImages || []).slice(1).filter(Boolean);
-
-    const highlights = proj.highlights && proj.highlights.length >= 3
-      ? proj.highlights
-      : [
-          'High-performance 60 FPS WebGL shader pipeline',
-          'Fluid state transitions and kinetic micro-animations',
-          'Responsive multi-viewport touch architecture'
-        ];
-
-    const cleanTitle = escapeHtml(proj.title.split('—')[0].trim());
-    const accentColor = proj.color || '#3a86ff';
-
-    this.bentoGridEl.innerHTML = `
-      <!-- Row 1: Symmetrical Hero Showcase + Narrative Overview -->
-      <section class="ma-bento-card ma-bento-card--hero" style="--accent: ${accentColor}">
-        <div class="ma-bento-card__badge-row">
-          <span class="ma-bento-badge ma-bento-badge--cat">${escapeHtml(proj.category)}</span>
-          ${proj.isLive ? '<span class="ma-bento-badge ma-bento-badge--live"><span class="ma-live-dot"></span>LIVE DEPLOYMENT</span>' : ''}
-        </div>
-        <div class="ma-bento-hero-img-wrap">
-          ${heroImg ? `<img class="ma-bento-hero-img" src="${heroImg}" alt="${cleanTitle} Preview" loading="eager" />` : ''}
-        </div>
-      </section>
-
-      <section class="ma-bento-card ma-bento-card--meta" style="--accent: ${accentColor}">
-        <div class="ma-bento-kicker">${escapeHtml(proj.client.toUpperCase())} // ${escapeHtml(proj.year)}</div>
-        <h1 class="ma-bento-title">${cleanTitle}</h1>
-        <p class="ma-bento-desc">${escapeHtml(proj.description)}</p>
-
-        <div class="ma-bento-cta-row">
-          ${proj.isLive ? `
-            <a href="${escapeHtml(proj.liveUrl)}" target="_blank" rel="noopener noreferrer" class="ma-bento-btn ma-bento-btn--primary">
-              <span>EXPLORE LIVE SITE ↗</span>
-            </a>
-          ` : ''}
-        </div>
-
-        <div class="ma-bento-metric-badge">
-          <span class="ma-bento-metric-dot"></span>
-          <span>${escapeHtml(proj.metrics)}</span>
-        </div>
-      </section>
-
-      <!-- Row 2: Triple Capability Feature Modules (3-col Bento Symmetry) -->
-      <section class="ma-bento-card ma-bento-card--feature">
-        <div class="ma-bento-feature-check">✓</div>
-        <div class="ma-bento-feature-content">
-          <h3 class="ma-bento-feature-title">${escapeHtml(highlights[0])}</h3>
-          <span class="ma-bento-feature-sub">Verified Production Module · Zero Latency</span>
-        </div>
-      </section>
-
-      <section class="ma-bento-card ma-bento-card--feature">
-        <div class="ma-bento-feature-check">✓</div>
-        <div class="ma-bento-feature-content">
-          <h3 class="ma-bento-feature-title">${escapeHtml(highlights[1])}</h3>
-          <span class="ma-bento-feature-sub">Interactive Architecture · Fluid States</span>
-        </div>
-      </section>
-
-      <section class="ma-bento-card ma-bento-card--feature">
-        <div class="ma-bento-feature-check">✓</div>
-        <div class="ma-bento-feature-content">
-          <h3 class="ma-bento-feature-title">${escapeHtml(highlights[2])}</h3>
-          <span class="ma-bento-feature-sub">Responsive Multi-Viewport Engineering</span>
-        </div>
-      </section>
-
-      <!-- Row 3: Secondary Screenshot Gallery Tiles & System Tech Architecture -->
-      ${secondaryImgs.length > 0 ? `
-        <section class="ma-bento-card ma-bento-card--gallery">
-          <div class="ma-bento-gallery-grid ma-bento-gallery-grid--${Math.min(secondaryImgs.length, 3)}">
-            ${secondaryImgs.map((imgSrc, i) => `
-              <div class="ma-bento-gallery-item">
-                <img src="${imgSrc}" alt="${cleanTitle} Detail ${i + 1}" loading="lazy" />
-              </div>
-            `).join('')}
-          </div>
-        </section>
-      ` : ''}
-
-      <section class="ma-bento-card ma-bento-card--specs ${secondaryImgs.length === 0 ? 'ma-bento-card--full' : ''}">
-        <h3 class="ma-bento-specs-title">SYSTEM ARCHITECTURE & DISCIPLINES</h3>
-        <div class="ma-bento-chips-row">
-          ${proj.techStack.map(t => `<span class="ma-bento-chip">${escapeHtml(t)}</span>`).join('')}
-        </div>
-        <div class="ma-bento-panels-row">
-          <div class="ma-bento-mini-panel">
-            <span class="ma-mini-label">RUNTIME ENGINE</span>
-            <strong class="ma-mini-val">WebGL & Native DOM</strong>
-          </div>
-          <div class="ma-bento-mini-panel">
-            <span class="ma-mini-label">FRAME TIMINGS</span>
-            <strong class="ma-mini-val">60 FPS Hardware</strong>
-          </div>
-          <div class="ma-bento-mini-panel">
-            <span class="ma-mini-label">DEPLOYMENT</span>
-            <strong class="ma-mini-val">Global Edge CDN</strong>
-          </div>
-        </div>
-      </section>
-    `;
   }
 
   public setCaseStudyOpen(open: boolean): void {

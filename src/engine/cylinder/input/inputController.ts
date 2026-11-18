@@ -61,7 +61,7 @@ export class InputController {
     const onPointerDown = (e: PointerEvent) => {
       // Ignore drags initiating on interactive DOM buttons
       const target = e.target as HTMLElement | null;
-      if (target && target.closest('button, a, input, select, textarea')) return;
+      if (target && target.closest('button, a, input, select, textarea, .ma-about-drawer')) return;
 
       this.isDragging = true;
       this.hasDragged = false;
@@ -122,8 +122,8 @@ export class InputController {
     };
 
     const onWheel = (e: WheelEvent) => {
-      // Input Scoping: If About drawer or Case Study is open, let them scroll natively!
-      if (this.callbacks.isAboutOpen() || this.callbacks.isCaseStudyOpen()) {
+      // Input Scoping: If About drawer is open, let it scroll natively!
+      if (this.callbacks.isAboutOpen()) {
         return;
       }
 
@@ -134,7 +134,7 @@ export class InputController {
         target === this.wrapper ||
         (target !== null && target.classList.contains('ma-cylinder-root'));
 
-      if (!isCanvasOrRoot) {
+      if (!isCanvasOrRoot && !this.callbacks.isCaseStudyOpen()) {
         return;
       }
 
@@ -170,7 +170,7 @@ export class InputController {
       }
     };
 
-    this.add(this.canvas, 'pointerdown', onPointerDown as EventListener);
+    this.add(this.wrapper, 'pointerdown', onPointerDown as EventListener);
     this.add(window, 'pointermove', onPointerMove as EventListener);
     this.add(window, 'pointerup', onPointerUp as EventListener);
     this.add(window, 'pointercancel', onPointerUp as EventListener);
