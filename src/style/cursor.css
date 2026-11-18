@@ -67,3 +67,10 @@
 .custom-cursor.is-grabbing .cursor-pill {
   transform: translate(-50%, -50%) scale(0.9);
 }
+
+/* Touch Device Suppression: Mobile & touch screens use native direct manipulation */
+@media (pointer: coarse), (hover: none) {
+  .custom-cursor {
+    display: none !important;
+  }
+}

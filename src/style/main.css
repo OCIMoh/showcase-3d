@@ -124,7 +124,7 @@
    -------------------------------------------------------------------------- */
 .ma-arc-hud {
   position: fixed;
-  bottom: 24px;
+  bottom: max(24px, env(safe-area-inset-bottom, 24px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 45;
@@ -382,12 +382,18 @@
 }
 
 @media (max-width: 768px) {
-  .ma-case-topbar { padding: 0 20px; }
+  .ma-case-topbar { padding: max(16px, env(safe-area-inset-top, 16px)) max(16px, env(safe-area-inset-left, 16px)); }
   .ma-case-info { font-size: 13px; }
   .ma-case-info__agency { display: none; }
-  .ma-case-sound-btn { left: 20px; bottom: 20px; }
-  .ma-case-close-btn { right: 20px; bottom: 20px; }
-  .ma-case-nav { bottom: 20px; padding: 6px 14px; gap: 10px; }
+  .ma-case-sound-btn { left: max(16px, env(safe-area-inset-left, 16px)); bottom: max(16px, env(safe-area-inset-bottom, 16px)); }
+  .ma-case-close-btn { right: max(16px, env(safe-area-inset-right, 16px)); bottom: max(16px, env(safe-area-inset-bottom, 16px)); }
+  .ma-case-nav { bottom: max(16px, env(safe-area-inset-bottom, 16px)); padding: 6px 14px; gap: 10px; max-width: calc(100vw - 140px); }
+  .ma-case-nav__title { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+@media (max-width: 440px) {
+  .ma-case-sound-btn { display: none; }
+  .ma-case-nav { left: max(16px, env(safe-area-inset-left, 16px)); transform: none; max-width: calc(100vw - 80px); }
 }
 
 /* --------------------------------------------------------------------------
@@ -470,6 +476,8 @@
 .ma-drawer__scroll {
   padding: 40px 32px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -549,6 +557,36 @@
   .ma-case-overlay__brand { display: none; }
   .ma-case-meta { flex-direction: column; gap: 4px; }
   .ma-about__grid { grid-template-columns: 1fr; }
+}
+
+/* --------------------------------------------------------------------------
+   Big Screens & Ultra-High Resolution Displays (4K / 5K / Ultrawide)
+   -------------------------------------------------------------------------- */
+@media (min-width: 2560px) {
+  .ma-arc-hud__arc-wrap {
+    width: 240px;
+    height: 52px;
+  }
+  .ma-arc-hud__title {
+    font-size: 15px;
+    padding: 9px 28px;
+  }
+  .ma-brand-line-1 {
+    font-size: 16px;
+  }
+  .ma-brand-line-2 {
+    font-size: 14px;
+  }
+  .ma-sound-toggle,
+  .ma-about-link {
+    font-size: 15px;
+  }
+  .ma-case-info {
+    font-size: 15px;
+  }
+  .ma-case-nav__title {
+    font-size: 15px;
+  }
 }
 
 /* Visually-hidden accessible catalog for screen readers and SEO */

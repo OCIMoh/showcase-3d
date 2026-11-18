@@ -81,7 +81,10 @@ export class InputController {
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      const normX = (e.clientX / window.innerWidth) * 2 - 1;
+      // Aspect-balanced parallax: Dampen horizontal travel on ultrawide displays (>2:1)
+      const aspect = window.innerWidth / Math.max(1, window.innerHeight);
+      const aspectDamp = aspect > 2.0 ? 1.77 / aspect : 1.0;
+      const normX = ((e.clientX / window.innerWidth) * 2 - 1) * aspectDamp;
       const normY = -(e.clientY / window.innerHeight) * 2 + 1;
       this.callbacks.onPointerParallax(normX, normY);
 

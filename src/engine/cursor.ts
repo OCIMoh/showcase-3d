@@ -44,6 +44,9 @@ export class CustomCursor {
   }
 
   private bindEvents(): void {
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+      return; // Touch device — native finger interaction
+    }
     window.addEventListener('mousemove', (e) => {
       this.mouseX = e.clientX;
       this.mouseY = e.clientY;

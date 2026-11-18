@@ -19,6 +19,7 @@ export interface CarouselDrawParams {
   clickPos: [number, number];
   meshAspect: number;
   reducedMotion: boolean;
+  responsiveScale?: number;
 }
 
 interface CardDraw {
@@ -63,8 +64,12 @@ export class CarouselPass {
     const gl = this.gl;
     const u = this.programInfo.uniforms;
     const cfg = this.config;
+    const rScale = params.responsiveScale ?? 1.0;
     const numItems = params.projects.length;
-    const loopWidth = numItems * cfg.spacing;
+    const spacing = cfg.spacing * rScale;
+    const radiusX = cfg.radiusX * rScale;
+    const radiusZ = cfg.radiusZ * rScale;
+    const loopWidth = numItems * spacing;
 
     // 1. Activate dedicated Carousel Shader Program
     gl.useProgram(this.programInfo.program);
@@ -72,33 +77,33 @@ export class CarouselPass {
     // 2. Bind Camera Matrices & Carousel Radius
     gl.uniformMatrix4fv(u.uProjection, false, projMat);
     gl.uniformMatrix4fv(u.uView, false, viewMat);
-    gl.uniform1f(u.uPanelRadius, cfg.radiusX);
+    gl.uniform1f(u.uPanelRadius, radiusX);
 
     const cardsToDraw: CardDraw[] = [];
 
     for (let i = 0; i < numItems; i++) {
       const isHero = i === params.activeHeroIndex;
 
-      let wrappedX = (i * cfg.spacing + params.pos) % loopWidth;
+      let wrappedX = (i * spacing + params.pos) % loopWidth;
       wrappedX = ((wrappedX % loopWidth) + loopWidth) % loopWidth;
       if (wrappedX > loopWidth / 2) wrappedX -= loopWidth;
 
-      const angle = wrappedX / cfg.radiusX;
+      const angle = wrappedX / radiusX;
 
       if (!isHero && Math.abs(angle) > cfg.maxAngle) {
         continue;
       }
 
-      let x = Math.sin(angle) * cfg.radiusX;
-      let z = (Math.cos(angle) - 1.0) * cfg.radiusZ;
+      let x = Math.sin(angle) * radiusX;
+      let z = (Math.cos(angle) - 1.0) * radiusZ;
       let rotY = angle * cfg.ovalRatio;
 
-      let baseScale = 1.0;
-      const angularSpan = (cfg.spacing / cfg.radiusX) * cfg.angularSpanFactor;
+      let baseScale = rScale;
+      const angularSpan = (spacing / radiusX) * cfg.angularSpanFactor;
       if (Math.abs(angle) < angularSpan) {
         const t = Math.abs(angle) / angularSpan;
         const centerBonus = cfg.centerBonusScale * Math.pow(Math.cos(t * Math.PI * 0.5), 2.0);
-        baseScale += centerBonus;
+        baseScale += centerBonus * rScale;
       }
 
       let scale = baseScale;
@@ -110,7 +115,7 @@ export class CarouselPass {
         x = x * (1.0 - params.heroOpenAmount);
         z = z * (1.0 - params.heroOpenAmount) + 1.8 * params.heroOpenAmount;
         rotY = rotY * (1.0 - params.heroOpenAmount);
-        scale = baseScale + 1.25 * params.heroOpenAmount;
+        scale = baseScale * (1.0 + 1.25 * params.heroOpenAmount);
         wrapAmount = 1.0 - params.heroOpenAmount;
         dimFactor = 1.0 - params.heroOpenAmount * 0.6;
         opacity = 1.0;
@@ -191,30 +196,35 @@ export class CarouselPass {
     projMat: Mat4,
     viewMat: Mat4,
     canvasWidth: number,
-    canvasHeight: number
+    canvasHeight: number,
+    responsiveScale = 1.0
   ): ShowcaseProject | null {
     const cfg = this.config;
+    const rScale = responsiveScale;
     const numItems = projects.length;
-    const loopWidth = numItems * cfg.spacing;
-    const halfW = cfg.cardWidth / 2;
-    const halfH = cfg.cardHeight / 2;
+    const spacing = cfg.spacing * rScale;
+    const radiusX = cfg.radiusX * rScale;
+    const radiusZ = cfg.radiusZ * rScale;
+    const loopWidth = numItems * spacing;
+    const halfW = (cfg.cardWidth * rScale) / 2;
+    const halfH = (cfg.cardHeight * rScale) / 2;
 
     const visibleHits: { proj: ShowcaseProject; viewZ: number }[] = [];
 
     for (let i = 0; i < numItems; i++) {
-      let wrappedX = (i * cfg.spacing + pos) % loopWidth;
+      let wrappedX = (i * spacing + pos) % loopWidth;
       wrappedX = ((wrappedX % loopWidth) + loopWidth) % loopWidth;
       if (wrappedX > loopWidth / 2) wrappedX -= loopWidth;
 
-      const angle = wrappedX / cfg.radiusX;
+      const angle = wrappedX / radiusX;
       if (Math.abs(angle) > cfg.maxAngle) continue;
 
-      const x = Math.sin(angle) * cfg.radiusX;
-      const z = (Math.cos(angle) - 1.0) * cfg.radiusZ;
+      const x = Math.sin(angle) * radiusX;
+      const z = (Math.cos(angle) - 1.0) * radiusZ;
       const rotY = angle * cfg.ovalRatio;
 
       let scale = 1.0;
-      const angularSpan = (cfg.spacing / cfg.radiusX) * cfg.angularSpanFactor;
+      const angularSpan = (spacing / radiusX) * cfg.angularSpanFactor;
       if (Math.abs(angle) < angularSpan) {
         const t = Math.abs(angle) / angularSpan;
         scale += cfg.centerBonusScale * Math.pow(Math.cos(t * Math.PI * 0.5), 2.0);

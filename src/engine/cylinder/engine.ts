@@ -57,6 +57,7 @@ export class CylinderCarouselEngine {
   private synth!: SoundSynthesizer;
   private carouselPass!: CarouselPass;
   private galleryPass!: GalleryPass;
+  private responsiveScale = 1.0;
 
   private pos = 0;
   private targetPos = 0;
@@ -213,21 +214,21 @@ export class CylinderCarouselEngine {
 
     this.inputController = new InputController(this.canvas, this.wrapper, {
       onDragMove: (dx, dy) => {
-        if (this.heroOpenAmount > 0.5) this.galleryTargetPos += dy * 0.012;
-        else this.targetPos += dx * 0.018;
+        if (this.heroOpenAmount > 0.5) this.galleryTargetPos += dy * 0.012 * this.responsiveScale;
+        else this.targetPos += dx * 0.018 * this.responsiveScale;
       },
       onFling: (vx, vy) => {
         if (this.heroOpenAmount < 0.2) {
-          if (Math.abs(vx) > 1.2) this.targetPos += vx * 0.12;
+          if (Math.abs(vx) > 1.2) this.targetPos += vx * 0.12 * this.responsiveScale;
           this.snapToNearestCard();
         } else if (Math.abs(vy) > 1.2) {
-          this.galleryTargetPos += vy * 0.12;
+          this.galleryTargetPos += vy * 0.12 * this.responsiveScale;
         }
       },
       onTap: (cx, cy) => {
         if (this.heroOpenAmount < 0.2) {
           const hit = this.carouselPass.hitTest(
-            cx, cy, this.projects, this.pos, this.projMat, this.viewMat, this.canvas.width, this.canvas.height
+            cx, cy, this.projects, this.pos, this.projMat, this.viewMat, this.canvas.width, this.canvas.height, this.responsiveScale
           );
           if (hit) this.openProject(hit, cx, cy);
         }
@@ -348,19 +349,38 @@ export class CylinderCarouselEngine {
       this.galleryCurve = Math.max(this.galleryScrollCurve, entranceCurve);
     }
 
+    // Viewport Aspect Ratio & Responsive Scale Calculation
+    const aspect = this.canvas.width / Math.max(1, this.canvas.height);
+
+    // Smooth responsive mesh scaling: adapts cards gracefully from 1080p desktop down to mobile portrait
+    let rScale = 1.0;
+    if (aspect < 1.77) {
+      rScale = Math.min(1.0, Math.max(0.38, 0.38 + (aspect - 0.45) * ((1.0 - 0.38) / (1.77 - 0.45))));
+    }
+    this.responsiveScale = rScale;
+
     // Arc HUD Scrubber
     const numItems = this.projects.length;
-    const norm = (((-this.pos / cfg.spacing) % numItems) + numItems) % numItems;
+    const spacing = cfg.spacing * rScale;
+    const norm = (((-this.pos / spacing) % numItems) + numItems) % numItems;
     const activeIdx = Math.round(norm) % numItems;
     this.arcHud.update(norm, numItems, this.projects[activeIdx]?.title.split('—')[0].trim(), () => {
       this.synth.playTone(720, 'sine', 0.02, 0.03);
     });
 
-    // Camera Matrices
-    const aspect = this.canvas.width / this.canvas.height;
+    // Dynamic Camera Distance:
+    // Gentle pull back on mobile portrait for comfortable vertical margins,
+    // and gentle push forward on ultrawides (aspect > 2.0) for panoramic immersion.
+    let camZ = cfg.cameraZ;
+    if (aspect < 1.0) {
+      camZ = cfg.cameraZ - (1.0 - aspect) * 0.8;
+    } else if (aspect > 2.0) {
+      camZ = Math.min(-5.8, cfg.cameraZ + (aspect - 1.77) * 0.4);
+    }
+
     mat4Perspective(this.projMat, (cfg.fovDegrees * Math.PI) / 180, aspect, 0.1, 50.0);
     mat4Identity(this.viewMat);
-    mat4Translate(this.viewMat, this.viewMat, [0, 0, cfg.cameraZ]);
+    mat4Translate(this.viewMat, this.viewMat, [0, 0, camZ]);
     mat4RotateX(this.viewMat, this.viewMat, this.tiltCurrentY);
     mat4RotateY(this.viewMat, this.viewMat, this.tiltCurrentX);
 
@@ -374,7 +394,8 @@ export class CylinderCarouselEngine {
       pullAmount: this.pullAmount,
       clickPos: this.clickPos,
       meshAspect: cfg.cardAspect,
-      reducedMotion: this.prefersReducedMotion
+      reducedMotion: this.prefersReducedMotion,
+      responsiveScale: rScale
     }, this.numIndices, this.projMat, this.viewMat);
 
     if (this.activeProject) {
@@ -387,12 +408,13 @@ export class CylinderCarouselEngine {
         galleryOffsetX: this.galleryOffsetX,
         heroOpenAmount: this.heroOpenAmount,
         meshAspect: cfg.cardAspect,
-        reducedMotion: this.prefersReducedMotion
+        reducedMotion: this.prefersReducedMotion,
+        responsiveScale: rScale
       }, this.numIndices, this.projMat, this.viewMat);
 
       if (this.heroOpenAmount > 0.5 && this.galleryEntrance > 0.75) {
         const entranceSpacingMult = 1.0 + (1.0 - this.galleryEntrance);
-        const gSpacing = cfg.gallerySpacing * entranceSpacingMult;
+        const gSpacing = cfg.gallerySpacing * rScale * entranceSpacingMult;
         const numG = 8;
         const currentCardIdx = Math.floor((((-this.galleryPos / gSpacing) % numG) + numG) % numG);
         if (this.lastGalleryCardIdx !== undefined && this.lastGalleryCardIdx !== currentCardIdx) {
@@ -529,9 +551,10 @@ export class CylinderCarouselEngine {
   }
 
   private snapToNearestCard(): void {
-    const rawIndex = -this.targetPos / this.config.spacing;
+    const spacing = this.config.spacing * this.responsiveScale;
+    const rawIndex = -this.targetPos / spacing;
     const nearestIndex = Math.round(rawIndex);
-    this.targetPos = -nearestIndex * this.config.spacing;
+    this.targetPos = -nearestIndex * spacing;
   }
 
   /**
@@ -554,12 +577,14 @@ export class CylinderCarouselEngine {
    * Resizes viewport dimensions and updates device pixel ratio on high-DPI displays.
    */
   public resize(): void {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const w = this.container.clientWidth || window.innerWidth;
     const h = this.container.clientHeight || window.innerHeight;
+    // Cap DPR at 1.5 for ultra-high-resolution 4K/5K screens (width >= 2560) to protect 60fps fill rate
+    const maxDpr = w >= 2560 ? 1.5 : 2.0;
+    const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
 
-    this.canvas.width = w * dpr;
-    this.canvas.height = h * dpr;
+    this.canvas.width = Math.round(w * dpr);
+    this.canvas.height = Math.round(h * dpr);
     this.canvas.style.width = `${w}px`;
     this.canvas.style.height = `${h}px`;
 

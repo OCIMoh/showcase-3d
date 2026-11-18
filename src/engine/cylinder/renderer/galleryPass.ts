@@ -3,7 +3,7 @@
  * Dedicated to GalleryPass with isolated GalleryProgramInfo.
  */
 
-import { Mat4, mat4Identity, mat4Translate, mat4Create, clamp } from '../math/mat4';
+import { Mat4, mat4Identity, mat4Translate, mat4Scale, mat4Create, clamp } from '../math/mat4';
 import { GalleryProgramInfo } from '../gl/program';
 import { CylinderConfig } from '../core/config';
 import { ShowcaseProject } from '../../../data/showcaseProjects';
@@ -19,6 +19,7 @@ export interface GalleryDrawParams {
   heroOpenAmount: number;
   meshAspect: number;
   reducedMotion: boolean;
+  responsiveScale?: number;
 }
 
 export class GalleryPass {
@@ -58,10 +59,12 @@ export class GalleryPass {
     // 1. Activate dedicated Gallery Shader Program
     gl.useProgram(this.programInfo.program);
 
+    const rScale = params.responsiveScale ?? 1.0;
+
     // 2. Bind Camera Matrices & Barrel Geometry Uniforms
     gl.uniformMatrix4fv(u.uProjection, false, projMat);
     gl.uniformMatrix4fv(u.uView, false, viewMat);
-    gl.uniform1f(u.uBarrelRadius, cfg.barrelRadius);
+    gl.uniform1f(u.uBarrelRadius, cfg.barrelRadius * rScale);
     gl.uniform1f(u.uOvalFlatness, cfg.ovalFlatness);
     gl.uniform1f(u.uCurveAmount, params.galleryCurve);
 
@@ -70,7 +73,7 @@ export class GalleryPass {
 
     // Entrance spacing: arrives fully curved, with doubled gaps and zero opacity, and relaxes into place
     const entranceSpacingMult = 1.0 + (1.0 - params.galleryEntrance);
-    const gSpacing = cfg.gallerySpacing * entranceSpacingMult;
+    const gSpacing = cfg.gallerySpacing * rScale * entranceSpacingMult;
     const galLoopHeight = numG * gSpacing;
 
     const offsetX = params.galleryOffsetX ?? 0;
@@ -85,7 +88,7 @@ export class GalleryPass {
       // Soft-edged band only at the extreme off-screen margins to avoid loop pops
       // Cards anywhere on screen are 100% solid and vibrant with ZERO white haze
       const maxBand = galLoopHeight * 0.48;
-      const fadeStart = 4.8;
+      const fadeStart = 4.8 * rScale;
       let bandOpacity = 1.0;
       if (distY > fadeStart) {
         bandOpacity = clamp(1.0 - (distY - fadeStart) / (maxBand - fadeStart), 0.0, 1.0);
@@ -102,6 +105,7 @@ export class GalleryPass {
 
       mat4Identity(this.modelMat);
       mat4Translate(this.modelMat, this.modelMat, [offsetX, wrappedY, 1.2]);
+      mat4Scale(this.modelMat, this.modelMat, [rScale, rScale, rScale]);
       gl.uniformMatrix4fv(u.uModel, false, this.modelMat);
 
       gl.activeTexture(gl.TEXTURE0);
