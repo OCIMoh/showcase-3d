@@ -1,0 +1,113 @@
+[
+  {
+    "id": 1405695737,
+    "name": "varun-sir-portfolio",
+    "full_name": "OCIMoh/varun-sir-portfolio",
+    "description": "Portfolio website",
+    "language": "TypeScript",
+    "homepage": null,
+    "created_at": "2026-10-05T12:14:06Z",
+    "pushed_at": "2026-10-05T12:20:18Z"
+  },
+  {
+    "id": 1405710976,
+    "name": "touche-keyboard",
+    "full_name": "OCIMoh/touche-keyboard",
+    "description": "3-d scroll website for a keyboard company showcase",
+    "language": "TypeScript",
+    "homepage": "https://touche-chi.vercel.app/",
+    "created_at": "2026-10-05T12:23:11Z",
+    "pushed_at": "2026-10-05T12:23:37Z"
+  },
+  {
+    "id": 1405721490,
+    "name": "lumina-coffee",
+    "full_name": "OCIMoh/lumina-coffee",
+    "description": "3-d scrollytelling coffee website",
+    "language": "HTML",
+    "homepage": "https://lumina-theta-green.vercel.app/",
+    "created_at": "2026-10-05T12:29:42Z",
+    "pushed_at": "2026-10-05T12:30:53Z"
+  },
+  {
+    "id": 1405731402,
+    "name": "amc-journey",
+    "full_name": "OCIMoh/amc-journey",
+    "description": "mohali pet clinic website.",
+    "language": "TypeScript",
+    "homepage": "https://amc-journey.vercel.app/",
+    "created_at": "2026-10-05T12:36:14Z",
+    "pushed_at": "2026-10-06T07:52:39Z"
+  },
+  {
+    "id": 1405745826,
+    "name": "boosit-showcase-poc-1",
+    "full_name": "OCIMoh/boosit-showcase-poc-1",
+    "description": "showcase website for boostit. ",
+    "language": "HTML",
+    "homepage": null,
+    "created_at": "2026-10-05T12:45:42Z",
+    "pushed_at": "2026-10-05T12:46:05Z"
+  },
+  {
+    "id": 1405754524,
+    "name": "koi-fish-3d",
+    "full_name": "OCIMoh/koi-fish-3d",
+    "description": null,
+    "language": "TypeScript",
+    "homepage": "https://koi-create-daily.vercel.app/",
+    "created_at": "2026-10-05T12:51:27Z",
+    "pushed_at": "2026-10-05T12:51:49Z"
+  },
+  {
+    "id": 1416482104,
+    "name": "universal-college",
+    "full_name": "OCIMoh/universal-college",
+    "description": null,
+    "language": "TypeScript",
+    "homepage": "https://universal-college-patran.vercel.app/",
+    "created_at": "2026-10-13T04:56:58Z",
+    "pushed_at": "2026-10-28T05:43:25Z"
+  },
+  {
+    "id": 1436794703,
+    "name": "jimmy-oye",
+    "full_name": "OCIMoh/jimmy-oye",
+    "description": null,
+    "language": "TypeScript",
+    "homepage": "https://jimmy-oye.vercel.app",
+    "created_at": "2026-10-28T08:19:19Z",
+    "pushed_at": "2026-10-28T08:22:03Z"
+  },
+  {
+    "id": 1445298003,
+    "name": "wraith",
+    "full_name": "OCIMoh/wraith",
+    "description": null,
+    "language": "CSS",
+    "homepage": "https://wraith-sigma-two.vercel.app/",
+    "created_at": "2026-11-04T07:22:15Z",
+    "pushed_at": "2026-11-04T07:50:09Z"
+  },
+  {
+    "id": 1456400895,
+    "name": "amit-tandon",
+    "full_name": "OCIMoh/amit-tandon",
+    "description": null,
+    "language": "CSS",
+    "homepage": "https://amit-tandon.vercel.app",
+    "created_at": "2026-11-13T09:24:22Z",
+    "pushed_at": "2026-11-17T06:46:26Z"
+  },
+  {
+    "id": 1456523093,
+    "name": "adieu-perfume",
+    "full_name": "OCIMoh/adieu-perfume",
+    "description": null,
+    "language": "CSS",
+    "homepage": "https://adieu-perfume.vercel.app/",
+    "created_at": "2026-11-13T11:35:45Z",
+    "pushed_at": "2026-11-13T11:43:31Z"
+  }
+]
+

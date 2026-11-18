@@ -1,0 +1,20 @@
+<svg width="1169" height="1169" viewBox="0 0 1169 1169" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;display=swap');
+      .seal-text {
+        font-family: 'Cinzel', 'Times New Roman', Georgia, serif;
+        font-size: 21px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        fill: #E94E1B;
+      }
+    </style>
+    <path id="circlePathEn" d="M 584.5, 584.5 m -480, 0 a 480,480 0 1,1 960,0 a 480,480 0 1,1 -960,0" fill="none"/>
+  </defs>
+  <text class="seal-text" textLength="3015" lengthAdjust="spacing">
+    <textPath href="#circlePathEn" startOffset="0%">
+      • AGRUMÊA FARM • ARTISANAL PRESERVES • ORGANIC MARMALADES • SWEET CREAMS • SICILIAN HARVEST • AGRUMÊA FARM • ARTISANAL PRESERVES • ORGANIC MARMALADES • SWEET CREAMS • SICILIAN HARVEST •
+    </textPath>
+  </text>
+</svg>

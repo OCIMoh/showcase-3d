@@ -1,0 +1,34 @@
+/**
+ * Mathias Adolfsson '26 Design System Tokens
+ * Reference Width 1536px, Minimalist Obsidian Palette
+ */
+
+:root {
+  /* Mathias Adolfsson Core Palette */
+  --bc: rgb(8, 8, 8);
+  --tc: rgb(247, 247, 247);
+  --size-canvas: 1536;
+  --spacing: calc(100vw / var(--size-canvas));
+
+  --color-bg: #080808;
+  --color-surface: #121214;
+  --color-surface-hover: #1c1c20;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-border-bright: rgba(255, 255, 255, 0.28);
+  --color-text: #f7f7f7;
+  --color-text-muted: rgba(255, 255, 255, 0.55);
+  --color-text-subtle: rgba(255, 255, 255, 0.35);
+
+  /* Signature Accents */
+  --color-accent-cyan: #00e5ff;
+  --color-accent-glow: rgba(0, 229, 255, 0.25);
+  --color-accent-green: #00ff88;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'Space Mono', 'SF Mono', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Motion & Easing */
+  --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
