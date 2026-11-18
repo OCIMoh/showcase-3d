@@ -196,7 +196,8 @@ export class CylinderCarouselEngine {
     this.carouselPass = new CarouselPass(this.gl, this.carouselProgramInfo, this.config, this.textureManager);
     this.galleryPass = new GalleryPass(this.gl, this.galleryProgramInfo, this.config, this.textureManager);
 
-    this.arcHud = new ArcHudComponent(this.wrapper, this.projects[0]?.title.split('—')[0].trim());
+    const projectTitles = this.projects.map(p => p.title.split('—')[0].trim());
+    this.arcHud = new ArcHudComponent(this.wrapper, projectTitles);
     this.aboutDrawer = new AboutDrawerComponent(this.wrapper, this.brand, this.projects, () => {
       this.synth.playTone(420, 'sine', 0.04, 0.06);
     });
@@ -362,9 +363,9 @@ export class CylinderCarouselEngine {
     // Arc HUD Scrubber
     const numItems = this.projects.length;
     const spacing = cfg.spacing * rScale;
-    const norm = (((-this.pos / spacing) % numItems) + numItems) % numItems;
-    const activeIdx = Math.round(norm) % numItems;
-    this.arcHud.update(norm, numItems, this.projects[activeIdx]?.title.split('—')[0].trim(), () => {
+    const continuousProgress = -this.pos / spacing;
+    const norm = (((continuousProgress) % numItems) + numItems) % numItems;
+    this.arcHud.update(norm, continuousProgress, numItems, () => {
       this.synth.playTone(720, 'sine', 0.02, 0.03);
     });
 

@@ -190,8 +190,8 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
       '/jimmy-3.png',
       '/jimmy-4.png'
     ],
-    color: '#ffbe0b'
-  },
+    color: '#ffbe0b' 
+  }, 
   'wraith': {
     title: 'Project Wraith — Obsidian Cyber Suite',
     category: 'CYBERSECURITY & DEVTOOLS',
