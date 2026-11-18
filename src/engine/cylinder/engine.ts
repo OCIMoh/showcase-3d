@@ -11,7 +11,6 @@ import { TextureManager } from './gl/textures';
 import { CylinderConfig, BrandConfig, DEFAULT_CONFIG, DEFAULT_BRAND } from './core/config';
 import { InputController } from './input/inputController';
 import { ArcHudComponent } from './ui/arcHud';
-import { AboutDrawerComponent } from './ui/aboutDrawer';
 import { OverlayComponent } from './ui/overlay';
 import { SoundSynthesizer } from './audio/synth';
 import { CarouselPass } from './renderer/carouselPass';
@@ -52,12 +51,12 @@ export class CylinderCarouselEngine {
   private textureManager!: TextureManager;
   private inputController!: InputController;
   private arcHud!: ArcHudComponent;
-  private aboutDrawer!: AboutDrawerComponent;
   private overlay!: OverlayComponent;
   private synth!: SoundSynthesizer;
   private carouselPass!: CarouselPass;
   private galleryPass!: GalleryPass;
   private responsiveScale = 1.0;
+  private lastCenterIdx = -1;
 
   private pos = 0;
   private targetPos = 0;
@@ -198,9 +197,6 @@ export class CylinderCarouselEngine {
 
     const projectTitles = this.projects.map(p => p.title.split('—')[0].trim());
     this.arcHud = new ArcHudComponent(this.wrapper, projectTitles);
-    this.aboutDrawer = new AboutDrawerComponent(this.wrapper, this.brand, this.projects, () => {
-      this.synth.playTone(420, 'sine', 0.04, 0.06);
-    });
 
     this.overlay = new OverlayComponent(this.wrapper, this.brand, this.projects, {
       onCloseCaseStudy: () => this.closeProject(),
@@ -209,9 +205,12 @@ export class CylinderCarouselEngine {
       onToggleSound: () => {
         const isMuted = this.synth.toggleMute();
         this.overlay.updateSoundState(isMuted);
-      },
-      onOpenAbout: () => this.openAbout()
+      }
     });
+
+    if (this.projects.length > 0) {
+      this.overlay.updateActiveCenterProject(this.projects[0]);
+    }
 
     this.inputController = new InputController(this.canvas, this.wrapper, {
       onDragMove: (dx, dy) => {
@@ -264,10 +263,9 @@ export class CylinderCarouselEngine {
         }
       },
       onEscape: () => {
-        if (this.aboutDrawer.isOpen()) this.closeAbout();
-        else if (this.heroOpenAmount > 0.5) this.closeProject();
+        if (this.heroOpenAmount > 0.5) this.closeProject();
       },
-      isAboutOpen: () => this.aboutDrawer.isOpen(),
+      isAboutOpen: () => false,
       isCaseStudyOpen: () => this.heroOpenAmount > 0.5
     });
 
@@ -365,6 +363,15 @@ export class CylinderCarouselEngine {
     const spacing = cfg.spacing * rScale;
     const continuousProgress = -this.pos / spacing;
     const norm = (((continuousProgress) % numItems) + numItems) % numItems;
+    const centerIdx = Math.round(norm) % numItems;
+    if (centerIdx !== this.lastCenterIdx) {
+      this.lastCenterIdx = centerIdx;
+      const centerProj = this.projects[centerIdx];
+      if (centerProj) {
+        this.overlay.updateActiveCenterProject(centerProj);
+      }
+    }
+
     this.arcHud.update(norm, continuousProgress, numItems, () => {
       this.synth.playTone(720, 'sine', 0.02, 0.03);
     });
@@ -571,22 +578,6 @@ export class CylinderCarouselEngine {
   }
 
   /**
-   * Opens the studio profile drawer overlay.
-   */
-  public openAbout(): void {
-    this.aboutDrawer.open();
-    this.synth.playTone(680, 'sine', 0.05, 0.07);
-  }
-
-  /**
-   * Closes the studio profile drawer overlay.
-   */
-  public closeAbout(): void {
-    this.aboutDrawer.close();
-    this.synth.playTone(420, 'sine', 0.04, 0.06);
-  }
-
-  /**
    * Resizes viewport dimensions and updates device pixel ratio on high-DPI displays.
    */
   public resize(): void {
@@ -617,7 +608,6 @@ export class CylinderCarouselEngine {
     this.textureManager.destroy();
     this.synth.destroy();
     this.arcHud.destroy();
-    this.aboutDrawer.destroy();
     this.overlay.destroy();
 
     const gl = this.gl;

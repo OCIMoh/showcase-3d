@@ -55,7 +55,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  z-index: 75;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -105,6 +105,10 @@
   padding: 6px 14px;
   border-radius: 9999px;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.25s ease;
 }
 
@@ -264,8 +268,9 @@
 .ma-minimal-header.is-hidden {
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
   transform: translateY(-8px);
-  transition: opacity 0.4s var(--ease-expo-out), transform 0.4s var(--ease-expo-out);
+  transition: opacity 0.4s var(--ease-expo-out), transform 0.4s var(--ease-expo-out), visibility 0.4s;
 }
 
 .ma-case-overlay {
@@ -274,11 +279,19 @@
   z-index: 60;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
 }
 
 .ma-case-overlay.is-open {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Strictly ensure no child element can intercept pointer/hover events when case overlay is closed */
+.ma-case-overlay:not(.is-open) * {
+  pointer-events: none !important;
 }
 
 
@@ -509,21 +522,21 @@
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.4s var(--ease-expo-out);
+  visibility: hidden;
 }
 
 .ma-drawer.is-open {
   pointer-events: auto;
-  opacity: 1;
+  visibility: visible;
 }
 
 .ma-drawer__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(4, 4, 6, 0.78);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  opacity: 0;
 }
 
 .ma-drawer__panel {
@@ -532,17 +545,25 @@
   right: 0;
   bottom: 0;
   width: min(580px, 100vw);
-  background: #111113;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0f1013;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
-  transition: transform 0.5s var(--ease-expo-out);
-  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.8);
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.85);
+  will-change: transform;
 }
 
-.ma-drawer.is-open .ma-drawer__panel {
-  transform: translateX(0);
+.ma-drawer__drag-handle {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 36px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.16);
+  pointer-events: none;
 }
 
 .ma-drawer__bar {
@@ -550,7 +571,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .ma-drawer__badge {
@@ -571,11 +592,17 @@
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  transition: color 0.2s ease;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 9999px;
+  transition: color 0.2s ease, background 0.2s ease;
+  will-change: transform;
 }
 
 .ma-drawer__close-btn:hover {
   color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .ma-drawer__scroll {
@@ -597,15 +624,16 @@
 }
 
 .ma-about__bio {
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.65;
   color: var(--color-text-muted);
+  margin-top: 12px;
 }
 
 .ma-about__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 28px;
 }
 
 .ma-about__col-title {
@@ -624,13 +652,86 @@
   gap: 10px;
 }
 
-.ma-about__list li {
+.ma-about__list--disciplines li {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.78);
+  display: flex;
+  align-items: baseline;
+}
+
+.ma-bullet {
+  color: var(--color-accent-cyan);
+  font-weight: 700;
+  margin-right: 8px;
+  font-size: 12px;
+}
+
+.ma-about__work-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.22s ease;
+  user-select: none;
+}
+
+.ma-about__work-item:hover,
+.ma-about__work-item:focus-visible {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(-2px);
+  outline: none;
+}
+
+.ma-about__work-item-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ma-about__work-title {
   font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.ma-about__work-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ma-about__work-arrow {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.ma-about__work-item:hover .ma-about__work-arrow {
+  transform: translateX(3px);
+  color: #ffffff;
 }
 
 .ma-about__actions {
-  margin-top: 12px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ma-about__colophon {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .ma-btn {
@@ -646,6 +747,7 @@
   cursor: pointer;
   text-decoration: none;
   transition: all 0.25s ease;
+  will-change: transform;
 }
 
 .ma-btn--primary {
@@ -654,7 +756,7 @@
 }
 
 .ma-btn--primary:hover {
-  background: #e6e6e6;
+  background: #f0f0f0;
   transform: translateY(-2px);
 }
 

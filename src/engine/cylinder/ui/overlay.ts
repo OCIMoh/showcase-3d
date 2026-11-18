@@ -16,7 +16,7 @@ export interface OverlayCallbacks {
   onNextProject: () => void;
   onPrevProject: () => void;
   onToggleSound: () => void;
-  onOpenAbout: () => void;
+  onOpenAbout?: () => void;
 }
 
 export interface MagneticOptions {
@@ -28,7 +28,7 @@ export interface MagneticOptions {
 /**
  * Creates physical magnetic cursor attraction on a button with elastic spring recoil.
  */
-function attachMagneticEffect(el: HTMLElement, opts: MagneticOptions = {}): () => void {
+export function attachMagneticEffect(el: HTMLElement, opts: MagneticOptions = {}): () => void {
   if (typeof window === 'undefined' || window.matchMedia('(hover: none)').matches) {
     return () => {};
   }
@@ -104,6 +104,7 @@ export class OverlayComponent {
   public soundToggleBtn: HTMLButtonElement;
   public caseSoundBtn: HTMLButtonElement;
   public accessibleNavEl: HTMLElement;
+  public aboutLink: HTMLAnchorElement;
 
   private catEl: HTMLElement;
   private roleEl: HTMLElement;
@@ -143,7 +144,7 @@ export class OverlayComponent {
 
         <div class="ma-minimal-header__nav">
           <button class="ma-sound-toggle" id="maSoundToggle" type="button" aria-label="Toggle Spatial Audio">SOUND ON</button>
-          <button class="ma-about-link" id="maAboutBtn" type="button" aria-label="Open Studio Profile">About</button>
+          <a class="ma-about-link" id="maAboutBtn" href="#" target="_blank" rel="noopener noreferrer" aria-label="Visit Project Website">About</a>
         </div>
       </header>
 
@@ -225,6 +226,7 @@ export class OverlayComponent {
     this.titleWrapEl = this.root.querySelector('#maCaseTitleWrap')!;
     this.activeTitleEl = this.root.querySelector('#maCaseNavTitle')!;
     this.viewLink = this.root.querySelector('#maCaseViewLink')!;
+    this.aboutLink = this.root.querySelector('#maAboutBtn') as HTMLAnchorElement;
     this.closeBtn = this.root.querySelector('#maCaseCloseBtn')!;
     this.prevBtn = this.root.querySelector('#maCasePrevBtn')!;
     this.nextBtn = this.root.querySelector('#maCaseNextBtn')!;
@@ -233,7 +235,9 @@ export class OverlayComponent {
     // Bind event handlers
     this.soundToggleBtn.addEventListener('click', callbacks.onToggleSound);
     this.caseSoundBtn.addEventListener('click', callbacks.onToggleSound);
-    this.root.querySelector('#maAboutBtn')?.addEventListener('click', callbacks.onOpenAbout);
+    if (callbacks.onOpenAbout) {
+      this.aboutLink?.addEventListener('click', callbacks.onOpenAbout);
+    }
     this.closeBtn.addEventListener('click', callbacks.onCloseCaseStudy);
     this.nextBtn.addEventListener('click', callbacks.onNextProject);
     this.prevBtn.addEventListener('click', callbacks.onPrevProject);
@@ -244,8 +248,23 @@ export class OverlayComponent {
     this.cleanupFns.push(attachMagneticEffect(this.nextBtn, { maxDistance: 40, pullFactor: 0.32 }));
     this.cleanupFns.push(attachMagneticEffect(this.caseSoundBtn, { maxDistance: 45, pullFactor: 0.35 }));
     this.cleanupFns.push(attachMagneticEffect(this.soundToggleBtn, { maxDistance: 45, pullFactor: 0.28 }));
-    const aboutBtn = this.root.querySelector('#maAboutBtn') as HTMLElement;
-    if (aboutBtn) this.cleanupFns.push(attachMagneticEffect(aboutBtn, { maxDistance: 45, pullFactor: 0.28 }));
+    if (this.aboutLink) this.cleanupFns.push(attachMagneticEffect(this.aboutLink, { maxDistance: 45, pullFactor: 0.28 }));
+  }
+
+  /**
+   * Updates the About header button link to point directly to the currently centered project's live website.
+   */
+  public updateActiveCenterProject(proj: ShowcaseProject): void {
+    if (this.aboutLink) {
+      if (proj.liveUrl && !proj.liveUrl.includes('github.com')) {
+        this.aboutLink.href = proj.liveUrl;
+        this.aboutLink.target = '_blank';
+      } else {
+        this.aboutLink.href = `/projects/${proj.slug}`;
+        this.aboutLink.removeAttribute('target');
+      }
+      this.aboutLink.setAttribute('title', `Visit ${proj.title.split('—')[0].trim()}`);
+    }
   }
 
   public updateCaseStudy(proj: ShowcaseProject, direction: 'next' | 'prev' | 'none' = 'none'): void {
@@ -254,8 +273,13 @@ export class OverlayComponent {
     if (this.agencyEl) this.agencyEl.textContent = `Client: ${proj.client}`;
 
     if (this.viewLink) {
-      this.viewLink.href = proj.liveUrl;
-      this.viewLink.style.display = proj.isLive ? 'inline-block' : 'none';
+      if (proj.isLive && proj.liveUrl && !proj.liveUrl.includes('github.com')) {
+        this.viewLink.href = proj.liveUrl;
+        this.viewLink.style.display = 'inline-block';
+      } else {
+        this.viewLink.href = '#';
+        this.viewLink.style.display = 'none';
+      }
     }
 
     // Directional Kinetic Title Switcher

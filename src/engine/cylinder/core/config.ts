@@ -62,7 +62,7 @@ export interface BrandConfig {
   badge: string;
   aboutHeadline: string;
   aboutBio: string;
-  githubUrl: string;
+  contactEmail: string;
 }
 
 export const DEFAULT_CONFIG: Readonly<CylinderConfig> = {
@@ -98,6 +98,6 @@ export const DEFAULT_BRAND: Readonly<BrandConfig> = {
   badge: 'Showcase-3D // CREATIVE ENGINEER',
   aboutHeadline: 'CURVED CYLINDRICAL CAROUSEL & 3D INTERACTIVE ENGINE',
   aboutBio: 'Creative engineering studio specializing in WebGL, procedural 3D graphics, dynamic GLSL shaders, and tactile digital experiences.',
-  githubUrl: 'https://github.com/OCIMoh'
+  contactEmail: 'studio@showcase-3d.com'
 };
 

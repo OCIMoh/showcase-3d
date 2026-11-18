@@ -63,5 +63,5 @@ document.addEventListener('DOMContentLoaded', () => {
   cursor.bindInteractive(document.querySelectorAll('.ma-case-close-btn'), 'CLOSE');
   cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link, .ma-bento-btn'), 'VISIT');
   cursor.bindInteractive(document.querySelectorAll('.ma-case-sound-btn, .ma-sound-toggle'), 'AUDIO');
-  cursor.bindInteractive(document.querySelectorAll('.ma-about-link'), 'ABOUT');
+  cursor.bindInteractive(document.querySelectorAll('.ma-about-link'), 'VISIT');
 });

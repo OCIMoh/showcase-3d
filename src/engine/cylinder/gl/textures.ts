@@ -423,7 +423,7 @@ export class TextureManager {
 
       ctx.font = '500 22px monospace';
       ctx.fillStyle = 'rgba(18, 18, 18, 0.45)';
-      const prov = `STUDIO ARCHIVE // ${proj.name.toUpperCase()} — REPO INDEX // LIVE AT ${proj.liveUrl || 'LOCAL'}`;
+      const prov = `STUDIO ARCHIVE // ${proj.name.toUpperCase()} — CATALOG // RELEASE ${proj.year || '2026'}`;
       ctx.fillText(prov, 140, 680);
     }
 

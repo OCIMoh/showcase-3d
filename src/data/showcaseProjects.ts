@@ -260,17 +260,20 @@ const HIDDEN_REPOS = new Set(['varun-sir-portfolio', 'boosit-showcase-poc-1']);
 export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawProjects
   .filter(repo => !HIDDEN_REPOS.has(repo.name))
   .map((repo) => {
+  const isLive = Boolean(repo.homepage && !repo.homepage.includes('github.com'));
+  const liveUrl = isLive ? (repo.homepage as string) : '';
+
   const meta = REPO_METADATA_MAP[repo.name] || {
     title: repo.name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-    category: `${(repo.language || 'SOFTWARE').toUpperCase()} // REPOSITORY`,
-    description: repo.description || 'Open source software repository developed by OCIMoh.',
+    category: `${(repo.language || 'CREATIVE').toUpperCase()} // ARCHIVE`,
+    description: repo.description || 'Interactive digital experience engineered by Showcase-3D Studio.',
     highlights: [
-      `Official repository: ${repo.full_name}`,
-      `Primary language: ${repo.language || 'TypeScript'}`,
-      `Branch: ${(repo as any).default_branch || 'main'}`
+      'Hardware-accelerated 60 FPS WebGL rendering pipeline',
+      'Dynamic GLSL cylindrical distortion and vertex displacement',
+      'Continuous spatial momentum with tactile kinetic controls'
     ],
-    techStack: [repo.language || 'TypeScript', 'Git', 'Vercel'].filter(Boolean),
-    metrics: repo.homepage ? 'Production Live' : 'Open Source Repository',
+    techStack: [repo.language || 'TypeScript', 'WebGL', 'GSAP'].filter(Boolean),
+    metrics: isLive ? 'Production Live' : 'Studio Prototype · 60 FPS',
     previewImageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
     galleryImages: [
       'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
@@ -280,10 +283,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawProjects
   };
 
   const year = repo.created_at ? new Date(repo.created_at).getFullYear().toString() : '2026';
-  const client = repo.full_name ? repo.full_name.split('/')[0] : 'OCIMoh';
-  const isLive = Boolean(repo.homepage);
-  const githubUrl = (repo as any).html_url || `https://github.com/${repo.full_name}`;
-  const liveUrl = repo.homepage || githubUrl;
+  const client = repo.full_name ? repo.full_name.split('/')[0] : 'Studio';
 
   return {
     id: String(repo.id),
@@ -298,7 +298,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawProjects
     techStack: meta.techStack,
     metrics: meta.metrics,
     liveUrl: liveUrl,
-    githubUrl: githubUrl,
+    githubUrl: '',
     previewImageUrl: meta.previewImageUrl,
     galleryImages: meta.galleryImages,
     color: meta.color,
