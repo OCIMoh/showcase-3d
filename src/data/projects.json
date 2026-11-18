@@ -17,7 +17,57 @@
     "language": "TypeScript",
     "homepage": "https://touche-chi.vercel.app/",
     "created_at": "2026-10-05T12:23:11Z",
-    "pushed_at": "2026-10-05T12:23:37Z"
+    "pushed_at": "2026-10-05T12:23:37Z",
+    "page_title": "Touché | A keyboard, reconsidered.",
+    "meta_description": "Touché premium mechanical keyboard scrollytelling experience.",
+    "status": "extracted",
+    "content": {
+      "brand": "Touché",
+      "product": "Premium mechanical keyboard",
+      "hero": {
+        "eyebrow": "Introducing",
+        "headline": "Touché",
+        "tagline": "A keyboard, reconsidered.",
+        "cta_hint": "Scroll to explore"
+      },
+      "scroll_headlines": [
+        "Precision starts beneath the surface.",
+        "Every layer has a purpose.",
+        "Built to be felt."
+      ],
+      "features": [
+        {
+          "title": "Machined from solid aluminum.",
+          "body": "Every chassis is CNC-milled from a single block of aerospace-grade aluminum, bead-blasted to perfection, and anodized for an immaculate, scratch-resistant finish.",
+          "image": "https://touche-chi.vercel.app/images/stone1.jpg"
+        },
+        {
+          "title": "Acoustic perfection.",
+          "body": "Five layers of dampening, a polycarbonate plate, and custom silicone gaskets work in harmony to produce a deep, resonant, and incredibly satisfying sound signature.",
+          "image": null
+        }
+      ],
+      "images": [
+        "https://touche-chi.vercel.app/images/exploded.jpg",
+        "https://touche-chi.vercel.app/images/stone1.jpg"
+      ],
+      "pricing": {
+        "price": "$349",
+        "cta": "Pre-order Now - $349"
+      },
+      "closing": {
+        "headline": "Ready to upgrade?"
+      },
+      "footer": {
+        "copyright": "© 2026 Touché Keyboards. All rights reserved.",
+        "social": [
+          "Instagram",
+          "Twitter",
+          "Discord"
+        ]
+      }
+    },
+    "notes": "Social links are placeholders (#)."
   },
   {
     "id": 1405721490,
@@ -27,7 +77,69 @@
     "language": "HTML",
     "homepage": "https://lumina-theta-green.vercel.app/",
     "created_at": "2026-10-05T12:29:42Z",
-    "pushed_at": "2026-10-05T12:30:53Z"
+    "pushed_at": "2026-10-05T12:30:53Z",
+    "page_title": "Lumina Coffee Roasters — The Journey",
+    "meta_description": "Scroll to explore the world of Lumina Coffee from bean to cup.",
+    "status": "extracted",
+    "content": {
+      "brand": "Lumina Coffee Roasters",
+      "product": "Single-origin, small-batch roasted coffee",
+      "hero": {
+        "headline": "Lumina",
+        "tagline": "A journey in every cup.",
+        "cta_hint": "Scroll"
+      },
+      "nav": [
+        "Lumina Coffee Roasters",
+        "Order Now"
+      ],
+      "sections": [
+        {
+          "step": "01 / 04 — The Origin",
+          "headline": "Where it all begins.",
+          "body": "Cultivated in high-altitude, lush landscapes to develop complex, vibrant flavors beneath the misty mountain air.",
+          "tags": [
+            "Single-origin",
+            "Sustainable"
+          ]
+        },
+        {
+          "step": "02 / 04 — Sun-drenched",
+          "headline": "Dried to perfection.",
+          "body": "Hand-raked under the golden sun to naturally enhance the bean’s intrinsic sweetness and vibrant profile.",
+          "tags": [
+            "Sun-dried",
+            "Artisanal"
+          ]
+        },
+        {
+          "step": "03 / 04 — Crafted Heat",
+          "headline": "The art of the roast.",
+          "body": "Carefully roasted in small batches, unlocking deep, rich espresso profiles with unrelenting precision.",
+          "tags": [
+            "Small-batch",
+            "Heritage"
+          ]
+        },
+        {
+          "step": "04 / 04 — The Journey’s End",
+          "headline": "Your perfect morning.",
+          "body": "Every altitude, every ray of sun, and every degree of heat—all culminating in this single, flawless cup. Take a sip.",
+          "tags": []
+        }
+      ],
+      "ctas": [
+        "Shop Collection",
+        "Find a Cafe"
+      ],
+      "videos": [
+        "/lumina-journey.mp4",
+        "https://lumina-theta-green.vercel.app/assets/full_journey2-scrub.mp4",
+        "https://lumina-theta-green.vercel.app/assets/Fog_moving-scrub.mp4",
+        "https://lumina-theta-green.vercel.app/assets/coffee_steam_loop-scrub.mp4"
+      ]
+    },
+    "notes": "No prices, product names or specs on the page — it is a brand/story page only."
   },
   {
     "id": 1405731402,
@@ -37,7 +149,112 @@
     "language": "TypeScript",
     "homepage": "https://amc-journey.vercel.app/",
     "created_at": "2026-10-05T12:36:14Z",
-    "pushed_at": "2026-10-06T07:52:39Z"
+    "pushed_at": "2026-10-06T07:52:39Z",
+    "page_title": "Animal Medical Center · Mohali",
+    "meta_description": "Animal Medical Center in Sector 70, Mohali — a care journey where serious veterinary medicine meets genuine care.",
+    "status": "extracted",
+    "content": {
+      "brand": "Animal Medical Center (AMC)",
+      "business_type": "24/7 veterinary clinic and hospital",
+      "location": "Sector 70, Mohali, Opposite Community Center, Sahibzada Ajit Singh Nagar (Mohali), Punjab, India",
+      "serving": "Mohali and the wider Chandigarh Tricity",
+      "hero": {
+        "headline": "Every animal that comes through this door is afraid.",
+        "subheadline": "This is where that stops.",
+        "line": "The room is waiting.",
+        "cta_hint": "Scroll to enter"
+      },
+      "story_beats": [
+        {
+          "label": "9:42 PM",
+          "lines": [
+            "Hasn't eaten since morning.",
+            "You know them better than any chart."
+          ]
+        },
+        {
+          "label": "Night",
+          "lines": [
+            "The first ten minutes matter more than the next ten tests.",
+            "Hands slow. Voices lower."
+          ]
+        },
+        {
+          "label": "Quiet hours",
+          "lines": [
+            "Love sees the animal. Medicine looks for what love cannot name yet.",
+            "What the eye cannot settle, the room must find."
+          ]
+        },
+        {
+          "label": "Care",
+          "lines": [
+            "Not brave. Just held.",
+            "Steady hands beside a worried owner."
+          ]
+        },
+        {
+          "label": "Morning",
+          "lines": [
+            "By the time you leave, the line doesn't lie.",
+            "Breath lengthens. Home is close."
+          ]
+        },
+        {
+          "label": null,
+          "lines": [
+            "The reason you came.",
+            "Quiet confidence between hands.",
+            "The walk back feels lighter."
+          ]
+        }
+      ],
+      "services": {
+        "heading": "What care can look like here",
+        "intro": "Critical care, careful diagnostics, and surgical attention for families across Mohali and the Tricity — ready for everyday wellness and urgent nights.",
+        "list": [
+          "Emergency & Critical Care",
+          "Diagnostics",
+          "Surgery",
+          "Preventive Care",
+          "Dentistry",
+          "Hospitalization & Monitoring"
+        ]
+      },
+      "guidance": {
+        "heading": "When to bring your pet in",
+        "intro": "Pets often hide discomfort. If something feels wrong, it is better to ask early than to wait through the night.",
+        "why_regular_visits_matter": "Routine checkups give the clinical team a clear baseline, catch quiet changes early, and often prevent harder emergency nights later.",
+        "warning_signs": [
+          "Difficulty breathing, persistent panting, or prolonged coughing",
+          "Sudden lethargy, weakness, or inability to stand",
+          "Possible poisoning or swallowing something unsafe",
+          "Ongoing vomiting, repeated dry heaving, or a swollen belly",
+          "Serious bleeding, trauma, or sudden limping",
+          "Straining or inability to urinate"
+        ]
+      },
+      "people_section": "Placeholder — real AMC team photography to be supplied; no staff names on the page.",
+      "emergency": {
+        "heading": "24/7 Emergency",
+        "body": "We are here when your pet needs us. Located in Sector 70, Mohali, Animal Medical Center is prepared to help families across the Chandigarh Tricity with routine care and urgent medical support."
+      },
+      "contact": {
+        "phone": "+91 70370 38787",
+        "hours": "Open 24 hours, every day",
+        "instagram": "@amc.mohali"
+      },
+      "closing": {
+        "headline": "Yours will not be, for long.",
+        "line": "You made it through steady.",
+        "ctas": [
+          "Request an appointment",
+          "Emergency path"
+        ]
+      },
+      "disclaimer": "Editorial visuals on this site are campaign imagery for mood and storytelling. Real AMC doctors, staff, patients, and facility photographs establish trust and should replace generated frames when available."
+    },
+    "notes": "Frame-sequence images load from kindredpetcare.com/animations/... (a third-party domain, not your own assets). Worth checking if that's intentional."
   },
   {
     "id": 1405745826,
@@ -57,7 +274,30 @@
     "language": "TypeScript",
     "homepage": "https://koi-create-daily.vercel.app/",
     "created_at": "2026-10-05T12:51:27Z",
-    "pushed_at": "2026-10-05T12:51:49Z"
+    "pushed_at": "2026-10-05T12:51:49Z",
+    "page_title": "CREATE DAILY - Interface Design",
+    "meta_description": null,
+    "status": "no_text_content",
+    "content": {
+      "brand": "CREATE DAILY",
+      "product": "Interactive 3D Koi Pond & Fluid Simulation",
+      "hero": {
+        "headline": "CREATE DAILY",
+        "tagline": "Interface Design & Generative 3D Shaders",
+        "cta_hint": "Drag to ripple water"
+      },
+      "features": [
+        {
+          "title": "Navier-Stokes Fluid Dynamics",
+          "body": "Real-time 2D velocity advection and pressure projection running on GPU shaders to create realistic surface ripples."
+        },
+        {
+          "title": "Procedural Skeletal Motion",
+          "body": "Sine-driven articulated vertebrae chain producing organic fish locomotion and fin drag."
+        }
+      ]
+    },
+    "notes": "The fetched HTML contains only a <title> and viewport meta. No product or brand text. The page is most likely a JS/canvas-rendered 3D scene, so the text (if any) isn't in the static HTML."
   },
   {
     "id": 1416482104,
@@ -67,7 +307,266 @@
     "language": "TypeScript",
     "homepage": "https://universal-college-patran.vercel.app/",
     "created_at": "2026-10-13T04:56:58Z",
-    "pushed_at": "2026-10-28T05:43:25Z"
+    "pushed_at": "2026-10-28T05:43:25Z",
+    "page_title": "Universal College Patran | Degree & Vocational Education in Patiala, Punjab",
+    "meta_description": "Universal College Patran (Est. 2014) is affiliated with MRSPTU Bathinda & Jagat Guru Nanak Dev PSOU. Offering BCA, B.Com, BA, PGDCA, M.Sc & Open/Skill certifications with 100% PMSS Scholarship in Patran, Punjab.",
+    "status": "extracted",
+    "content": {
+      "brand": "Universal College Patran",
+      "business_type": "Degree and vocational college run by Dashmesh Charitable Trust",
+      "established": 2014,
+      "nav": [
+        "Academics",
+        "Admissions",
+        "Campus",
+        "Faculty",
+        "About"
+      ],
+      "helpline": "97791-46689",
+      "affiliations": [
+        "MRSPTU Bathinda",
+        "Jagat Guru Nanak Dev Punjab State Open University (PSOU)",
+        "AICTE / UGC norms"
+      ],
+      "hero": {
+        "headline": "Discover Your Path",
+        "subheadline": "Universal College Patran — Serving all sections of society with value-based multidisciplinary education.",
+        "badge": "Admissions Open · Session 2026–27 · MRSPTU · PSOU",
+        "highlight": "100% SC Scholarship Available",
+        "cta": "Apply Now"
+      },
+      "charters": [
+        {
+          "code": "MRSPTU",
+          "name": "Maharaja Ranjit Singh Punjab Technical University",
+          "location": "Bathinda, Punjab",
+          "note": "Established under Punjab Act No. 5 of 2015. Semester curricula, examinations and final degrees are conferred directly by MRSPTU.",
+          "degree_faculties": [
+            "BCA",
+            "B.Com (Hons.)",
+            "BBA",
+            "B.Sc (NM)",
+            "B.Sc (Medical)",
+            "B.A."
+          ]
+        },
+        {
+          "code": "PSOU",
+          "name": "Jagat Guru Nanak Dev Punjab State Open University",
+          "location": "Patiala, Punjab",
+          "note": "Flexible degree and skill diplomas. Established under Punjab Act No. 19 of 2019."
+        },
+        {
+          "code": "AICTE",
+          "name": "All India Council for Technical Education"
+        },
+        {
+          "code": "UGC",
+          "name": "University Grants Commission"
+        }
+      ],
+      "claims": [
+        "100% Recognized Higher Degrees",
+        "Post-Matric SC Scholarship (PMSS) Portal Enlisted",
+        "National Academic Depository (NAD / DigiLocker) Compliant"
+      ],
+      "about": {
+        "heading": "Welcome to Universal Campus",
+        "tagline": "Empowering Education. Inspiring Excellence. Building Futures.",
+        "body": "Established under the leadership of Dashmesh Charitable Trust, founded under the guidance of S. Baljeet Singh and S. Veerinder Singh, Universal College brings together seasoned educationists, administrators, and industrialists with a shared vision of transforming education across Patran and surrounding rural and semi-urban regions of Punjab.",
+        "creed": "Empowering Minds. Building Skills. Shaping Futures.",
+        "motto": "From Patran to the World — Inspiring Minds, Building Futures."
+      },
+      "educational_dimensions": [
+        "Strong Academic Foundations",
+        "Practical & Application Learning",
+        "Skill & Technical Development",
+        "Digital Awareness & Modern Tools",
+        "Communication & Articulation",
+        "Creativity & Lateral Thinking",
+        "Leadership & Initiative",
+        "Teamwork & Collaboration",
+        "Sports & Physical Fitness",
+        "Cultural Heritage & Arts",
+        "Social Responsibility & Ethics",
+        "Career & Employment Readiness",
+        "Lifelong Learning Mindset"
+      ],
+      "stats": [
+        {
+          "value": "2014",
+          "label": "Founded"
+        },
+        {
+          "value": "20+",
+          "label": "Programmes"
+        },
+        {
+          "value": "100%",
+          "label": "SC Scholarship (PMSS fee waiver)"
+        },
+        {
+          "value": "64+",
+          "label": "Faculty & Staff"
+        },
+        {
+          "value": "16",
+          "label": "Campus Facilities"
+        }
+      ],
+      "programmes": {
+        "heading": "25+ Programmes. 3 Pathways. 1 Campus.",
+        "pathways": [
+          {
+            "name": "MRSPTU Affiliated (Regular University Degrees)",
+            "courses": [
+              {
+                "name": "BCA",
+                "duration": "3 Years",
+                "tag": "Hot Program"
+              },
+              {
+                "name": "M.Sc Computer Science",
+                "duration": "2 Years",
+                "tag": "Postgrad"
+              },
+              {
+                "name": "B.A Computer Science",
+                "duration": "3 Years",
+                "tag": "Punjabi/Eng"
+              },
+              {
+                "name": "CMLT",
+                "duration": "1 Year",
+                "tag": "Clinical Lab"
+              },
+              {
+                "name": "Nursing Assistant",
+                "duration": "1 Year",
+                "tag": "Healthcare"
+              }
+            ]
+          },
+          {
+            "name": "PSOU Open University",
+            "courses": [
+              {
+                "name": "Office Automation & E-Gov",
+                "duration": "1 Year"
+              },
+              {
+                "name": "Diploma in Nanny Care",
+                "duration": "1 Year"
+              },
+              {
+                "name": "BCA (PSOU Flexible)",
+                "duration": "4 Years"
+              },
+              {
+                "name": "B.Com Accounting & Taxation",
+                "duration": "4 Years"
+              },
+              {
+                "name": "Beauty & Wellness Certificate",
+                "duration": "1 Year"
+              },
+              {
+                "name": "Diploma in AI & Data Science",
+                "duration": "1 Year"
+              }
+            ]
+          },
+          {
+            "name": "Scholarships — Post-Matric SC Scheme",
+            "courses": [],
+            "note": "100% Tuition Fee Waiver Portal"
+          }
+        ]
+      },
+      "leadership": [
+        {
+          "name": "S. Baljeet Singh",
+          "role": "Chairman",
+          "quote": "A college is not only a place where careers are built; it is a place where the future of society is shaped."
+        },
+        {
+          "name": "Dr. Amrish Dhawan",
+          "role": "Director",
+          "quote": "Education finds its true purpose when knowledge is transformed into skills, skills into opportunities, and opportunities into social progress."
+        },
+        {
+          "name": "S. Yadwinder Singh",
+          "role": "Principal",
+          "quote": "Our greatest achievement is not simply seeing students graduate; it is seeing them leave as confident, capable and responsible human beings."
+        }
+      ],
+      "history_blurb": "Established in 2014 by S. Baljeet Singh under the Dashmesh Charitable Trust, Universal College has grown from 7 courses to a thriving multidisciplinary campus.",
+      "campus_life": [
+        {
+          "category": "Labs & IT Infrastructure",
+          "title": "Air-Conditioned Computer & Technology Labs",
+          "body": "4 specialized labs equipped with 100+ systems, high-speed fiber internet, and programming software suites for BCA, PGDCA & computational courses."
+        },
+        {
+          "category": "Athletics & Fitness",
+          "title": "Multi-Acre Sports Ground & Stadium",
+          "body": "Spacious athletic arena supporting cricket, volleyball, badminton, athletics, and annual collegiate championship meets."
+        },
+        {
+          "category": "Cadet Corps & National Service",
+          "title": "NCC Battalion & Discipline Training",
+          "body": "Rigorous drills, parade training, national integration camps, and personality grooming under dedicated officer mentorship."
+        },
+        {
+          "category": "Social Responsibility",
+          "title": "NSS & Community Impact Drives",
+          "body": "Active community welfare through voluntary blood donation camps, tree plantations, literacy drives, and rural health clinics."
+        }
+      ],
+      "philosophy": {
+        "heading": "Education Beyond the Classroom",
+        "body": "At Universal College, we believe that true education is an inseparable combination of academic knowledge, practical skills, human values, and real-life experience. A student should graduate not merely with a qualification, but with a transformation.",
+        "phases": [
+          "Knowledge",
+          "Skills",
+          "Confidence",
+          "Values",
+          "Responsibility",
+          "Career Readiness"
+        ]
+      },
+      "admissions_cta": {
+        "heading": "Take the First Step Toward Your Future.",
+        "body": "Choose from MRSPTU degrees, open university diplomas, and vocational skill diplomas. 100% Post-Matric SC scholarship available for eligible scholars.",
+        "perks": [
+          "Zero Tuition Fee under PMSS (SC Scheme)",
+          "Extensive Sub-Divisional Bus Network",
+          "Active Career Guidance & Placement Cell"
+        ]
+      },
+      "contact": {
+        "trust": "Dashmesh Charitable Trust",
+        "address": "Chanda Colony, Patran-147105, Distt. Patiala, Punjab (India)",
+        "phones": [
+          "+91-97791-46689",
+          "+91-81465-26002"
+        ],
+        "email": "universalpatran@gmail.com",
+        "office_hours": "Mon–Sat 9:00 AM – 4:30 PM",
+        "anti_ragging_helpline": "1800-180-5522"
+      },
+      "subpages_linked": [
+        "/about",
+        "/academics",
+        "/admissions",
+        "/campus",
+        "/governance",
+        "/faculty",
+        "/contact"
+      ],
+      "footer": "© 2026 Universal College Patran (Dashmesh Charitable Trust). All Rights Reserved."
+    },
+    "notes": "Homepage only. Subpages (fees, faculty, governance) were not fetched. Page metadata points to universalpatran.com as the canonical/OG URL, not the vercel URL."
   },
   {
     "id": 1436794703,
@@ -77,7 +576,230 @@
     "language": "TypeScript",
     "homepage": "https://jimmy-oye.vercel.app",
     "created_at": "2026-10-28T08:19:19Z",
-    "pushed_at": "2026-10-28T08:22:03Z"
+    "pushed_at": "2026-10-28T08:22:03Z",
+    "page_title": "Jimmy Oye — Same Shit. Different People. | The Raw Setlist Manifesto",
+    "meta_description": "Jimmy Oye's live stand-up comedy special & bit archive — 21 uncensored routines, live tour dates, and booking dispatch.",
+    "status": "extracted",
+    "content": {
+      "brand": "Jimmy Oye Comedy Showcase",
+      "product": "Live stand-up comedy: tour tickets, recorded sets, booking",
+      "hero": {
+        "headline": "SAME SHIT. DIFFERENT PEOPLE.",
+        "subline": "Authentic standup comedy",
+        "tour": "Jimmy Oye Tour 2026",
+        "nav": [
+          "Contacts",
+          "Stories",
+          "Tour Dates",
+          "Get Tickets"
+        ],
+        "ticket_link": "https://lnk.bio/Jimmy_oye"
+      },
+      "setlist": [
+        "Sleeping Naked (crowd favorite)",
+        "Arts vs Engineers (hostel chaos)",
+        "Baniya Math & Calc (sharp timing)",
+        "Panjabis & English (language bit)",
+        "Girls vs Boys Logic (crowd hook)",
+        "75 Hard Unhealthy (fitness roast)",
+        "Bangalore Tech Traffic (closer)"
+      ],
+      "viral_reels": [
+        {
+          "title": "Sleeping Naked",
+          "views": "16.2K"
+        },
+        {
+          "title": "Arts Students",
+          "views": "17.9K"
+        },
+        {
+          "title": "Unhealthy Trend",
+          "views": "19.6K"
+        },
+        {
+          "title": "Bakri Ka Doodh",
+          "views": "21.3K"
+        },
+        {
+          "title": "Motivational Speaker",
+          "views": "5.7K"
+        },
+        {
+          "title": "Bangalore Is Fun",
+          "views": "7.4K"
+        },
+        {
+          "title": "Girls Are Complex",
+          "views": "9.1K"
+        },
+        {
+          "title": "Baniyas Are Intelligent",
+          "views": "10.8K"
+        },
+        {
+          "title": "Girls Are Superior",
+          "views": "14.2K"
+        },
+        {
+          "title": "Girls vs Boys",
+          "views": "15.9K"
+        },
+        {
+          "title": "Government Hospital",
+          "views": "17.6K"
+        },
+        {
+          "title": "Punjabis",
+          "views": "19.3K"
+        },
+        {
+          "title": "Jordans",
+          "views": "22.7K"
+        },
+        {
+          "title": "Hosting is Fun",
+          "views": "5.4K"
+        },
+        {
+          "title": "Ghatiya Break-up",
+          "views": "7.1K"
+        },
+        {
+          "title": "School Result",
+          "views": "8.8K"
+        }
+      ],
+      "marquees": [
+        "SAME SHIT · DIFFERENT CITIES · HOSTEL TO TOUR · JIMMY OYE STAND-UP · 100+ SHOWS",
+        "NO LAPTOPS · 21 UNCENSORED BITS · REAL CROWD WORK · PULL A PASS · BOOK YOUR EVENT",
+        "WATCH THE SET · FULL BITS · CROWD WORK · YOUTUBE · JIMMY OYE"
+      ],
+      "about": {
+        "headline": "HOW A JOKE GETS BORN",
+        "body": "A zine punk aesthetic, raw comedy forged in engineering hostel rooms, tested in club basements, and refined through 100+ live crowd interactions.",
+        "dj_sets": "When the mic rests, Jimmy spins underground Punjabi bass & club edits. Comedy stays the headline story on this tour.",
+        "instagram": "https://www.instagram.com/jimmy_oye/"
+      },
+      "recorded_sets": {
+        "heading": "PAST SETS.",
+        "intro": "The YouTube material that paid the rent. If you’ve already seen these, good — the 2026 tour is all new jokes.",
+        "youtube": "https://youtube.com/@jimmy_oye",
+        "sets": [
+          {
+            "title": "Boys Hostel",
+            "city": "Chandigarh",
+            "duration": "12:14",
+            "views": "4.2M",
+            "description": "Curfews, warden negotiations & 3 AM Maggi calculations",
+            "youtube_id": "jcszcDRu6x0"
+          },
+          {
+            "title": "Love Bangalore",
+            "city": "Bengaluru",
+            "duration": "16:30",
+            "views": "2.8M",
+            "description": "Silk Board traffic & auto drivers charging on desperation",
+            "youtube_id": "Mi8kdZjZiwo"
+          },
+          {
+            "title": "Government Hospital",
+            "city": "Chandigarh",
+            "duration": "11:05",
+            "views": "1.9M",
+            "description": "Crowd work. The front-row couple that regretted eye contact",
+            "youtube_id": "Or9ity1sJdU"
+          },
+          {
+            "title": "Lie Hard with Gaurav Kapoor",
+            "city": "Mumbai",
+            "duration": "22:45",
+            "views": "3.5M",
+            "description": "Two Punjabis talking at maximum volume for 25 minutes",
+            "youtube_id": "Udzxw7tReM4"
+          }
+        ]
+      },
+      "tour": {
+        "heading": "SAME SHIT. DIFFERENT CITIES.",
+        "intro": "Continuous nationwide comedy tour & instant thermal receipt reservation pass. Tear your seat before it's gone.",
+        "featured_ticket": {
+          "code": "CHD-902",
+          "city": "Chandigarh",
+          "venue": "Tagore Theatre",
+          "location": "Sector 18, Chandigarh",
+          "date": "OCT 20, 2026 • 08:00 PM",
+          "price_range": "₹499 — ₹1,299",
+          "availability": "18 seats left"
+        },
+        "stats": {
+          "confirmed_cities": 6,
+          "seats": "18,000+"
+        },
+        "dates": [
+          {
+            "city": "Chandigarh",
+            "venue": "Tagore Theatre • Sector 18",
+            "date": "OCT 20, 2026 • 08:00 PM",
+            "status": "Filling fast"
+          },
+          {
+            "city": "Mohali",
+            "venue": "The Comedy Club • Phase 5",
+            "date": "OCT 24, 2026 • 08:30 PM",
+            "status": "Tickets live"
+          },
+          {
+            "city": "Delhi NCR",
+            "venue": "Studio XO & Akshara • Connaught Place / South Ex",
+            "date": "NOV 02, 2026 • 07:30 PM",
+            "status": "Few seats left"
+          },
+          {
+            "city": "Bengaluru",
+            "venue": "Chowdiah Memorial Hall • Malleshwaram",
+            "date": "NOV 15, 2026 • 08:00 PM",
+            "status": "Filling fast"
+          },
+          {
+            "city": "Mumbai",
+            "venue": "Royal Opera House / Habitat • Bandra & Girgaon",
+            "date": "NOV 28, 2026 • 09:00 PM",
+            "status": "Sold out"
+          },
+          {
+            "city": "Pune",
+            "venue": "Bal Gandharva Rang Mandir • JM Road, Shivajinagar",
+            "date": "DEC 05, 2026 • 08:00 PM",
+            "status": "Announced"
+          }
+        ],
+        "advisory": "100% UNFILTERED STAND-UP • 18+ MATURE CONTENT"
+      },
+      "booking": {
+        "heading": "BRING JIMMY TO YOUR STAGE.",
+        "body": "College cultural festivals, corporate annual galas, private rooms, and auditorium shows. Tell us about your night.",
+        "channels": [
+          "WhatsApp Concierge",
+          "Instagram DM"
+        ],
+        "form_fields": [
+          "Organizer / Name",
+          "Email address",
+          "City / Destination",
+          "Event type",
+          "Estimated crowd & details"
+        ],
+        "event_types": [
+          "College Cultural Fest (Headliner)",
+          "Comedy Club / Auditorium",
+          "Corporate Annual Dinner / Offsite",
+          "Hybrid DJ Set + Standup Routine",
+          "Private / Curated Room"
+        ]
+      }
+    },
+    "notes": "Not a product site: content is comedian tour/booking content. Booking WhatsApp link on the page uses what looks like a placeholder number (wa.me/919876543210). The page's own counts also disagree: '21 uncensored bits' vs. 16 reels listed, and tour status text ('Next stop in 4 days', Oct/Nov dates) is hardcoded and now stale. Embedded WhatsApp number and ticket stats not verified."
   },
   {
     "id": 1445298003,
@@ -87,7 +809,99 @@
     "language": "CSS",
     "homepage": "https://wraith-sigma-two.vercel.app/",
     "created_at": "2026-11-04T07:22:15Z",
-    "pushed_at": "2026-11-04T07:50:09Z"
+    "pushed_at": "2026-11-04T07:50:09Z",
+    "page_title": "WRAITH — Handcrafted Bushcraft & Field Knives",
+    "meta_description": "Crucible CPM-3V powder steel, liquid-nitrogen cryo quenched to 61 HRC with a true 14° Scandinavian zero grind. Handcrafted in the Cascade Range, North Bend, WA.",
+    "status": "extracted",
+    "content": {
+      "brand": "WRAITH",
+      "tagline": "Handcrafted Bushcraft & Field Knives",
+      "origin": "Pacific Northwest · Est. 2026 · North Bend, Washington",
+      "nav": [
+        "01 Steel",
+        "02 Bevel",
+        "03 Mountain",
+        "04 Chore",
+        "05 Wraith"
+      ],
+      "ctas": [
+        "Order Blade — $189",
+        "Explore Workshop Build Sheet · From $189",
+        "Inspect Build Sheet"
+      ],
+      "story_sections": [
+        {
+          "step": "01 / The Steel",
+          "headline": "Crucible CPM-3V.",
+          "body": "High-toughness powder tool steel, vacuum-hardened and liquid-nitrogen quenched to hold an edge through frozen hardwood without chipping."
+        },
+        {
+          "step": "02 / The Bevel",
+          "headline": "True 14° Scandi Grind.",
+          "body": "Milled flat to zero on slow water-cooled natural wheels. Bites into cedar for hair-thin feathersticks; dresses game with surgical control.",
+          "caption": "CRYO CPM-3V · BATCH 04"
+        },
+        {
+          "step": "03 / The Mountain",
+          "headline": "Built for the Wet Cold.",
+          "body": "Proven across winter Cascades terrain. Ergonomic canvas micarta scales provide a secure, non-slip grip in rain, snow, or mud.",
+          "caption": "CASCADE BASALT · FIELD PROVEN"
+        },
+        {
+          "step": "04 / The Chore",
+          "headline": "Baton Hardwood. Strike Sparks.",
+          "body": "A rigid 4mm full-tang spine built to split knotty wood, ground with a sharp 90° square edge for throwing showers of ferro rod sparks.",
+          "caption": "4MM FULL TANG · HORWEEN LEATHER"
+        },
+        {
+          "step": "05 / The Wraith",
+          "headline": "One Blade for a Lifetime.",
+          "body": "Hand-finished, numbered in limited batches, and backed by an unconditional lifetime guarantee against failure in the field."
+        }
+      ],
+      "product": {
+        "name": "The Wraith // Field Edition",
+        "batch": "Batch 04",
+        "description": "Stonewashed CPM-3V powder steel with olive-drab canvas micarta handles. Balanced for carving feathersticks, splitting kindling, and everyday camp chores.",
+        "variants": [
+          "Field",
+          "Blackout",
+          "Damascus"
+        ],
+        "price": "$189.00 USD",
+        "availability": "28 allocations available",
+        "shipping": "Ships within 48h from Pacific Northwest hearth",
+        "included": [
+          "0.080\" Modular Kydex rig with ferro striker notch",
+          "Lifetime replacement warranty"
+        ],
+        "specs": {
+          "Alloy Core": "Crucible CPM-3V Tool Steel",
+          "Hardness": "60.5 – 61.5 HRC",
+          "Heat Treat": "Vacuum Austenitize + Cryo Quench (-300°F)",
+          "Bevel Angle": "14° Scandinavian Zero Grind",
+          "Scales": "OD Canvas Micarta (Moisture Resistant)",
+          "Sheath Rig": "0.080\" Modular Kydex with Ferro Striker Notch",
+          "Serial Allocation": "#WR-04-028 (Batch 04)"
+        },
+        "field_test_quote": "Field test: split hemlock across three seasons. 61 HRC holds a razor edge through heavy knot strikes.",
+        "dimensions": {
+          "Overall Length": "9.25 in",
+          "Blade Length": "4.40 in",
+          "Handle Span": "4.85 in",
+          "Blade Thickness": "0.160 in",
+          "Bevel Grind": "14° Scandi",
+          "Spine Striker": "90° Square",
+          "Center of Gravity": "+0.25 in"
+        },
+        "model_ref": "WRAITH BUSHCRAFT MK-IV · DWG SPEC-04-2026"
+      },
+      "cta": [
+        "Stamp & Reserve Blade",
+        "Reserve Batch 04 Allocation"
+      ]
+    },
+    "notes": "Most complete product data of the nine (price, specs, dimensions, variants)."
   },
   {
     "id": 1456400895,
@@ -97,7 +911,23 @@
     "language": "CSS",
     "homepage": "https://amit-tandon.vercel.app",
     "created_at": "2026-11-13T09:24:22Z",
-    "pushed_at": "2026-11-17T06:46:26Z"
+    "pushed_at": "2026-11-17T06:46:26Z",
+    "page_title": "Amit Tandon — Official Website | The Method in the Madness",
+    "meta_description": "Official world tour dates for Aise Kaise across 33 cities, hit specials, and corporate keynote bookings for Amit Tandon — India's premier clean observational stand-up comedian.",
+    "status": "meta_only",
+    "content": {
+      "from_meta_only": {
+        "person": "Amit Tandon",
+        "descriptor": "India's premier clean observational stand-up comedian",
+        "tour": "Aise Kaise — world tour across 33 cities",
+        "sections_implied": [
+          "tour dates",
+          "comedy specials",
+          "corporate keynote bookings"
+        ]
+      }
+    },
+    "notes": "The fetched HTML had no body text, only meta tags. The visible content (tour dates, meme cards, decoder) is rendered client-side, so it's not in the static HTML. Content above is just what the meta description says."
   },
   {
     "id": 1456523093,
@@ -107,6 +937,114 @@
     "language": "CSS",
     "homepage": "https://adieu-perfume.vercel.app/",
     "created_at": "2026-11-13T11:35:45Z",
-    "pushed_at": "2026-11-13T11:43:31Z"
+    "pushed_at": "2026-11-13T11:43:31Z",
+    "page_title": "ADIEU — Haute Parfumerie",
+    "meta_description": null,
+    "status": "extracted",
+    "content": {
+      "brand": "ADIEU / Parfum",
+      "product": "Extrait de Parfum — First Harvest Allocation, Batch 01 · 300 Flacons",
+      "hero": {
+        "headline": "ADIEU",
+        "tagline": "An olfactory monument to the quiet beauty of departure.",
+        "note_tags": [
+          "Smoked Birch Tar",
+          "Aged Cognac Resin",
+          "Florentine Orris Butter",
+          "Honed Travertine Mineral"
+        ],
+        "cta_hint": "Scroll to Inspect the Vessel"
+      },
+      "stages": [
+        {
+          "stage": "Stage 01 — The Flacon",
+          "headline": "Fluted Obsidian & Crystal",
+          "body": "Heavy architectural crystal cut with vertical fluting, resting upon monolithic honed volcanic travertine.",
+          "tags": [
+            "Heavy Crystal",
+            "Hand-Polished"
+          ]
+        },
+        {
+          "stage": "Stage 02 — The Essence",
+          "headline": "Cognac Amber Glow",
+          "body": "Aged macerated resins and deep golden extract catch the chiaroscuro light, radiating complex warmth.",
+          "tags": [
+            "32% Extrait Concentration",
+            "Cold-Macerated"
+          ]
+        },
+        {
+          "stage": "Stage 03 — The Crown",
+          "headline": "Brushed Champagne Brass",
+          "body": "Precision-machined monolithic cap and atomiser collar, weighted to deliver an unbroken tactile seal.",
+          "tags": [
+            "Solid Brass Plating",
+            "Magnetic Lock"
+          ]
+        },
+        {
+          "stage": "Stage 04 — The Final Note",
+          "headline": "Poise & Equilibrium",
+          "body": "A harmonious convergence of bittersweet memory: charred birch smoke, orris root, and sacred labdanum.",
+          "tags": [
+            "Limited Edition Serial No. 001–300"
+          ]
+        }
+      ],
+      "atelier": {
+        "heading": "The Art of the Parting Glance.",
+        "body": "Crafted for those who linger in memory long after they have gone. Each flacon is hand-filled, individually numbered, and sealed in our Grasse laboratory."
+      },
+      "fragrance_pyramid": [
+        {
+          "layer": "I. The Departure · Top",
+          "title": "Bitter Bergamot & Smoke",
+          "notes": "Cracked Guatemalan cardamom, charred birch smoke, and crisp Calabrian bergamot zest ignite the senses."
+        },
+        {
+          "layer": "II. The Reverie · Heart",
+          "title": "Cognac & Orris Butter",
+          "notes": "Aged 12-year French oak cognac resin, velvety Florentine orris root, and sun-dried golden osmanthus petals."
+        },
+        {
+          "layer": "III. The Monument · Base",
+          "title": "Smoked Labdanum & Stone",
+          "notes": "Dark volcanic travertine mineral accord, Spanish labdanum resin, raw ambergris, and cedar embers."
+        }
+      ],
+      "shipping": "Complimentary Worldwide Express",
+      "editions": [
+        {
+          "tier": "Core Vessel",
+          "name": "The Monolith · 100ml",
+          "description": "Heavy fluted crystal flacon with brushed champagne brass cap, resting in a charred cedar presentation box.",
+          "price": "$285"
+        },
+        {
+          "tier": "Artisan Coffret",
+          "name": "The Atelier Coffret",
+          "description": "100ml Flacon plus a 15ml magnetic travel pocket atomiser and solid brass filling funnel.",
+          "price": "$340"
+        },
+        {
+          "tier": "Sensory Sample",
+          "name": "Discovery Flight",
+          "description": "Three 5ml maceration trials. Includes a $65 credit voucher applicable toward your full 100ml flacon.",
+          "price": "$65"
+        }
+      ],
+      "perks": {
+        "engraving": "Complimentary Bespoke Engraving — your inscription will be hand-chiseled onto the brushed champagne brass pedestal badge.",
+        "policy_title": "The \"Test First, Break Seal Later\" Atelier Policy",
+        "policy_body": "Every flacon arrives with a complimentary 2ml matching sample vial attached outside the wax seal. Wear it for 48 hours on skin. If it does not become your signature, return the unopened monolith box for a complete, immediate refund."
+      },
+      "ctas": [
+        "Acquire The Monolith — $285",
+        "Request Complimentary Scent Blotter by Mail"
+      ],
+      "scarcity": "86 of 300 bottles remaining in Harvest Allocation"
+    },
+    "notes": "Site has no meta description or og tags."
   }
 ]

@@ -17,6 +17,8 @@ export interface CarouselProgramInfo {
     uView: WebGLUniformLocation;
     uModel: WebGLUniformLocation;
     uTexture: WebGLUniformLocation;
+    uTextureNext: WebGLUniformLocation;
+    uTransitionProgress: WebGLUniformLocation;
     uPanelRadius: WebGLUniformLocation;
     uWrapAmount: WebGLUniformLocation;
     uClickPos: WebGLUniformLocation;
@@ -108,6 +110,8 @@ export function createCarouselProgram(gl: WebGLRenderingContext): CarouselProgra
       uView: getUniform('uView'),
       uModel: getUniform('uModel'),
       uTexture: getUniform('uTexture'),
+      uTextureNext: getUniform('uTextureNext'),
+      uTransitionProgress: getUniform('uTransitionProgress'),
       uPanelRadius: getUniform('uPanelRadius'),
       uWrapAmount: getUniform('uWrapAmount'),
       uClickPos: getUniform('uClickPos'),

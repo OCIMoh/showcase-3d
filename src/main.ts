@@ -10,22 +10,27 @@ import './style/main.css';
 import { CustomCursor } from './engine/cursor';
 import { CylinderCarouselEngine } from './engine/cylinder/engine';
 import { SHOWCASE_PROJECTS } from './data/showcaseProjects';
+import { AnimaxLoader } from './engine/cylinder/ui/animaxLoader';
 
 document.addEventListener('DOMContentLoaded', () => {
   const viewMount = document.getElementById('viewMount');
   if (!viewMount) return;
 
-  // 1. Initialize Magnetic Contextual Cursor
+  // 1. Mount Animax Studio High-Precision Preloader
+  const loader = new AnimaxLoader();
+  loader.setProgress(14, 'INITIALIZING SPATIAL 3D ENGINE');
+
+  // 2. Initialize Magnetic Contextual Cursor
   const cursor = new CustomCursor();
 
-  // 2. Parse initial route for deep linking
+  // 3. Parse initial route for deep linking
   const path = window.location.pathname;
   let initialSlug: string | undefined = undefined;
   if (path.startsWith('/projects/') || path.startsWith('/project/')) {
     initialSlug = path.split('/').filter(Boolean).pop();
   }
 
-  // 3. Initialize Single Persistent 3D WebGL Engine
+  // 4. Initialize Single Persistent 3D WebGL Engine
   const engine = new CylinderCarouselEngine({
     container: viewMount,
     projects: SHOWCASE_PROJECTS,
@@ -44,7 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 4. Host History Router Adapter (handles browser back/forward buttons)
+  // 5. Track Real Asset Loading & Buffer Progress
+  const minLoadTimePromise = new Promise(res => setTimeout(res, 1200));
+
+  const assetPreloadPromise = engine.preloadAssets((loaded, total, name) => {
+    const rawPct = 15 + Math.round((loaded / total) * 82);
+    loader.setProgress(rawPct, `BUFFERING: ${name}`);
+  });
+
+  Promise.all([assetPreloadPromise, minLoadTimePromise]).then(() => {
+    loader.finish();
+  });
+
+  // 6. Host History Router Adapter (handles browser back/forward buttons)
   window.addEventListener('popstate', () => {
     const curPath = window.location.pathname;
     if (curPath.startsWith('/projects/') || curPath.startsWith('/project/')) {
@@ -58,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 5. Bind interactive cursor triggers
+  // 7. Bind interactive cursor triggers
   cursor.bindInteractive(document.querySelectorAll('a, button'), 'EXPLORE');
   cursor.bindInteractive(document.querySelectorAll('.ma-case-close-btn'), 'CLOSE');
   cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link, .ma-bento-btn'), 'VISIT');

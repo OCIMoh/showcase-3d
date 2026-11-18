@@ -21,6 +21,7 @@ export interface CarouselDrawParams {
   reducedMotion: boolean;
   responsiveScale?: number;
   lightPos?: [number, number, number];
+  now?: number;
 }
 
 interface CardDraw {
@@ -157,6 +158,21 @@ export class CarouselPass {
     // Sort back-to-front (lowest viewZ is farther from camera, drawn first)
     cardsToDraw.sort((a, b) => a.viewZ - b.viewZ);
 
+    // Viewport-aware multi-image liquid transitions:
+    // Only cards actually in view on-screen (opacity > 0.25 and not hidden behind case study) are eligible to ripple
+    const nowMs = params.now ?? performance.now();
+    const isRapidScrolling = Math.abs(params.velocity) > 0.12;
+    const isHeroActive = params.heroOpenAmount > 0.15;
+
+    const visibleIndices: number[] = isHeroActive
+      ? []
+      : cardsToDraw
+          .filter(c => c.opacity > 0.25 && !c.isHero)
+          .sort((a, b) => Math.abs(a.rotY) - Math.abs(b.rotY)) // Center-most cards first
+          .map(c => c.index);
+
+    this.textureManager.update(nowMs, visibleIndices, isRapidScrolling);
+
     for (const card of cardsToDraw) {
       gl.uniform1f(u.uWrapAmount, card.wrapAmount);
       gl.uniform1f(u.uVelocity, params.velocity);
@@ -182,13 +198,21 @@ export class CarouselPass {
       mat4Scale(this.modelMat, this.modelMat, [card.scale, card.scale, 1.0]);
       gl.uniformMatrix4fv(u.uModel, false, this.modelMat);
 
-      // Bind Texture
+      // Bind Textures: Texture 0 = Current Slide, Texture 1 = Incoming Slide
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this.textureManager.getPreviewTexture(card.index));
       gl.uniform1i(u.uTexture, 0);
 
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, this.textureManager.getNextTexture(card.index));
+      gl.uniform1i(u.uTextureNext, 1);
+
+      gl.uniform1f(u.uTransitionProgress, this.textureManager.getTransitionProgress(card.index));
+
       gl.drawElements(gl.TRIANGLES, numIndices, gl.UNSIGNED_SHORT, 0);
     }
+
+    gl.activeTexture(gl.TEXTURE0);
   }
 
   /**

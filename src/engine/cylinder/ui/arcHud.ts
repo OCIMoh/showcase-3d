@@ -58,8 +58,8 @@ export class ArcHudComponent {
     this.root.id = 'maArcHud';
     this.root.setAttribute('aria-label', 'Carousel Arc Scrubber');
 
-    // Build True 4-Sided 90° Rectangular Cuboid Geometry (H=24px, D=24px, R=12px)
-    const halfD = 12;
+    // Build True 4-Sided 90° Rectangular Cuboid Geometry (H=25.2px, D=25.2px, R=12.6px — 5% height increase)
+    const halfD = 13;
     const facesConfig = [
       { id: 'front', angle: 0 },
       { id: 'top', angle: 90 },
@@ -77,8 +77,8 @@ export class ArcHudComponent {
     });
     // Add 3D Volumetric End Caps to seal the rectangular box
     facetsHtml += `
-      <div class="ma-cuboid-cap ma-cuboid-cap--left" style="transform: translateX(-12px) rotateY(-90deg);"></div>
-      <div class="ma-cuboid-cap ma-cuboid-cap--right" style="transform: translateX(12px) rotateY(90deg);"></div>
+      <div class="ma-cuboid-cap ma-cuboid-cap--left" style="transform: translateX(-${halfD}px) rotateY(-90deg);"></div>
+      <div class="ma-cuboid-cap ma-cuboid-cap--right" style="transform: translateX(${halfD}px) rotateY(90deg);"></div>
     `;
 
     this.root.innerHTML = `

@@ -405,7 +405,8 @@ export class CylinderCarouselEngine {
       meshAspect: cfg.cardAspect,
       reducedMotion: this.prefersReducedMotion,
       responsiveScale: rScale,
-      lightPos: [this.lightCurrentX, this.lightCurrentY, 2.5]
+      lightPos: [this.lightCurrentX, this.lightCurrentY, 2.5],
+      now
     }, this.numIndices, this.projMat, this.viewMat);
 
     if (this.activeProject) {
@@ -597,6 +598,15 @@ export class CylinderCarouselEngine {
     if (this.gl) {
       this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     }
+  }
+
+  /**
+   * Preloads textures, video metadata, and typography assets for the Animax Loader.
+   */
+  public preloadAssets(
+    onProgress?: (loaded: number, total: number, name: string) => void
+  ): Promise<void> {
+    return this.textureManager.preloadAllAssets(onProgress);
   }
 
   /**

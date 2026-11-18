@@ -75,6 +75,9 @@ export const CAROUSEL_FRAGMENT_SHADER = `
 precision highp float;
 
 uniform sampler2D uTexture;
+uniform sampler2D uTextureNext;
+uniform float uTransitionProgress; // 0.0 to 1.0 (Liquid Displacement Transition)
+
 uniform float uOpacity;           // Item opacity
 uniform float uDimFactor;         // Dimming towards edges or background
 uniform float uIsHeroBackdrop;    // Smooth blend to warm cream background (0.0 to 1.0)
@@ -86,20 +89,66 @@ varying vec2 vUv;
 varying vec3 vWorldPos;
 
 void main() {
-  // 1. Kinetic Optical Chromatic Aberration on Fling/Spin
-  // Splits RGB channels along the velocity vector during rapid momentum
-  float speed = abs(uVelocity);
-  float chroma = clamp(speed * 0.0035, 0.0, 0.015) * (1.0 - uReducedMotion);
-  vec2 chromaDir = vec2(sign(uVelocity), 0.0);
-
+  vec2 uv = vUv;
   vec4 texColor;
-  if (chroma > 0.0005) {
-    float r = texture2D(uTexture, vUv + chromaDir * chroma).r;
-    float g = texture2D(uTexture, vUv).g;
-    float b = texture2D(uTexture, vUv - chromaDir * chroma).b;
-    texColor = vec4(r, g, b, 1.0);
+
+  // Option 2: Liquid Shader Ripple & Displacement Transition
+  if (uTransitionProgress > 0.0005 && uTransitionProgress < 0.9995) {
+    float p = uTransitionProgress;
+
+    if (uReducedMotion > 0.5) {
+      // Clean accessible crossfade without displacement under reduced motion
+      vec4 c1 = texture2D(uTexture, uv);
+      vec4 c2 = texture2D(uTextureNext, uv);
+      texColor = mix(c1, c2, p);
+    } else {
+      // Smooth bell-curve amplitude peaking at mid-transition (p = 0.5)
+      float strength = sin(p * 3.14159265);
+
+      // Concentric liquid ripples expanding from center, adapted to 1.95:1 aspect
+      vec2 center = vec2(0.5, 0.5);
+      vec2 toCenter = (uv - center) * vec2(1.85, 1.0);
+      float dist = length(toCenter);
+
+      // Dual harmonic organic ripple waves
+      float wave1 = sin(dist * 24.0 - p * 14.0) * 0.038 * strength;
+      float wave2 = cos(dist * 16.0 - p * 10.0 + uv.x * 5.0) * 0.022 * strength;
+      float totalWave = wave1 + wave2;
+
+      // Opposing displacement vectors for outgoing and incoming textures
+      vec2 uv1 = clamp(uv + vec2(totalWave, totalWave * 0.6) * (1.0 - p), 0.001, 0.999);
+      vec2 uv2 = clamp(uv - vec2(totalWave * 0.75, totalWave * 0.5) * p, 0.001, 0.999);
+
+      // Delicate chromatic fringe along the liquid wave edge
+      float cFringe = totalWave * 0.32;
+      vec4 c1;
+      c1.r = texture2D(uTexture, clamp(uv1 + vec2(cFringe, 0.0), 0.001, 0.999)).r;
+      c1.g = texture2D(uTexture, uv1).g;
+      c1.b = texture2D(uTexture, clamp(uv1 - vec2(cFringe, 0.0), 0.001, 0.999)).b;
+      c1.a = texture2D(uTexture, uv1).a;
+
+      vec4 c2;
+      c2.r = texture2D(uTextureNext, clamp(uv2 + vec2(cFringe, 0.0), 0.001, 0.999)).r;
+      c2.g = texture2D(uTextureNext, uv2).g;
+      c2.b = texture2D(uTextureNext, clamp(uv2 - vec2(cFringe, 0.0), 0.001, 0.999)).b;
+      c2.a = texture2D(uTextureNext, uv2).a;
+
+      texColor = mix(c1, c2, smoothstep(0.0, 1.0, p));
+    }
   } else {
-    texColor = texture2D(uTexture, vUv);
+    // 1. Kinetic Optical Chromatic Aberration on Fling/Spin
+    float speed = abs(uVelocity);
+    float chroma = clamp(speed * 0.0035, 0.0, 0.015) * (1.0 - uReducedMotion);
+    vec2 chromaDir = vec2(sign(uVelocity), 0.0);
+
+    if (chroma > 0.0005) {
+      float r = texture2D(uTexture, vUv + chromaDir * chroma).r;
+      float g = texture2D(uTexture, vUv).g;
+      float b = texture2D(uTexture, vUv - chromaDir * chroma).b;
+      texColor = vec4(r, g, b, 1.0);
+    } else {
+      texColor = texture2D(uTexture, vUv);
+    }
   }
 
   vec3 baseRgb = texColor.rgb * uDimFactor;
