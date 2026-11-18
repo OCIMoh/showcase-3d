@@ -183,6 +183,11 @@
   align-items: center;
   justify-content: center;
   user-select: none;
+  cursor: grab;
+}
+
+.ma-cuboid-flipper:active {
+  cursor: grabbing;
 }
 
 /* 4-Sided Rotating 3D Rectangular Prism Ring */

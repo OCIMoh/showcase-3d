@@ -1,9 +1,14 @@
 /**
  * Arc HUD Component: Bottom dynamic curved SVG trajectory with scrub thumb
  * Upgraded with:
- * - 3D Barrel Cuboid Tumbler (continuous rotary drum in 3D perspective)
- * - In-camera SVG path stroke draw on entrance (animaxxing/svg-effects)
- * - Spring-tension glider bead with physical lead/lag (animaxxing/pointer-effects)
+ * - 3D Barrel Cuboid Tumbler with Reactive Rigid-Body Mechanics
+ * - Housner Tipping-Point Non-Linear Potential Well Dynamics (45° threshold snap)
+ * - Elastic Restitution Micro-Recoil Shudder on Flat-Face Landing
+ * - Geometric Center-of-Mass Vertical Bob (1.414x corner apex translation)
+ * - Dynamic Rotational Squish & Stretch with Velocity
+ * - Direct 3D Cursor Perspective Tilt on Hover
+ * - In-camera SVG path stroke draw on entrance
+ * - Spring-tension glider bead with physical lead/lag
  * - 100% infinite 360° continuous rotation (zero numbers, zero pagination)
  */
 
@@ -32,8 +37,19 @@ export class ArcHudComponent {
   private currentActiveIndex = -1;
   private pathLength = 185;
   private currentT = 0.5;
-  private currentDrumAngle = 0;
   private projectTitles: string[];
+
+  // --- Reactive Rigid-Body Physics State ---
+  private currentDrumAngle = 0;      // Current rotational position in degrees
+  private drumAngularVel = 0;        // Angular velocity (deg/frame)
+  private recoilOffset = 0;          // Dynamic restitution micro-shudder angle (deg)
+  private recoilVel = 0;             // Recoil velocity
+  private lastLatchQuadrant = 0;     // Last crossed 90-degree quadrant for landing impact
+  private targetTiltX = 0;           // Direct cursor interactive tilt (X)
+  private targetTiltY = 0;           // Direct cursor interactive tilt (Y)
+  private currentTiltX = 0;
+  private currentTiltY = 0;
+  private cleanupFns: Array<() => void> = [];
 
   constructor(parent: HTMLElement, projectTitles: string[] = ['Touché']) {
     this.projectTitles = projectTitles.length > 0 ? projectTitles : ['Touché'];
@@ -102,6 +118,38 @@ export class ArcHudComponent {
     }
     this.trackEl.style.strokeDasharray = `${this.pathLength}`;
     this.trackEl.style.strokeDashoffset = `${this.pathLength}`;
+
+    // Direct Pointer Reactive Tilt on Tumbler
+    this.initInteractiveTilt();
+  }
+
+  /**
+   * Directly reacts to cursor proximity over the tumbler with 3D perspective tilting.
+   */
+  private initInteractiveTilt(): void {
+    if (!this.flipperEl) return;
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return;
+      const rect = this.flipperEl.getBoundingClientRect();
+      const nx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+      const ny = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+      this.targetTiltY = Math.max(-12, Math.min(12, nx * 9.5));
+      this.targetTiltX = Math.max(-8, Math.min(8, -ny * 7.5));
+    };
+
+    const onPointerLeave = () => {
+      this.targetTiltY = 0;
+      this.targetTiltX = 0;
+    };
+
+    this.flipperEl.addEventListener('pointermove', onPointerMove);
+    this.flipperEl.addEventListener('pointerleave', onPointerLeave);
+
+    this.cleanupFns.push(() => {
+      this.flipperEl.removeEventListener('pointermove', onPointerMove);
+      this.flipperEl.removeEventListener('pointerleave', onPointerLeave);
+    });
   }
 
   private updateFaceTitles(k: number): void {
@@ -146,23 +194,67 @@ export class ArcHudComponent {
     const k = Math.round(continuousProgress);
     this.updateFaceTitles(k);
 
-    // 2. Rotate 3D Rectangular Prism in real-time 1:1 with continuous scroll
+    // 2. --- Reactive Rigid-Body Tumbler Mechanics ---
+    const targetContinuousAngle = -continuousProgress * 90;
+
+    // A. Housner Tipping Dynamics: Non-linear magnetic potential well
+    // At 45 deg, the 1.414x corner reaches tipping apex; magnetic pull accelerates forward into flat face
+    const quadPhase = (((targetContinuousAngle % 90) + 90) % 90);
+    const radPhase = (quadPhase / 90) * Math.PI; // 0 to PI
+    const tippingPull = -Math.sin(2 * radPhase) * 3.8;
+    const physicalTargetAngle = targetContinuousAngle + tippingPull;
+
+    // B. Rotational Spring-Damper Inertia
+    const deltaAngle = physicalTargetAngle - this.currentDrumAngle;
+    const springForce = deltaAngle * 0.36;
+    this.drumAngularVel = (this.drumAngularVel + springForce) * 0.72;
+    this.currentDrumAngle += this.drumAngularVel;
+
+    // C. Elastic Restitution (Flat-Face Impact Shudder)
+    // Detect when crossing near a 90-degree quadrant
+    const currentQuad = Math.round(this.currentDrumAngle / 90);
+    if (currentQuad !== this.lastLatchQuadrant) {
+      this.lastLatchQuadrant = currentQuad;
+      const impactSpeed = Math.abs(this.drumAngularVel);
+      if (impactSpeed > 0.6) {
+        this.recoilVel = -Math.sign(this.drumAngularVel) * Math.min(3.2, impactSpeed * 0.24);
+      }
+    }
+
+    // Step restitution spring (decaying 2-cycle micro-shudder)
+    this.recoilOffset += this.recoilVel;
+    this.recoilVel = (this.recoilVel - this.recoilOffset * 0.48) * 0.64;
+    if (Math.abs(this.recoilOffset) < 0.01 && Math.abs(this.recoilVel) < 0.01) {
+      this.recoilOffset = 0;
+      this.recoilVel = 0;
+    }
+
+    // D. Geometric Center-of-Mass Vertical Bob
+    // Corner apex is 1.414x longer than flat face (16.97px vs 12px), causing physical vertical lift
+    const totalDisplayAngle = this.currentDrumAngle + this.recoilOffset + this.currentTiltX;
+    const radAngle = (totalDisplayAngle * Math.PI) / 180;
+    const bobY = -Math.abs(Math.sin(2 * radAngle)) * 2.2;
+
+    // E. Dynamic Rotational Velocity Squish & Stretch
+    const absSpeed = Math.abs(this.drumAngularVel);
+    const squishY = Math.max(0.92, 1.0 - absSpeed * 0.0035);
+    const stretchZ = Math.min(1.08, 1.0 + absSpeed * 0.0025);
+
+    // F. Cursor Interactive Tilt Damping
+    this.currentTiltX += (this.targetTiltX - this.currentTiltX) * 0.16;
+    this.currentTiltY += (this.targetTiltY - this.currentTiltY) * 0.16;
+
+    // G. Apply Full 3D Physics Matrix Transform
     if (this.drumRingEl) {
-      // 90 degrees per project item
-      const targetDrumAngle = -continuousProgress * 90;
+      this.drumRingEl.style.transform = `translateY(${bobY.toFixed(2)}px) rotateY(${this.currentTiltY.toFixed(2)}deg) rotateX(${totalDisplayAngle.toFixed(2)}deg) scaleY(${squishY.toFixed(3)}) scaleZ(${stretchZ.toFixed(3)})`;
 
-      // Smooth damped tracking
-      this.currentDrumAngle += (targetDrumAngle - this.currentDrumAngle) * 0.22;
-      this.drumRingEl.style.transform = `rotateX(${this.currentDrumAngle.toFixed(2)}deg)`;
-
-      // 3. Dynamic directional lighting on the 4 faces
-      const rad = (this.currentDrumAngle * Math.PI) / 180;
+      // H. Directional Dynamic Cosine Lighting (reacts to bounce & cursor tilt)
       for (let f = 0; f < 4; f++) {
-        const phi = f * (Math.PI / 2) + rad;
+        const phi = f * (Math.PI / 2) + radAngle;
         const cosVal = Math.cos(phi);
         const facet = this.facetEls[f];
         if (facet) {
-          if (cosVal > 0.05) {
+          if (cosVal > 0.04) {
             const brightness = 0.42 + 0.58 * Math.pow(cosVal, 1.25);
             facet.style.opacity = brightness.toFixed(3);
             facet.style.visibility = 'visible';
@@ -174,13 +266,13 @@ export class ArcHudComponent {
       }
     }
 
-    // 2. Sync SVG track path curve
+    // 3. Sync SVG track path curve
     if (this.trackEl) {
       const midY = (8 * this.arcCurveAmount + 40 * (1 - this.arcCurveAmount)).toFixed(1);
       this.trackEl.setAttribute('d', `M 12 40 Q 100 ${midY} 188 40`);
     }
 
-    // 3. Move thumb along quadratic bezier with organic spring follow
+    // 4. Move thumb along quadratic bezier with organic spring follow
     if (this.thumbEl) {
       const targetT = totalItems > 1 ? normIndex / (totalItems - 1) : 0.5;
       const clampedTarget = Math.max(0, Math.min(1, targetT));
@@ -221,7 +313,7 @@ export class ArcHudComponent {
     if (this.trackEl) gsap.killTweensOf(this.trackEl);
     if (this.flipperEl) gsap.killTweensOf(this.flipperEl);
 
-    // 1. In-camera SVG path stroke draw (animaxxing/svg-effects)
+    // 1. In-camera SVG path stroke draw
     if (this.trackEl) {
       gsap.fromTo(
         this.trackEl,
@@ -269,10 +361,11 @@ export class ArcHudComponent {
   }
 
   public destroy(): void {
+    this.cleanupFns.forEach(fn => fn());
+    this.cleanupFns = [];
     gsap.killTweensOf(this);
     if (this.trackEl) gsap.killTweensOf(this.trackEl);
     if (this.flipperEl) gsap.killTweensOf(this.flipperEl);
     this.root.remove();
   }
 }
-
