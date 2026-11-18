@@ -26,6 +26,7 @@ export interface CarouselProgramInfo {
     uOpacity: WebGLUniformLocation;
     uDimFactor: WebGLUniformLocation;
     uIsHeroBackdrop: WebGLUniformLocation;
+    uLightPos: WebGLUniformLocation;
   };
 }
 
@@ -115,7 +116,8 @@ export function createCarouselProgram(gl: WebGLRenderingContext): CarouselProgra
       uReducedMotion: getUniform('uReducedMotion'),
       uOpacity: getUniform('uOpacity'),
       uDimFactor: getUniform('uDimFactor'),
-      uIsHeroBackdrop: getUniform('uIsHeroBackdrop')
+      uIsHeroBackdrop: getUniform('uIsHeroBackdrop'),
+      uLightPos: getUniform('uLightPos')
     }
   };
 }

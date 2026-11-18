@@ -50,6 +50,67 @@ export class SoundSynthesizer {
     }
   }
 
+  /**
+   * Synthesizes an authentic mechanical rotary dial detent tick (Leica dial / precision encoder)
+   * with dual-component transient click and low-frequency tactile body.
+   */
+  public playDialClick(speed = 1.0): void {
+    if (this.isMuted) return;
+    try {
+      if (!this.audioCtx) {
+        const AudioCtxClass =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        this.audioCtx = new AudioCtxClass();
+      }
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+
+      const now = this.audioCtx.currentTime;
+      const baseVol = Math.min(0.09, 0.035 + speed * 0.015);
+
+      // 1. High crisp mechanical transient (rotary tooth notch)
+      const oscHigh = this.audioCtx.createOscillator();
+      const gainHigh = this.audioCtx.createGain();
+      oscHigh.type = 'triangle';
+      oscHigh.frequency.setValueAtTime(1950 + Math.min(500, speed * 120), now);
+      gainHigh.gain.setValueAtTime(baseVol * 0.85, now);
+      gainHigh.gain.exponentialRampToValueAtTime(0.0001, now + 0.014);
+      oscHigh.connect(gainHigh);
+      gainHigh.connect(this.audioCtx.destination);
+      oscHigh.start(now);
+      oscHigh.stop(now + 0.016);
+
+      // 2. Low tactile body detent
+      const oscLow = this.audioCtx.createOscillator();
+      const gainLow = this.audioCtx.createGain();
+      oscLow.type = 'sine';
+      oscLow.frequency.setValueAtTime(210, now);
+      gainLow.gain.setValueAtTime(baseVol * 0.55, now);
+      gainLow.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
+      oscLow.connect(gainLow);
+      gainLow.connect(this.audioCtx.destination);
+      oscLow.start(now);
+      oscLow.stop(now + 0.024);
+    } catch {
+      // Autoplay fallback
+    }
+  }
+
+  /**
+   * Fires a subtle physical micro-vibration pulse on touch/mobile devices.
+   */
+  public triggerHaptic(duration = 10): void {
+    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+      try {
+        navigator.vibrate(duration);
+      } catch {
+        // Unsupported device or restricted context
+      }
+    }
+  }
+
   public destroy(): void {
     if (this.audioCtx) {
       this.audioCtx.close().catch(() => {});

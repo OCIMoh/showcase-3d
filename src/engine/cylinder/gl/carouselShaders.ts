@@ -78,13 +78,47 @@ uniform sampler2D uTexture;
 uniform float uOpacity;           // Item opacity
 uniform float uDimFactor;         // Dimming towards edges or background
 uniform float uIsHeroBackdrop;    // Smooth blend to warm cream background (0.0 to 1.0)
+uniform float uVelocity;          // Speed of carousel motion
+uniform float uReducedMotion;     // 1.0 disables chromatic aberration
+uniform vec3 uLightPos;           // Dynamic cursor light position in world coords
 
 varying vec2 vUv;
 varying vec3 vWorldPos;
 
 void main() {
-  vec4 texColor = texture2D(uTexture, vUv);
-  vec3 finalRgb = texColor.rgb * uDimFactor;
+  // 1. Kinetic Optical Chromatic Aberration on Fling/Spin
+  // Splits RGB channels along the velocity vector during rapid momentum
+  float speed = abs(uVelocity);
+  float chroma = clamp(speed * 0.0035, 0.0, 0.015) * (1.0 - uReducedMotion);
+  vec2 chromaDir = vec2(sign(uVelocity), 0.0);
+
+  vec4 texColor;
+  if (chroma > 0.0005) {
+    float r = texture2D(uTexture, vUv + chromaDir * chroma).r;
+    float g = texture2D(uTexture, vUv).g;
+    float b = texture2D(uTexture, vUv - chromaDir * chroma).b;
+    texColor = vec4(r, g, b, 1.0);
+  } else {
+    texColor = texture2D(uTexture, vUv);
+  }
+
+  vec3 baseRgb = texColor.rgb * uDimFactor;
+
+  // 2. Card Surface Specular Sheen (Soft, luxury satin spotlight tracking cursor)
+  vec3 lightDir = normalize(uLightPos - vWorldPos);
+  // Curved surface normal across the cylindrical panel
+  vec3 normal = normalize(vec3(vWorldPos.x * 0.16, vWorldPos.y * 0.05, 1.0));
+  vec3 viewDir = normalize(vec3(0.0, 0.0, -6.8) - vWorldPos);
+  vec3 halfVec = normalize(lightDir + viewDir);
+
+  float NdotH = max(dot(normal, halfVec), 0.0);
+  float specular = pow(NdotH, 32.0) * 0.28 * (1.0 - uIsHeroBackdrop);
+
+  // Soft radial spotlight falloff
+  float distToLight = length(uLightPos.xy - vWorldPos.xy);
+  float spotFalloff = exp(-distToLight * 0.32) * 0.15 * (1.0 - uIsHeroBackdrop);
+
+  vec3 finalRgb = baseRgb + vec3(specular + spotFalloff);
 
   // Smooth hero backdrop blending during case study transition
   if (uIsHeroBackdrop > 0.001) {

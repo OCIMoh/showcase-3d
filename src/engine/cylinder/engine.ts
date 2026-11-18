@@ -373,7 +373,8 @@ export class CylinderCarouselEngine {
     }
 
     this.arcHud.update(norm, continuousProgress, numItems, () => {
-      this.synth.playTone(720, 'sine', 0.02, 0.03);
+      this.synth.playDialClick(Math.abs(this.velocity));
+      this.synth.triggerHaptic(10);
     });
 
     // Dynamic Camera Distance:
@@ -403,7 +404,8 @@ export class CylinderCarouselEngine {
       clickPos: this.clickPos,
       meshAspect: cfg.cardAspect,
       reducedMotion: this.prefersReducedMotion,
-      responsiveScale: rScale
+      responsiveScale: rScale,
+      lightPos: [this.lightCurrentX, this.lightCurrentY, 2.5]
     }, this.numIndices, this.projMat, this.viewMat);
 
     if (this.activeProject) {

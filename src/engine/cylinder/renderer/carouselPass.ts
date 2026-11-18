@@ -20,6 +20,7 @@ export interface CarouselDrawParams {
   meshAspect: number;
   reducedMotion: boolean;
   responsiveScale?: number;
+  lightPos?: [number, number, number];
 }
 
 interface CardDraw {
@@ -78,6 +79,12 @@ export class CarouselPass {
     gl.uniformMatrix4fv(u.uProjection, false, projMat);
     gl.uniformMatrix4fv(u.uView, false, viewMat);
     gl.uniform1f(u.uPanelRadius, radiusX);
+
+    // 3. Dynamic Cursor Spotlight Light Position (for Satin Specular Sheen)
+    const lx = params.lightPos ? params.lightPos[0] : 0.0;
+    const ly = params.lightPos ? params.lightPos[1] : 0.0;
+    const lz = params.lightPos ? params.lightPos[2] : 2.5;
+    gl.uniform3f(u.uLightPos, lx, ly, lz);
 
     const cardsToDraw: CardDraw[] = [];
 
