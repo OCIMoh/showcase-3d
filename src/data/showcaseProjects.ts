@@ -33,7 +33,6 @@ export interface ShowcaseProject {
   quote?: { text: string; author?: string; role?: string };
   location?: string;
   contact?: { phone?: string; hours?: string; instagram?: string };
-  videos?: string[];
   fragrancePyramid?: Array<{ layer: string; title: string; notes: string }>;
   viralReels?: Array<{ title: string; views: string }>;
   services?: string[];
@@ -58,7 +57,6 @@ interface RepoMetadata {
   quote?: { text: string; author?: string; role?: string };
   location?: string;
   contact?: { phone?: string; hours?: string; instagram?: string };
-  videos?: string[];
   fragrancePyramid?: Array<{ layer: string; title: string; notes: string }>;
   viralReels?: Array<{ title: string; views: string }>;
   services?: string[];
@@ -127,16 +125,16 @@ const REPO_METADATA_MAP: Record<string, RepoMetadata> = {
       { step: '04 / The End', headline: 'Your perfect morning.', body: 'Every altitude, ray of sun, and degree of heat culminating in this single, flawless cup.', tags: ['Single Cup', 'Flawless'] }
     ],
     highlights: [
-      'Kinetic scrollytelling synchronized with video scrub frames',
+      'Kinetic scrollytelling with procedural WebGL shaders',
       '4-stage artisanal origin progression: Origin, Sun-drenched, Roasted Heat, Morning Cup',
       'High-altitude single-origin small batch roasting profile'
     ],
-    techStack: ['HTML', 'CSS Architecture', 'JavaScript', '3D Canvas', 'GSAP'],
+    techStack: ['HTML', 'CSS Architecture', 'JavaScript', '3D WebGL Canvas', 'GSAP'],
     specs: {
-      'Format': '3D Canvas & Video Scrubbing',
+      'Format': '3D WebGL Canvas & Liquid Transitions',
       'Origin': 'High-Altitude Single-Origin',
       'Roast': 'Small-Batch Artisanal Heat',
-      'Media': 'Cinematic Video Loops'
+      'Media': 'Generative GLSL Visuals'
     },
     quote: { text: 'Every altitude, every ray of sun, and every degree of heat—all culminating in this single, flawless cup.' },
     metrics: 'Production Live · 4-Stage Scrollytelling',
@@ -467,7 +465,6 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = rawProjects
       quote: meta.quote,
       location: meta.location,
       contact: meta.contact,
-      videos: meta.videos,
       fragrancePyramid: meta.fragrancePyramid,
       viralReels: meta.viralReels,
       services: meta.services
