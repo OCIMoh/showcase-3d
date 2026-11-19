@@ -41,7 +41,7 @@ void main() {
   float speed = abs(uVelocity);
   float velBend = clamp(speed * 0.45 * motionScale, 0.0, 2.2);
 
-  // A. True cylindrical arch across card width in Z-depth (Preserves full 1.95:1 widescreen width)
+  // A. True cylindrical arch across card width in Z-depth (Natural expansive convex arch)
   float archRadius = uPanelRadius * 0.65;
   float localAngle = pos.x / archRadius;
   float bentX = sin(localAngle) * archRadius;

@@ -38,9 +38,9 @@ void main() {
   float angleY = worldY / effRadius;
 
   // Derivative at center worldY=0 is -sin(0)=0 (perfectly flat tangent at rest)
-  // Bends backward into -Z depth following scroll speed and entrance curve
+  // Bends inward into +Z depth following scroll speed and entrance curve
   float clampedAngleY = clamp(angleY, -1.5707963, 1.5707963);
-  float barrelZ = -(1.0 - cos(clampedAngleY)) * effRadius * uOvalFlatness * uCurveAmount;
+  float barrelZ = +(1.0 - cos(clampedAngleY)) * effRadius * uOvalFlatness * uCurveAmount;
   pos.z += barrelZ;
 
   vec4 worldPos = uModel * vec4(pos, 1.0);
