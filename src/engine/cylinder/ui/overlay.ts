@@ -9,14 +9,13 @@
 import gsap from 'gsap';
 import { BrandConfig } from '../core/config';
 import { ShowcaseProject } from '../../../data/showcaseProjects';
-import { escapeHtml } from './aboutDrawer';
+import { escapeHtml } from '../utils/html';
 
 export interface OverlayCallbacks {
   onCloseCaseStudy: () => void;
   onNextProject: () => void;
   onPrevProject: () => void;
   onToggleSound: () => void;
-  onOpenAbout?: () => void;
 }
 
 export interface MagneticOptions {
@@ -232,15 +231,18 @@ export class OverlayComponent {
     this.nextBtn = this.root.querySelector('#maCaseNextBtn')!;
     this.caseNavEl = this.root.querySelector('#maCaseNav')!;
 
-    // Bind event handlers
-    this.soundToggleBtn.addEventListener('click', callbacks.onToggleSound);
-    this.caseSoundBtn.addEventListener('click', callbacks.onToggleSound);
-    if (callbacks.onOpenAbout) {
-      this.aboutLink?.addEventListener('click', callbacks.onOpenAbout);
-    }
-    this.closeBtn.addEventListener('click', callbacks.onCloseCaseStudy);
-    this.nextBtn.addEventListener('click', callbacks.onNextProject);
-    this.prevBtn.addEventListener('click', callbacks.onPrevProject);
+    // Bind event handlers with clean listener lifecycle disposal
+    const addListener = (el: HTMLElement | null, event: string, handler: EventListener) => {
+      if (!el) return;
+      el.addEventListener(event, handler);
+      this.cleanupFns.push(() => el.removeEventListener(event, handler));
+    };
+
+    addListener(this.soundToggleBtn, 'click', callbacks.onToggleSound as EventListener);
+    addListener(this.caseSoundBtn, 'click', callbacks.onToggleSound as EventListener);
+    addListener(this.closeBtn, 'click', callbacks.onCloseCaseStudy as EventListener);
+    addListener(this.nextBtn, 'click', callbacks.onNextProject as EventListener);
+    addListener(this.prevBtn, 'click', callbacks.onPrevProject as EventListener);
 
     // Attach Magnetic Physics to Action Buttons (Animaxxing/pointer-effects)
     this.cleanupFns.push(attachMagneticEffect(this.closeBtn, { maxDistance: 50, pullFactor: 0.38, rotateIcon: true }));
@@ -270,7 +272,7 @@ export class OverlayComponent {
   public updateCaseStudy(proj: ShowcaseProject, direction: 'next' | 'prev' | 'none' = 'none'): void {
     if (this.catEl) this.catEl.textContent = proj.category.split('//')[0].trim();
     if (this.roleEl) this.roleEl.textContent = 'Frontend Engineering';
-    if (this.agencyEl) this.agencyEl.textContent = `Client: ${proj.client}`;
+    // if (this.agencyEl) this.agencyEl.textContent = `Client: ${proj.client}`;
 
     if (this.viewLink) {
       if (proj.isLive && proj.liveUrl && !proj.liveUrl.includes('github.com')) {

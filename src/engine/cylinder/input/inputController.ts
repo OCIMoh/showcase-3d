@@ -11,7 +11,6 @@ export interface InputCallbacks {
   onPointerParallax: (normX: number, normY: number) => void;
   onArrowKey: (key: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown') => void;
   onEscape: () => void;
-  isAboutOpen: () => boolean;
   isCaseStudyOpen: () => boolean;
 }
 
@@ -61,7 +60,7 @@ export class InputController {
     const onPointerDown = (e: PointerEvent) => {
       // Ignore drags initiating on interactive DOM buttons
       const target = e.target as HTMLElement | null;
-      if (target && target.closest('button, a, input, select, textarea, .ma-about-drawer')) return;
+      if (target && target.closest('button, a, input, select, textarea')) return;
 
       this.isDragging = true;
       this.hasDragged = false;
@@ -125,11 +124,6 @@ export class InputController {
     };
 
     const onWheel = (e: WheelEvent) => {
-      // Input Scoping: If About drawer is open, let it scroll natively!
-      if (this.callbacks.isAboutOpen()) {
-        return;
-      }
-
       // If user is hovering an interactive element or overlay, do not capture wheel
       const target = e.target as HTMLElement | null;
       const isCanvasOrRoot =
@@ -155,11 +149,6 @@ export class InputController {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         this.callbacks.onEscape();
-        return;
-      }
-
-      // Ignore arrow keys while About drawer is open
-      if (this.callbacks.isAboutOpen()) {
         return;
       }
 
