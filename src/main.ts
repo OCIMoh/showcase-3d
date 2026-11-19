@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 5. Track Real Asset Loading & Buffer Progress with Fail-Safe Timeout
-  const minLoadTimePromise = new Promise(res => setTimeout(res, 1200));
-  const maxTimeoutPromise = new Promise(res => setTimeout(res, 3500));
+  const minLoadTimePromise = new Promise(res => setTimeout(res, 2000));
+  const maxTimeoutPromise = new Promise(res => setTimeout(res, 4500));
 
   const assetPreloadPromise = engine.preloadAssets((loaded, total, name) => {
     const rawPct = 15 + Math.round((loaded / total) * 82);

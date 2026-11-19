@@ -1,17 +1,19 @@
 /**
- * Authentic Lusion Preloader with Buttery-Smooth 60 FPS GSAP Number Rolling
+ * Authentic Lusion Preloader with Buttery-Smooth 60-120 FPS GSAP Number Rolling
  * 
  * - Stable, rock-solid width: All 3 columns have permanently reserved dimensions (ZERO layout resizing at 100)
- * - Generous, balanced editorial position (no longer crammed against the bottom edge)
- * - GPU hardware-accelerated sub-pixel translation (translate3d + backface-visibility: hidden)
- * - Continuous GSAP sub-pixel timeline driver
- * - Silky GSAP curtain lift (power4.inOut) smoothly unveiling the 3D WebGL scene
+ * - HUD-aligned Bottom-Center placement with responsive vertical clamping
+ * - GPU hardware-accelerated sub-pixel translation (gsap.quickSetter in px + contain: strict)
+ * - Single continuous GSAP timeline (0 -> 100) with dynamic timeScale modulation (eliminates velocity discontinuities)
+ * - Accessibility-throttled aria-valuenow (prevents AXTree recalculation thrash)
+ * - Silky GSAP curtain lift unveiling the 3D WebGL scene
  */
 
 import gsap from 'gsap';
 
 export class AnimaxLoader {
   private root: HTMLElement;
+  private counterEl: HTMLElement;
   private colHundreds!: HTMLElement;
   private trackHundreds!: HTMLElement;
   private colTens!: HTMLElement;
@@ -21,9 +23,18 @@ export class AnimaxLoader {
 
   private isFinished = false;
   private isAssetsReady = false;
+  private isBraking = false;
+  private lastAriaVal = -1;
+  private singleDigitHeight = 0;
+
+  private setUnitsY!: (value: number) => void;
+  private setTensY!: (value: number) => void;
+  private setHundredsY!: (value: number) => void;
+
   private currentProgress = { val: 0 };
   private onCompleteCallback?: () => void;
   private tween?: gsap.core.Tween;
+  private finishPromise?: Promise<void>;
 
   constructor() {
     this.root = document.createElement('div');
@@ -48,7 +59,7 @@ export class AnimaxLoader {
     }
 
     this.root.innerHTML = `
-      <!-- Masked Number-Flipping Odometer (Fixed dimensions, zero resizing) -->
+      <!-- Masked Number-Flipping Odometer (Fixed dimensions, zero resizing, centered) -->
       <div class="lusion-counter" id="lusionCounter">
         <!-- Hundreds Column (Fixed reserved width, slides '1' in at 100 without resizing container) -->
         <div class="digit-col digit-col--hundreds" id="colHundreds">
@@ -76,6 +87,7 @@ export class AnimaxLoader {
 
     document.body.appendChild(this.root);
 
+    this.counterEl = this.root.querySelector('#lusionCounter') as HTMLElement;
     this.colHundreds = this.root.querySelector('#colHundreds') as HTMLElement;
     this.trackHundreds = this.root.querySelector('#trackHundreds') as HTMLElement;
     this.colTens = this.root.querySelector('#colTens') as HTMLElement;
@@ -83,58 +95,121 @@ export class AnimaxLoader {
     this.colUnits = this.root.querySelector('#colUnits') as HTMLElement;
     this.trackUnits = this.root.querySelector('#trackUnits') as HTMLElement;
 
+    // Initialize clean transform origin for left-aligned counter
+    gsap.set(this.counterEl, { xPercent: 0, x: 0 });
+
+    // Initialize ultra-fast hardware quickSetters for sub-pixel pixel translations
+    this.setUnitsY = gsap.quickSetter(this.trackUnits, 'y', 'px') as (value: number) => void;
+    this.setTensY = gsap.quickSetter(this.trackTens, 'y', 'px') as (value: number) => void;
+    this.setHundredsY = gsap.quickSetter(this.trackHundreds, 'y', 'px') as (value: number) => void;
+
+    // Pre-measure digit height once attached
+    this.singleDigitHeight = this.measureDigitHeight();
+
+    // Responsive recalculation on viewport resize
+    window.addEventListener('resize', this.handleResize, { passive: true });
+
+    // Initialize columns at 0
+    this.updateColumns(0);
+
     // Start continuous, buttery-smooth GSAP progression
     this.startSmoothCounter();
   }
 
+  private measureDigitHeight(): number {
+    if (!this.trackUnits) return 0;
+    const span = this.trackUnits.querySelector('span');
+    if (span) {
+      const rect = span.getBoundingClientRect();
+      if (rect.height > 0) {
+        return rect.height;
+      }
+    }
+    if (this.colUnits && this.colUnits.clientHeight > 0) {
+      return this.colUnits.clientHeight;
+    }
+    const computedFs = parseFloat(window.getComputedStyle(this.counterEl || this.root).fontSize) || 96;
+    return computedFs * 0.85;
+  }
+
+  private getDigitHeight(): number {
+    if (this.singleDigitHeight <= 0) {
+      this.singleDigitHeight = this.measureDigitHeight();
+    }
+    return this.singleDigitHeight;
+  }
+
+  private handleResize = (): void => {
+    this.singleDigitHeight = this.measureDigitHeight();
+    this.updateColumns(this.currentProgress.val);
+  };
+
   /**
-   * Starts a smooth, continuous 60 FPS sub-pixel tween.
-   * Runs smoothly towards 92% over 1.4s, and smoothly accelerates to 100% as soon
-   * as the assets are ready without ANY freezing, jumping, or stalling.
+   * Starts a smooth, continuous sub-pixel timeline from 0 to 100.
+   * Modulates timeScale dynamically when assets finish buffering,
+   * eliminating velocity discontinuities, tween interruption, or stutter.
    */
   private startSmoothCounter(): void {
     this.tween = gsap.to(this.currentProgress, {
-      val: 92,
-      duration: 1.4,
+      val: 100,
+      duration: 3.2,
       ease: 'power1.inOut',
       onUpdate: () => {
-        this.updateColumns(this.currentProgress.val);
+        const val = this.currentProgress.val;
+
+        // Soft braking if assets are not ready yet as we approach completion ceiling
+        if (!this.isAssetsReady) {
+          if (val >= 92) {
+            this.currentProgress.val = 92;
+            this.updateColumns(92);
+            this.tween?.pause();
+            return;
+          } else if (val >= 80 && !this.isBraking && this.tween) {
+            this.isBraking = true;
+            gsap.to(this.tween, { timeScale: 0.4, duration: 0.6, ease: 'power2.out' });
+          }
+        }
+
+        this.updateColumns(val);
       },
       onComplete: () => {
-        if (this.isAssetsReady) {
-          this.finishToCompletion();
-        }
+        this.triggerOutro();
       }
     });
   }
 
   /**
-   * Translates column strips smoothly with GPU sub-pixel positioning.
+   * Translates column strips smoothly with GPU sub-pixel positioning using gsap.quickSetter.
    * Container width remains 100% static and stable throughout.
    */
   private updateColumns(p: number): void {
     const clamped = Math.min(100, Math.max(0, p));
-    this.root.setAttribute('aria-valuenow', Math.round(clamped).toString());
+    const h = this.getDigitHeight();
 
-    // 1. Units Column (101 items total, continuous analog roll)
-    const unitPercent = -(clamped / 101) * 100;
-    this.trackUnits.style.transform = `translate3d(0, ${unitPercent.toFixed(4)}%, 0)`;
+    // 1. Throttle aria-valuenow to whole integer updates to prevent accessibility tree recalculation thrash
+    const intVal = Math.round(clamped);
+    if (intVal !== this.lastAriaVal) {
+      this.lastAriaVal = intVal;
+      this.root.setAttribute('aria-valuenow', String(intVal));
+    }
 
-    // 2. Tens Column (11 items total, continuous roll)
-    const tensPercent = -(clamped / 110) * 100;
-    this.trackTens.style.transform = `translate3d(0, ${tensPercent.toFixed(4)}%, 0)`;
+    // 2. Units Column (101 items total, 0-100 continuous mapping: 1 progress unit = 1 row height)
+    this.setUnitsY(-clamped * h);
 
-    // 3. Hundreds Column (rolls '1' into its already-reserved slot at 100% - ZERO horizontal layout shift)
-    if (clamped < 96) {
-      this.trackHundreds.style.transform = 'translate3d(0, 0%, 0)';
+    // 3. Tens Column (11 items total, 0-10 mapping: 10 progress units = 1 row height)
+    this.setTensY(-(clamped / 10) * h);
+
+    // 4. Hundreds Column (rolls '1' into its reserved slot between 95 and 100)
+    if (clamped < 95) {
+      this.setHundredsY(0);
     } else {
-      const factor = Math.min(1, Math.max(0, (clamped - 96) / 4));
-      this.trackHundreds.style.transform = `translate3d(0, ${(-factor * 50).toFixed(4)}%, 0)`;
+      const factor = Math.min(1, Math.max(0, (clamped - 95) / 5));
+      this.setHundredsY(-factor * h);
     }
   }
 
   public setProgress(_pct: number, _message?: string): void {
-    // Uncoupled from stepped network spikes to guarantee silky 60 FPS motion
+    // Uncoupled from stepped network spikes to guarantee silky 60-120 FPS motion
   }
 
   public onComplete(cb: () => void): void {
@@ -143,45 +218,45 @@ export class AnimaxLoader {
 
   /**
    * Called when assets have finished buffering.
-   * Smoothly finishes the tween to 100% and triggers outro without stalling.
+   * Smoothly accelerates the continuous timeline to 100% and triggers outro without stalling.
    */
   public finish(): Promise<void> {
-    return new Promise((resolve) => {
+    if (this.finishPromise) return this.finishPromise;
+
+    this.finishPromise = new Promise((resolve) => {
       this.isAssetsReady = true;
       this.onCompleteCallback = resolve;
-      this.finishToCompletion();
-    });
-  }
 
-  private finishToCompletion(): void {
-    if (this.isFinished) return;
+      if (this.isFinished) {
+        resolve();
+        return;
+      }
 
-    if (this.tween) {
-      this.tween.kill();
-    }
-
-    // Smoothly glide from current progress to 100% with gentle deceleration
-    const remainingDistance = 100 - this.currentProgress.val;
-    const duration = Math.max(0.35, (remainingDistance / 100) * 0.9);
-
-    this.tween = gsap.to(this.currentProgress, {
-      val: 100,
-      duration,
-      ease: 'power2.out',
-      onUpdate: () => {
-        this.updateColumns(this.currentProgress.val);
-      },
-      onComplete: () => {
+      if (this.tween) {
+        if (this.tween.paused()) {
+          this.tween.play();
+        }
+        // Smoothly accelerate to 1.6x so the remaining roll is visible and buttery
+        gsap.to(this.tween, {
+          timeScale: 1.6,
+          duration: 0.5,
+          ease: 'power2.out'
+        });
+      } else {
         this.triggerOutro();
       }
     });
+
+    return this.finishPromise;
   }
 
   private triggerOutro(): void {
     if (this.isFinished) return;
     this.isFinished = true;
 
-    // Lock exact final alignment
+    window.removeEventListener('resize', this.handleResize);
+
+    // Lock exact final alignment at 100
     this.updateColumns(100);
 
     const prefersReduced =
@@ -209,22 +284,20 @@ export class AnimaxLoader {
       return;
     }
 
-    const counter = this.root.querySelector('#lusionCounter') as HTMLElement;
-
     // Slight beat on 100 for dramatic impact, then smooth curtain lift
     outroTl
-      .to({}, { duration: 0.2 })
-      .to(counter, {
-        y: -40,
+      .to({}, { duration: 0.28 })
+      .to(this.counterEl, {
+        y: -36,
         opacity: 0,
-        duration: 0.45,
+        duration: 0.5,
         ease: 'power3.inOut'
       })
       .to(
         this.root,
         {
           yPercent: -100,
-          duration: 0.85,
+          duration: 0.9,
           ease: 'power4.inOut'
         },
         '-=0.25'
@@ -232,6 +305,7 @@ export class AnimaxLoader {
   }
 
   public destroy(): void {
+    window.removeEventListener('resize', this.handleResize);
     if (this.tween) {
       this.tween.kill();
     }
