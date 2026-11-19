@@ -97,7 +97,7 @@ export class TextureManager {
 
   /**
    * Initializes preview card textures for the carousel.
-   * Loads all images per project and sets up staggered slideshow cycling and video streams.
+   * Loads all images per project and sets up staggered slideshow cycling with liquid shader transitions.
    */
   public initPreviewTextures(projects: ShowcaseProject[]): (WebGLTexture | null)[] {
     this.projects = projects;
@@ -673,6 +673,9 @@ export class TextureManager {
   public destroy(): void {
     this.disposed = true;
     const gl = this.gl;
+    if (this.fallbackTexture) {
+      gl.deleteTexture(this.fallbackTexture);
+    }
     this.previewTextures.forEach(t => t && gl.deleteTexture(t));
     this.nextTextures.forEach(t => t && gl.deleteTexture(t));
     this.galleryTextures.forEach(list => list.forEach(t => t && gl.deleteTexture(t)));

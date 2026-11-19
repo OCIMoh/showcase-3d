@@ -94,6 +94,7 @@ export class CylinderCarouselEngine {
   private isContextLost = false;
   private rafId: number | null = null;
   private prefersReducedMotion = false;
+  private onResize = () => this.resize();
 
   constructor(options: CylinderCarouselOptions) {
     this.container = options.container;
@@ -196,7 +197,39 @@ export class CylinderCarouselEngine {
     this.galleryPass = new GalleryPass(this.gl, this.galleryProgramInfo, this.config, this.textureManager);
 
     const projectTitles = this.projects.map(p => p.title.split('—')[0].trim());
-    this.arcHud = new ArcHudComponent(this.wrapper, projectTitles);
+    this.arcHud = new ArcHudComponent(this.wrapper, projectTitles, {
+      onSelectProject: () => {
+        if (this.heroOpenAmount < 0.2) {
+          const centerProj = this.projects[this.lastCenterIdx] || this.projects[0];
+          if (centerProj) {
+            const bounds = this.arcHud.getBounds();
+            this.openProject(centerProj, bounds.left + bounds.width / 2, bounds.top);
+          }
+        }
+      },
+      onDragDelta: (deltaProgress) => {
+        if (this.heroOpenAmount < 0.2) {
+          const spacing = this.config.spacing * this.responsiveScale;
+          this.targetPos += deltaProgress * spacing;
+        }
+      },
+      onFling: (vy) => {
+        if (this.heroOpenAmount < 0.2) {
+          const spacing = this.config.spacing * this.responsiveScale;
+          this.targetPos += vy * spacing * 0.35;
+          this.snapToNearestCard();
+        }
+      },
+      onScrubProgress: (t) => {
+        if (this.heroOpenAmount < 0.2) {
+          const numItems = this.projects.length;
+          const spacing = this.config.spacing * this.responsiveScale;
+          const targetIndex = t * (numItems - 1);
+          this.targetPos = -targetIndex * spacing;
+          this.snapToNearestCard();
+        }
+      }
+    });
 
     this.overlay = new OverlayComponent(this.wrapper, this.brand, this.projects, {
       onCloseCaseStudy: () => this.closeProject(),
@@ -265,11 +298,10 @@ export class CylinderCarouselEngine {
       onEscape: () => {
         if (this.heroOpenAmount > 0.5) this.closeProject();
       },
-      isAboutOpen: () => false,
       isCaseStudyOpen: () => this.heroOpenAmount > 0.5
     });
 
-    window.addEventListener('resize', () => this.resize());
+    window.addEventListener('resize', this.onResize);
   }
 
   private tick(): void {
@@ -426,7 +458,7 @@ export class CylinderCarouselEngine {
       if (this.heroOpenAmount > 0.5 && this.galleryEntrance > 0.75) {
         const entranceSpacingMult = 1.0 + (1.0 - this.galleryEntrance);
         const gSpacing = cfg.gallerySpacing * rScale * entranceSpacingMult;
-        const numG = 8;
+        const numG = this.textureManager.getGalleryTextures(this.activeProject).length || 8;
         const currentCardIdx = Math.floor((((-this.galleryPos / gSpacing) % numG) + numG) % numG);
         if (this.lastGalleryCardIdx !== undefined && this.lastGalleryCardIdx !== currentCardIdx) {
           this.synth.playTone(540 + currentCardIdx * 25, 'sine', 0.02, 0.025);
@@ -601,7 +633,7 @@ export class CylinderCarouselEngine {
   }
 
   /**
-   * Preloads textures, video metadata, and typography assets for the Animax Loader.
+   * Preloads textures and typography assets for the Animax Loader.
    */
   public preloadAssets(
     onProgress?: (loaded: number, total: number, name: string) => void
@@ -616,6 +648,7 @@ export class CylinderCarouselEngine {
     this.isRunning = false;
     if (this.rafId !== null) cancelAnimationFrame(this.rafId);
 
+    window.removeEventListener('resize', this.onResize);
     this.inputController.destroy();
     this.textureManager.destroy();
     this.synth.destroy();

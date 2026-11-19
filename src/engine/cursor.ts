@@ -17,6 +17,8 @@ export class CustomCursor {
   private isHovering = false;
   private isGrabbing = false;
   private isRunning = true;
+  private rafId: number | null = null;
+  private cleanupFns: Array<() => void> = [];
 
   constructor(cursorId: string = 'customCursor') {
     let el = document.getElementById(cursorId);
@@ -40,40 +42,55 @@ export class CustomCursor {
 
     this.bindEvents();
     this.loop = this.loop.bind(this);
-    requestAnimationFrame(this.loop);
+    this.rafId = requestAnimationFrame(this.loop);
   }
 
   private bindEvents(): void {
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
       return; // Touch device — native finger interaction
     }
-    window.addEventListener('mousemove', (e) => {
+
+    const onMouseMove = (e: MouseEvent) => {
       this.mouseX = e.clientX;
       this.mouseY = e.clientY;
       if (!this.isVisible) {
         this.isVisible = true;
         this.element.classList.add('is-visible');
       }
-    });
+    };
 
-    document.addEventListener('mouseleave', () => {
+    const onMouseLeave = () => {
       this.isVisible = false;
       this.element.classList.remove('is-visible');
-    });
+    };
 
-    document.addEventListener('mouseenter', () => {
+    const onMouseEnter = () => {
       this.isVisible = true;
       this.element.classList.add('is-visible');
-    });
+    };
 
-    document.addEventListener('mousedown', () => {
+    const onMouseDown = () => {
       this.isGrabbing = true;
       this.element.classList.add('is-grabbing');
-    });
+    };
 
-    document.addEventListener('mouseup', () => {
+    const onMouseUp = () => {
       this.isGrabbing = false;
       this.element.classList.remove('is-grabbing');
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseleave', onMouseLeave);
+    document.addEventListener('mouseenter', onMouseEnter);
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+
+    this.cleanupFns.push(() => {
+      window.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseleave', onMouseLeave);
+      document.removeEventListener('mouseenter', onMouseEnter);
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
     });
   }
 
@@ -89,8 +106,14 @@ export class CustomCursor {
 
   public bindInteractive(elements: NodeListOf<Element> | Element[], label: string): void {
     elements.forEach(el => {
-      el.addEventListener('mouseenter', () => this.setContext(label, true));
-      el.addEventListener('mouseleave', () => this.setContext('EXPLORE', false));
+      const onEnter = () => this.setContext(label, true);
+      const onLeave = () => this.setContext('EXPLORE', false);
+      el.addEventListener('mouseenter', onEnter);
+      el.addEventListener('mouseleave', onLeave);
+      this.cleanupFns.push(() => {
+        el.removeEventListener('mouseenter', onEnter);
+        el.removeEventListener('mouseleave', onLeave);
+      });
     });
   }
 
@@ -103,10 +126,14 @@ export class CustomCursor {
 
     this.element.style.transform = `translate3d(${this.currentX}px, ${this.currentY}px, 0)`;
 
-    requestAnimationFrame(this.loop);
+    this.rafId = requestAnimationFrame(this.loop);
   }
 
   public destroy(): void {
     this.isRunning = false;
+    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+    this.cleanupFns.forEach(fn => fn());
+    this.cleanupFns = [];
+    this.element.remove();
   }
 }
