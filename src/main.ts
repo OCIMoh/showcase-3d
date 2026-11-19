@@ -49,15 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 5. Track Real Asset Loading & Buffer Progress
+  // 5. Track Real Asset Loading & Buffer Progress with Fail-Safe Timeout
   const minLoadTimePromise = new Promise(res => setTimeout(res, 1200));
+  const maxTimeoutPromise = new Promise(res => setTimeout(res, 3500));
 
   const assetPreloadPromise = engine.preloadAssets((loaded, total, name) => {
     const rawPct = 15 + Math.round((loaded / total) * 82);
     loader.setProgress(rawPct, `BUFFERING: ${name}`);
-  });
+  }).catch(() => {});
 
-  Promise.all([assetPreloadPromise, minLoadTimePromise]).then(() => {
+  Promise.race([
+    Promise.all([assetPreloadPromise, minLoadTimePromise]),
+    maxTimeoutPromise
+  ]).finally(() => {
     loader.finish();
   });
 

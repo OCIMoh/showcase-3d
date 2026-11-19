@@ -624,15 +624,20 @@ export class ArcHudComponent {
       );
     }
 
-    // 2. D3 Staggered tick entrance
+    // 2. Staggered tick entrance via GSAP (avoids d3-transition Rollup tree-shaking bug in production)
     if (this.ticksGroup) {
-      d3.select(this.ticksGroup)
-        .selectAll('line.ma-arc-tick')
-        .style('opacity', 0)
-        .transition()
-        .delay((_d: any, i: number) => 220 + i * 16)
-        .duration(420)
-        .style('opacity', (d: any) => d?.isMajor ? 0.36 : 0.18);
+      const ticks = this.ticksGroup.querySelectorAll<SVGLineElement>('line.ma-arc-tick');
+      gsap.fromTo(ticks,
+        { opacity: 0 },
+        {
+          opacity: (_i, el) => el.classList.contains('ma-arc-tick--major') ? 0.36 : 0.18,
+          duration: 0.42,
+          stagger: 0.016,
+          delay: 0.22,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        }
+      );
     }
 
     // 3. Arc curve vertical relaxation
