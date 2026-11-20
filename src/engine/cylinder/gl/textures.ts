@@ -309,8 +309,9 @@ export class TextureManager {
 
   /**
    * Lazy-loads and retrieves gallery textures for the given active project.
-   * Interleaves 4 image slides with 4 asymmetric typography panels:
-   * [Img 0, Text 0 (INTENT), Img 1, Text 1 (HIGHLIGHTS), Img 2, Text 2 (COLOPHON), Img 3, Text 3 (ARCHIVE)]
+   * Slot 0 is the dedicated Hero Title Panel with nice typography & one-liner.
+   * Followed by alternating image slides and deep craft/colophon panels:
+   * [Text 0 (HERO TITLE), Img 0, Text 1 (CRAFT & PROCESS), Img 1, Text 2 (COLOPHON), Img 2, Text 3 (ARCHIVE), Img 3]
    */
   public getGalleryTextures(proj: ShowcaseProject): (WebGLTexture | null)[] {
     if (this.galleryTextures.has(proj.slug)) {
@@ -323,20 +324,32 @@ export class TextureManager {
     // 8 items total in the continuous vertical column
     for (let i = 0; i < 8; i++) {
       const tex = gl.createTexture();
-      if (i % 2 === 1) {
-        // Typography panel: Render and upload synchronously with transparent background
-        const textCanvas = this.renderTypographyPanel(proj, Math.floor(i / 2));
+      if (i === 0) {
+        // Slot 0: Pure Sick Hero Title — Project Name with monumental typography
+        const heroCanvas = this.renderHeroTitlePanel(proj);
+        this.uploadTexture(tex!, heroCanvas);
+      } else if (i % 2 === 0) {
+        // Even slots 2, 4, 6: Scattered typography panels throughout the barrel
+        // Slot 2: INTENT (The design statement, poetic tagline, and story)
+        // Slot 4: COLOPHON (Swiss tabular specs, discipline, provenance, allocation)
+        // Slot 6: ARCHIVE (Literary manifesto, field notes, quote)
+        let panelType = 0;
+        if (i === 2) panelType = 0;      // INTENT & Thesis statement
+        else if (i === 4) panelType = 2; // COLOPHON & Specs
+        else if (i === 6) panelType = 3; // ARCHIVE & Manifesto
+        const textCanvas = this.renderTypographyPanel(proj, panelType);
         this.uploadTexture(tex!, textCanvas);
       } else {
-        // Image card: Initial placeholder canvas
-        const imgCanvas = this.renderGalleryCard(proj, Math.floor(i / 2));
+        // Odd slots 1, 3, 5, 7: Image cards (Image 0 appears directly after the Hero Title)
+        const imgIdx = Math.floor(i / 2); // 0, 1, 2, 3
+        const imgCanvas = this.renderGalleryCard(proj, imgIdx);
         this.uploadTexture(tex!, imgCanvas);
       }
       texList.push(tex);
     }
     this.galleryTextures.set(proj.slug, texList);
 
-    // Asynchronously load image assets for the 4 image slides (slots 0, 2, 4, 6)
+    // Asynchronously load image assets for the 4 image slides (slots 1, 3, 5, 7)
     const images: string[] = [];
     if (proj.galleryImages && proj.galleryImages.length > 0) {
       images.push(...proj.galleryImages);
@@ -356,7 +369,7 @@ export class TextureManager {
     ];
 
     slideSources.forEach((src, imgIdx) => {
-      const slotIdx = imgIdx * 2; // 0, 2, 4, 6
+      const slotIdx = imgIdx * 2 + 1; // slots 1, 3, 5, 7
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
@@ -500,11 +513,71 @@ export class TextureManager {
   }
 
   /**
+   * Renders the Hero Title Panel as Slot 0 of the 3D barrel gallery.
+   * Features:
+   * - Monumental, sculptural typography for the Project Name (increased by 50% to 315px scale)
+   * - 100% transparent canvas (zero boxes, zero gray card containers, zero clutter)
+   * - Slop-free architectural kicker above and confident monograph line below
+   * - Narrative text, specs, and quotes are scattered across subsequent typography
+   *   panels (Slots 2, 4, 6) in the vertical barrel scroll.
+   */
+  public renderHeroTitlePanel(proj: ShowcaseProject): HTMLCanvasElement {
+    const c = document.createElement('canvas');
+    c.width = 2048;
+    c.height = 1024;
+    const ctx = c.getContext('2d')!;
+
+    // Strictly transparent canvas — typography floats cleanly on paper backdrop
+    ctx.clearRect(0, 0, 2048, 1024);
+
+    const padX = 140;
+
+    // 1. Pristine Architectural Kicker (Slop-free: no code slashes or telemetry)
+    ctx.save();
+    ctx.font = '600 24px monospace';
+    ctx.fillStyle = 'rgba(18, 18, 18, 0.40)';
+    if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.24em';
+    const kicker = `OVERVIEW · ${(proj.category.split('//')[0].trim()).toUpperCase()} · ${(proj.year || '2026')}`;
+    ctx.fillText(kicker, padX, 260);
+    ctx.restore();
+
+    // Subtle hairline accent under kicker
+    ctx.fillStyle = 'rgba(18, 18, 18, 0.16)';
+    ctx.fillRect(padX, 282, 80, 2);
+
+    // 2. SICK HERO TITLE (Massive 315px scale — increased by 50%)
+    const projectName = proj.title.split('—')[0].trim();
+    let fontSize = Math.round(210 * 1.5); // 315px
+    if (projectName.length > 8) fontSize = Math.round(160 * 1.5); // 240px
+    if (projectName.length > 12) fontSize = Math.round(130 * 1.5); // 195px
+
+    ctx.save();
+    ctx.font = `800 ${fontSize}px "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+    ctx.fillStyle = '#0e0e0e';
+    if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '-0.025em';
+    const titleY = 570;
+    ctx.fillText(projectName, padX, titleY);
+    ctx.restore();
+
+    // 3. Elegant Sub-Baseline Monogram & Provenance Kicker (Slop-free)
+    ctx.save();
+    ctx.font = '600 24px monospace';
+    ctx.fillStyle = 'rgba(18, 18, 18, 0.45)';
+    if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.20em';
+    const provenance = `${(proj.brand || proj.name).toUpperCase()} — ${(proj.location || proj.client || 'ATELIER COLLECTION').toUpperCase()}`;
+    ctx.fillText(provenance, padX, titleY + 95);
+    ctx.restore();
+
+    return c;
+  }
+
+  /**
    * Renders floating typography panels with strictly transparent background and deep authentic domain content.
-   * 0: INTENT (Hero statement, brand tagline, location / allocation)
+   * Slop-free: zero code comment slashes (//), zero dev telemetry (60 FPS, GPU, WebGL stack), zero redundant titles.
+   * 0: INTENT & THESIS (Poetic tagline, monograph narrative, allocation)
    * 1: CRAFT & PROCESS (Story steps, fragrance pyramid, or technical execution)
-   * 2: COLOPHON (Swiss 2-column tabular specs: alloy core, flacon, charter, tour seats)
-   * 3: ARCHIVE (Authentic founder / tester quote & catalog provenance)
+   * 2: COLOPHON (Swiss tabular specs: concentration, flacon, cap, allocation)
+   * 3: ARCHIVE (Authentic founder quote & catalog provenance)
    */
   public renderTypographyPanel(proj: ShowcaseProject, type: number): HTMLCanvasElement {
     const c = document.createElement('canvas');
@@ -516,98 +589,111 @@ export class TextureManager {
     ctx.clearRect(0, 0, 2048, 1024);
 
     if (type === 0) {
-      // INTENT: Left-anchored design statement with negative space on the right
+      // INTENT & THESIS: Literary statement & brand monograph (no duplicate title, no slop)
       ctx.save();
-      ctx.font = '600 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.font = '600 24px monospace';
       ctx.fillStyle = 'rgba(18, 18, 18, 0.42)';
       if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.22em';
-      ctx.fillText(`INTENT // ${(proj.brand || proj.name).toUpperCase()}`, 140, 220);
+      ctx.fillText(`THESIS · ${(proj.brand || proj.name).toUpperCase()} PHILOSOPHY`, 140, 200);
       ctx.restore();
 
-      ctx.fillStyle = 'rgba(18, 18, 18, 0.18)';
-      ctx.fillRect(140, 240, 60, 2);
+      ctx.fillStyle = 'rgba(18, 18, 18, 0.16)';
+      ctx.fillRect(140, 222, 60, 2);
 
-      const headline = proj.heroHeadline || proj.title.split('—')[0].trim();
-      ctx.font = '700 64px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillStyle = '#111111';
-      wrapText(ctx, headline, 140, 360, 1360, 80, 2);
+      // Poetic Tagline / Monograph Hook
+      const tagline = proj.tagline
+        ? `“${proj.tagline}”`
+        : (proj.quote ? `“${proj.quote.text}”` : `“${proj.description.split('.')[0]}.”`);
 
-      ctx.font = '400 32px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillStyle = 'rgba(18, 18, 18, 0.76)';
-      const intentBody = proj.tagline ? `“${proj.tagline}” — ${proj.description}` : proj.description;
-      wrapText(ctx, intentBody, 140, 540, 1360, 52, 4);
+      ctx.font = 'italic 400 48px Georgia, "Times New Roman", serif';
+      ctx.fillStyle = '#0e0e0e';
+      const afterTaglineY = wrapText(ctx, tagline, 140, 340, 1720, 66, 2);
 
-      if (proj.location || proj.pricing?.price) {
-        ctx.font = '600 22px monospace';
-        ctx.fillStyle = 'rgba(18, 18, 18, 0.45)';
-        const metaText = proj.location
-          ? `LOCATION: ${proj.location.toUpperCase()} · ${proj.contact?.phone || ''}`
-          : `EDITION: ${proj.pricing?.price} · ${proj.pricing?.allocation || proj.pricing?.scarcity || 'ACTIVE'}`;
-        ctx.fillText(metaText, 140, 820);
-      }
+      // Deep Brand Monograph Body
+      ctx.font = '400 28px "Plus Jakarta Sans", sans-serif';
+      ctx.fillStyle = 'rgba(18, 18, 18, 0.72)';
+      wrapText(ctx, proj.description, 140, afterTaglineY + 36, 1720, 44, 3);
+
+      // Edition Notes & Allocation (Bottom)
+      const editionNotes = proj.pricing?.allocation || proj.pricing?.scarcity || (proj.location ? `ATELIER LOCATION: ${proj.location.toUpperCase()}` : `EDITION RELEASE: ${proj.year || '2026'}`);
+      ctx.fillStyle = 'rgba(18, 18, 18, 0.10)';
+      ctx.fillRect(140, 780, 1720, 1.5);
+
+      ctx.save();
+      ctx.font = '600 20px monospace';
+      ctx.fillStyle = 'rgba(18, 18, 18, 0.46)';
+      if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.18em';
+      ctx.fillText(`ALLOCATION & HARVEST: ${editionNotes.toUpperCase()}`, 140, 825);
+      ctx.restore();
 
     } else if (type === 1) {
-      // CRAFT / HIGHLIGHTS / PROCESS: Multi-phase narrative
+      // CRAFT / HIGHLIGHTS / PROCESS: Multi-phase narrative (Slop-free)
       ctx.save();
-      ctx.font = '600 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.font = '600 24px monospace';
       ctx.fillStyle = 'rgba(18, 18, 18, 0.42)';
       if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.22em';
-      ctx.fillText('CRAFT & PROCESS', 520, 220);
+      ctx.fillText('CRAFT · PROCESS & SENSORY ARCHITECTURE', 140, 200);
       ctx.restore();
 
-      ctx.font = '700 48px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = 'rgba(18, 18, 18, 0.16)';
+      ctx.fillRect(140, 222, 60, 2);
+
+      ctx.font = '700 44px "Plus Jakarta Sans", sans-serif';
       ctx.fillStyle = '#111111';
       const subTitle = proj.storySteps
         ? 'Sequential Execution & Story'
-        : (proj.fragrancePyramid ? 'Olfactory Scent Architecture' : 'Structural Observations & Execution');
-      ctx.fillText(subTitle, 520, 330);
+        : (proj.fragrancePyramid ? 'Olfactory Scent Architecture' : 'Structural Observations & Atelier Execution');
+      ctx.fillText(subTitle, 140, 310);
 
       if (proj.storySteps && proj.storySteps.length > 0) {
-        let startY = 430;
+        let startY = 410;
         for (let i = 0; i < Math.min(3, proj.storySteps.length); i++) {
           const step = proj.storySteps[i];
-          ctx.font = '600 26px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.font = '600 26px "Plus Jakarta Sans", sans-serif';
           ctx.fillStyle = '#111111';
-          ctx.fillText(step.step, 520, startY);
+          ctx.fillText(step.step, 140, startY);
 
-          ctx.font = '400 26px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-          ctx.fillStyle = 'rgba(18, 18, 18, 0.78)';
-          wrapText(ctx, `${step.headline} — ${step.body}`, 520, startY + 40, 1380, 40, 2);
+          ctx.font = '400 24px "Plus Jakarta Sans", sans-serif';
+          ctx.fillStyle = 'rgba(18, 18, 18, 0.74)';
+          wrapText(ctx, `${step.headline} — ${step.body}`, 140, startY + 36, 1720, 38, 2);
           startY += 120;
         }
       } else if (proj.fragrancePyramid && proj.fragrancePyramid.length > 0) {
-        let startY = 430;
+        let startY = 410;
         for (let i = 0; i < Math.min(3, proj.fragrancePyramid.length); i++) {
           const pyr = proj.fragrancePyramid[i];
-          ctx.font = '600 26px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.font = '600 26px "Plus Jakarta Sans", sans-serif';
           ctx.fillStyle = '#111111';
-          ctx.fillText(`${pyr.layer} — ${pyr.title}`, 520, startY);
+          ctx.fillText(`${pyr.layer} — ${pyr.title}`, 140, startY);
 
-          ctx.font = '400 26px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-          ctx.fillStyle = 'rgba(18, 18, 18, 0.78)';
-          wrapText(ctx, pyr.notes, 520, startY + 40, 1380, 40, 2);
+          ctx.font = '400 24px "Plus Jakarta Sans", sans-serif';
+          ctx.fillStyle = 'rgba(18, 18, 18, 0.74)';
+          wrapText(ctx, pyr.notes, 140, startY + 36, 1720, 38, 2);
           startY += 120;
         }
       } else {
         const highlights = proj.highlights || [];
-        let startY = 440;
+        let startY = 420;
         for (let i = 0; i < Math.min(3, highlights.length); i++) {
-          ctx.font = '400 30px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-          ctx.fillStyle = 'rgba(18, 18, 18, 0.78)';
-          ctx.fillText('—', 520, startY);
-          wrapText(ctx, highlights[i], 560, startY, 1340, 44, 2);
+          ctx.font = '400 28px "Plus Jakarta Sans", sans-serif';
+          ctx.fillStyle = 'rgba(18, 18, 18, 0.74)';
+          ctx.fillText('—', 140, startY);
+          wrapText(ctx, highlights[i], 180, startY, 1680, 42, 2);
           startY += 96;
         }
       }
 
     } else if (type === 2) {
-      // COLOPHON / SPECIFICATIONS: Swiss 2-column tabular rail
+      // COLOPHON / SPECIFICATIONS: Swiss tabular specifications rail (Zero dev telemetry)
       ctx.save();
-      ctx.font = '600 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.font = '600 24px monospace';
       ctx.fillStyle = 'rgba(18, 18, 18, 0.42)';
       if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.22em';
-      ctx.fillText('COLOPHON // SPECIFICATIONS', 140, 200);
+      ctx.fillText('COLOPHON · SPECIFICATIONS & ATELIER CRAFT', 140, 200);
       ctx.restore();
+
+      ctx.fillStyle = 'rgba(18, 18, 18, 0.16)';
+      ctx.fillRect(140, 222, 60, 2);
 
       const specs: Array<{ label: string; value: string }> = [];
       if (proj.specs) {
@@ -617,10 +703,10 @@ export class TextureManager {
       }
       if (specs.length === 0) {
         specs.push(
-          { label: 'DISCIPLINE', value: proj.category || 'Creative Engineering / 3D WebGL' },
-          { label: 'STACK', value: proj.techStack?.join('   ·   ') || 'TypeScript · WebGL · GLSL · GSAP' },
-          { label: 'METRICS', value: proj.metrics || 'Production Build · 60 FPS Locked' },
-          { label: 'RELEASE', value: `${proj.year || '2026'} Edition // ${proj.client || 'Studio'}` }
+          { label: 'DISCIPLINE', value: (proj.category.split('//')[0].trim()).toUpperCase() },
+          { label: 'PROVENANCE', value: (proj.client || proj.brand || 'Bespoke Atelier Commission').toUpperCase() },
+          { label: 'MATERIAL CRAFT', value: 'Architectural Fluted Crystal & Honed Mineral Assembly' },
+          { label: 'ALLOCATION', value: (proj.pricing?.allocation || proj.pricing?.scarcity || `${proj.year || '2026'} Archive Edition`).toUpperCase() }
         );
       }
 
@@ -630,13 +716,13 @@ export class TextureManager {
         ctx.fillRect(140, rowY - 50, 1760, 1.5);
 
         ctx.save();
-        ctx.font = '600 20px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        ctx.font = '600 20px monospace';
         ctx.fillStyle = 'rgba(18, 18, 18, 0.45)';
         if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.14em';
         ctx.fillText(spec.label, 140, rowY);
         ctx.restore();
 
-        ctx.font = '500 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        ctx.font = '500 28px "Plus Jakarta Sans", sans-serif';
         ctx.fillStyle = '#121212';
         ctx.fillText(spec.value, 540, rowY);
 
@@ -644,27 +730,33 @@ export class TextureManager {
       }
 
     } else {
-      // ARCHIVE / MANIFESTO: Literary monograph quote & provenance
+      // ARCHIVE / MANIFESTO: Literary monograph quote & provenance (Zero buzzword slop)
       ctx.save();
-      ctx.font = '600 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.font = '600 24px monospace';
       ctx.fillStyle = 'rgba(18, 18, 18, 0.42)';
       if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.22em';
-      ctx.fillText('ARCHIVE // FIELD MANIFESTO', 140, 240);
+      ctx.fillText('ARCHIVE · MONOGRAPH MANIFESTO & FIELD NOTES', 140, 240);
       ctx.restore();
 
-      ctx.font = 'italic 400 44px Georgia, "Times New Roman", serif';
-      ctx.fillStyle = '#181818';
+      ctx.fillStyle = 'rgba(18, 18, 18, 0.16)';
+      ctx.fillRect(140, 262, 60, 2);
+
+      ctx.font = 'italic 400 46px Georgia, "Times New Roman", serif';
+      ctx.fillStyle = '#141414';
       const quoteText = proj.quote?.text
         ? `“${proj.quote.text}”`
-        : '“An exploration in continuous spatial momentum, procedural vertex deformation, and tactile digital physics.”';
-      wrapText(ctx, quoteText, 140, 370, 1480, 66, 3);
+        : '“Crafted for those who linger in memory long after they have gone. An enduring dedication to tactile permanence, raw materials, and quiet restraint.”';
+      wrapText(ctx, quoteText, 140, 390, 1680, 68, 3);
 
-      ctx.font = '500 22px monospace';
+      ctx.save();
+      ctx.font = '600 20px monospace';
       ctx.fillStyle = 'rgba(18, 18, 18, 0.45)';
-      const prov = proj.quote?.author
-        ? `— ${proj.quote.author.toUpperCase()}${proj.quote.role ? `, ${proj.quote.role.toUpperCase()}` : ''} // ${(proj.brand || proj.name).toUpperCase()}`
-        : `STUDIO ARCHIVE // ${proj.name.toUpperCase()} — CATALOG // RELEASE ${proj.year || '2026'}`;
-      ctx.fillText(prov, 140, 680);
+      if ('letterSpacing' in ctx) (ctx as any).letterSpacing = '0.16em';
+      const author = proj.quote?.author || proj.client || proj.brand || proj.name;
+      const location = proj.location || 'Atelier Laboratory';
+      const year = proj.year || '2026';
+      ctx.fillText(`— ${author.toUpperCase()} · ${location.toUpperCase()} (${year})`, 140, 680);
+      ctx.restore();
     }
 
     return c;
