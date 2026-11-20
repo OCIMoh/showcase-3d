@@ -64,19 +64,19 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Our craft philosophy, 3-step delivery process, bespoke 3D WebGL packages, and FAQs.'
   },
   {
-    path: '/hire',
-    name: 'hire',
+    path: '/contact',
+    name: 'contact',
     waypoint: 'DRAWER',
-    title: 'Start a Project — Showcase3D.cloud Commission Terminal',
-    description: 'Commission a bespoke 3D website or agency collaboration. Response guaranteed within one business day.',
+    title: 'Commission the Studio — Showcase3D.cloud Spatial Dispatch',
+    description: 'Direct atelier dispatch. Commission a bespoke 3D WebGL experience or architectural consultation.',
     isModal: true
   },
   {
-    path: '/contact',
-    name: 'contact-alias',
+    path: '/hire',
+    name: 'hire-alias',
     waypoint: 'DRAWER',
-    title: 'Start a Project — Showcase3D.cloud Commission Terminal',
-    description: 'Commission a bespoke 3D website or agency collaboration. Response guaranteed within one business day.',
+    title: 'Commission the Studio — Showcase3D.cloud Spatial Dispatch',
+    description: 'Direct atelier dispatch. Commission a bespoke 3D WebGL experience or architectural consultation.',
     isModal: true
   }
 ];

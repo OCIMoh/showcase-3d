@@ -7,7 +7,7 @@
  *   /              -> Active 3D Cylindrical Stage (Waypoint: STAGE)
  *   /work/:slug    -> In-Situ 3D Barrel Case Study (Waypoint: CASE_STUDY)
  *   /studio        -> Luxury Editorial Studio & Services (Waypoint: STUDIO)
- *   /hire          -> Commission Terminal Drawer (Waypoint: DRAWER)
+ *   /contact       -> Commission Terminal Drawer (Waypoint: DRAWER)
  */
 
 import './style/main.css';
@@ -17,7 +17,7 @@ import { SHOWCASE_PROJECTS } from './data/showcaseProjects';
 import { AnimaxLoader } from './engine/cylinder/ui/animaxLoader';
 import { SpatialRouter } from './router/spatialRouter';
 import { StudioView } from './views/studioView';
-import { HireView } from './views/hireView';
+import { ContactView } from './views/contactView';
 
 document.addEventListener('DOMContentLoaded', () => {
   const viewMount = document.getElementById('viewMount');
@@ -56,26 +56,47 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5. Mount Spatial Route Overlay Views
   const studioView = new StudioView({
     onClose: () => router.navigate('/'),
-    onHire: () => router.navigate('/hire')
+    onContact: () => router.navigate('/contact')
   });
   studioView.mount(viewMount);
 
-  const hireView = new HireView({
+  const contactView = new ContactView({
     onClose: () => {
       const prev = router.getPreviousRoute();
-      if (prev && prev.pathname !== '/hire' && prev.pathname !== '/contact') {
+      if (prev && prev.pathname !== '/contact' && prev.pathname !== '/hire') {
         router.navigate(prev.pathname);
       } else {
         router.navigate('/');
       }
     }
   });
-  hireView.mount(viewMount);
+  contactView.mount(viewMount);
 
   // 6. Connect Spatial Router to 3D Waypoints & DOM Overlays
   router.onRoute((current, previous) => {
     const overlay = engine.getOverlay();
     overlay.setActiveNav(current.pathname);
+
+    // Route-aware Header Visibility & Active Nav States
+    const maHeader = document.getElementById('maHeader');
+    const navWork = document.getElementById('navWork');
+    const navStudio = document.getElementById('navStudio');
+    const navContact = document.getElementById('navContact');
+
+    if (current.route.name === 'home') {
+      maHeader?.classList.remove('is-hidden');
+      navWork?.classList.add('is-active');
+      navStudio?.classList.remove('is-active');
+      navContact?.classList.remove('is-active');
+    } else {
+      maHeader?.classList.add('is-hidden');
+      navWork?.classList.remove('is-active');
+      if (current.route.name === 'studio' || current.route.name === 'about-alias' || current.route.name === 'services-alias') {
+        navStudio?.classList.add('is-active');
+      } else if (current.route.name === 'contact' || current.route.name === 'hire-alias' || current.route.name === 'contact-alias') {
+        navContact?.classList.add('is-active');
+      }
+    }
 
     switch (current.route.name) {
       case 'home': {
@@ -84,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         engine.setWaypoint('STAGE');
         studioView.exit();
-        hireView.exit();
+        contactView.exit();
         break;
       }
 
@@ -96,25 +117,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         engine.setWaypoint('STUDIO');
         studioView.enter();
-        hireView.exit();
+        contactView.exit();
         break;
       }
 
-      case 'hire':
-      case 'contact-alias': {
+      case 'contact':
+      case 'contact-alias':
+      case 'hire-alias': {
         engine.setWaypoint('DRAWER');
-        hireView.enter();
-        // Keep studio underneath if arriving from /studio
-        if (previous?.route.name !== 'studio' && previous?.route.name !== 'about-alias' && previous?.route.name !== 'services-alias') {
-          studioView.exit();
-        }
+        studioView.exit();
+        contactView.enter();
         break;
       }
 
       case 'project-detail':
       case 'project-detail-alias': {
         studioView.exit();
-        hireView.exit();
+        contactView.exit();
         engine.setWaypoint('CASE_STUDY');
         const targetSlug = current.params.slug;
         const activeProj = engine.getActiveProject();
@@ -127,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
       default: {
         engine.setWaypoint('STAGE');
         studioView.exit();
-        hireView.exit();
+        contactView.exit();
         break;
       }
     }
@@ -135,8 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Refresh dynamic cursor attachments for new interactive elements
     setTimeout(() => {
       cursor.bindInteractive(document.querySelectorAll('a, button, input, textarea, summary'), 'EXPLORE');
-      cursor.bindInteractive(document.querySelectorAll('.ma-studio-close-btn, .ma-hire-close-btn, .ma-case-close-btn'), 'CLOSE');
-      cursor.bindInteractive(document.querySelectorAll('.ma-nav-cta, .ma-cta-hire-btn, .ma-submit-btn'), 'START');
+      cursor.bindInteractive(document.querySelectorAll('.ma-studio-close-btn, .ma-contact-close-btn, .ma-case-close-btn'), 'CLOSE');
+      cursor.bindInteractive(document.querySelectorAll('.ma-nav-cta, .ma-cta-contact-btn, .ma-submit-btn'), 'START');
+      cursor.bindInteractive(document.querySelectorAll('#dispatchPillEmail'), 'COPY');
       cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link, .ma-call-link'), 'VISIT');
       cursor.bindInteractive(document.querySelectorAll('.ma-sound-toggle, .ma-case-sound-btn'), 'AUDIO');
     }, 100);

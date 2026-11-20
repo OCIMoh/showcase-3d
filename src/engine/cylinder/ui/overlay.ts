@@ -105,7 +105,7 @@ export class OverlayComponent {
   public accessibleNavEl: HTMLElement;
   public navWorkLink: HTMLAnchorElement | null = null;
   public navStudioLink: HTMLAnchorElement | null = null;
-  public navHireLink: HTMLAnchorElement | null = null;
+  public navContactLink: HTMLAnchorElement | null = null;
 
   private catEl: HTMLElement;
   private roleEl: HTMLElement;
@@ -147,7 +147,7 @@ export class OverlayComponent {
           <a class="ma-nav-link is-active" id="navWork" href="/">Work</a>
           <a class="ma-nav-link" id="navStudio" href="/studio">Studio</a>
           <button class="ma-sound-toggle" id="maSoundToggle" type="button" aria-label="Toggle Spatial Audio">SOUND ON</button>
-          <a class="ma-nav-cta" id="navHire" href="/hire">Start a Project ↗</a>
+          <a class="ma-nav-cta" id="navContact" href="/contact">Start a Project ↗</a>
         </nav>
       </header>
 
@@ -231,7 +231,7 @@ export class OverlayComponent {
     this.viewLink = this.root.querySelector('#maCaseViewLink')!;
     this.navWorkLink = this.root.querySelector('#navWork') as HTMLAnchorElement;
     this.navStudioLink = this.root.querySelector('#navStudio') as HTMLAnchorElement;
-    this.navHireLink = this.root.querySelector('#navHire') as HTMLAnchorElement;
+    this.navContactLink = this.root.querySelector('#navContact') as HTMLAnchorElement;
     this.closeBtn = this.root.querySelector('#maCaseCloseBtn')!;
     this.prevBtn = this.root.querySelector('#maCasePrevBtn')!;
     this.nextBtn = this.root.querySelector('#maCaseNextBtn')!;
@@ -258,7 +258,7 @@ export class OverlayComponent {
     this.cleanupFns.push(attachMagneticEffect(this.soundToggleBtn, { maxDistance: 45, pullFactor: 0.28 }));
     if (this.navWorkLink) this.cleanupFns.push(attachMagneticEffect(this.navWorkLink, { maxDistance: 45, pullFactor: 0.28 }));
     if (this.navStudioLink) this.cleanupFns.push(attachMagneticEffect(this.navStudioLink, { maxDistance: 45, pullFactor: 0.28 }));
-    if (this.navHireLink) this.cleanupFns.push(attachMagneticEffect(this.navHireLink, { maxDistance: 45, pullFactor: 0.32 }));
+    if (this.navContactLink) this.cleanupFns.push(attachMagneticEffect(this.navContactLink, { maxDistance: 45, pullFactor: 0.32 }));
   }
 
   /**
@@ -270,6 +270,9 @@ export class OverlayComponent {
     }
     if (this.navStudioLink) {
       this.navStudioLink.classList.toggle('is-active', path.startsWith('/studio') || path.startsWith('/about') || path.startsWith('/services'));
+    }
+    if (this.navContactLink) {
+      this.navContactLink.classList.toggle('is-active', path.startsWith('/contact') || path.startsWith('/hire'));
     }
   }
 
