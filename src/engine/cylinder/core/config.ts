@@ -89,7 +89,7 @@ export const DEFAULT_CONFIG: Readonly<CylinderConfig> = {
 
   barrelRadius: 4.2,
   ovalFlatness: 0.95,
-  gallerySpacing: 3.30,
+  gallerySpacing: 3.85,
 
   dampMotion: 5.33,
   dampPull: 5.00,

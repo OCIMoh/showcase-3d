@@ -187,20 +187,21 @@ void main() {
   vec3 finalRgb = baseRgb + vec3(specular + spotFalloff + anisoGlint);
 
   // Smooth hero backdrop blending into warm cream paper (#f5f3ec) during case study transition
+  // Strictly 100% blend to eliminate ghosting/watermark bleed from underlying slides
   if (uIsHeroBackdrop > 0.001) {
-    finalRgb = mix(finalRgb, vec3(0.961, 0.953, 0.925), uIsHeroBackdrop * 0.95);
+    finalRgb = mix(finalRgb, vec3(0.961, 0.953, 0.925), uIsHeroBackdrop);
   }
 
-  // 3. Radial Spatial Vignette
-  if (uVignette > 0.005) {
+  // 3. Radial Spatial Vignette (only when not in hero backdrop mode)
+  if (uVignette > 0.005 && uIsHeroBackdrop < 0.5) {
     vec2 vCenter = (vUv - vec2(0.5)) * vec2(1.5, 1.0);
     float vDist = length(vCenter);
     float vig = smoothstep(0.95, 0.20, vDist * uVignette);
     finalRgb *= mix(1.0, vig, uVignette * 0.85);
   }
 
-  // 4. Atmospheric Dimming for overlay legibility
-  if (uAtmosphereDim > 0.005) {
+  // 4. Atmospheric Dimming for overlay legibility (only when not in hero backdrop mode)
+  if (uAtmosphereDim > 0.005 && uIsHeroBackdrop < 0.5) {
     vec3 ambientTone = vec3(0.035, 0.035, 0.045);
     finalRgb = mix(finalRgb, ambientTone, uAtmosphereDim * 0.90);
   }

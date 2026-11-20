@@ -99,9 +99,13 @@ export class GalleryPass {
                        clamp(params.galleryEntrance * 1.35, 0.0, 1.0);
       if (gOpacity < 0.01) continue;
 
+      // Natural focal depth: 100% luminance at viewport center, subtle 82% depth soft-focus at periphery
+      const focusFactor = clamp(1.0 - (distY / (gSpacing * 1.8)), 0.0, 1.0);
+      const dim = 0.82 + 0.18 * focusFactor;
+
       gl.uniform1f(u.uMeshOffsetY, wrappedY);
       gl.uniform1f(u.uOpacity, gOpacity);
-      gl.uniform1f(u.uDimFactor, 1.0);
+      gl.uniform1f(u.uDimFactor, dim);
 
       mat4Identity(this.modelMat);
       mat4Translate(this.modelMat, this.modelMat, [offsetX, wrappedY, 1.2]);
