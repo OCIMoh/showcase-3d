@@ -15,6 +15,7 @@ import { OverlayComponent } from './ui/overlay';
 import { SoundSynthesizer } from './audio/synth';
 import { CarouselPass } from './renderer/carouselPass';
 import { GalleryPass } from './renderer/galleryPass';
+import { PostProcessingManager } from './gl/postprocessing';
 import { ShowcaseProject, SHOWCASE_PROJECTS } from '../../data/showcaseProjects';
 import { SpatialWaypoint, WAYPOINT_CONFIGS } from './core/spatialState';
 
@@ -56,6 +57,7 @@ export class CylinderCarouselEngine {
   private synth!: SoundSynthesizer;
   private carouselPass!: CarouselPass;
   private galleryPass!: GalleryPass;
+  private postProcessing!: PostProcessingManager;
   private responsiveScale = 1.0;
   private lastCenterIdx = -1;
 
@@ -163,6 +165,11 @@ export class CylinderCarouselEngine {
     this.canvas.addEventListener('webglcontextrestored', () => {
       this.isContextLost = false;
       this.buildGLResources();
+      if (this.postProcessing) {
+        this.postProcessing.dispose();
+        this.postProcessing = new PostProcessingManager(this.gl);
+        this.postProcessing.resize(this.canvas.width, this.canvas.height);
+      }
       this.tick();
     });
   }
@@ -187,19 +194,21 @@ export class CylinderCarouselEngine {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, geo.indices, gl.STATIC_DRAW);
 
-    // Bind vertex buffers and set up attributes for both decoupled programs
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.enableVertexAttribArray(this.carouselProgramInfo.attribs.aPosition);
-    gl.vertexAttribPointer(this.carouselProgramInfo.attribs.aPosition, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(this.galleryProgramInfo.attribs.aPosition);
-    gl.vertexAttribPointer(this.galleryProgramInfo.attribs.aPosition, 3, gl.FLOAT, false, 0, 0);
+    this.bindGeometryBuffers(this.carouselProgramInfo.attribs);
+  }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-    gl.enableVertexAttribArray(this.carouselProgramInfo.attribs.aUv);
-    gl.vertexAttribPointer(this.carouselProgramInfo.attribs.aUv, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(this.galleryProgramInfo.attribs.aUv);
-    gl.vertexAttribPointer(this.galleryProgramInfo.attribs.aUv, 2, gl.FLOAT, false, 0, 0);
-
+  private bindGeometryBuffers(attribs: { aPosition: number; aUv: number }): void {
+    const gl = this.gl;
+    if (attribs.aPosition >= 0) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+      gl.enableVertexAttribArray(attribs.aPosition);
+      gl.vertexAttribPointer(attribs.aPosition, 3, gl.FLOAT, false, 0, 0);
+    }
+    if (attribs.aUv >= 0) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+      gl.enableVertexAttribArray(attribs.aUv);
+      gl.vertexAttribPointer(attribs.aUv, 2, gl.FLOAT, false, 0, 0);
+    }
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
   }
 
@@ -210,6 +219,8 @@ export class CylinderCarouselEngine {
 
     this.carouselPass = new CarouselPass(this.gl, this.carouselProgramInfo, this.config, this.textureManager);
     this.galleryPass = new GalleryPass(this.gl, this.galleryProgramInfo, this.config, this.textureManager);
+    this.postProcessing = new PostProcessingManager(this.gl);
+    this.postProcessing.resize(this.canvas.width, this.canvas.height);
 
     const projectTitles = this.projects.map(p => p.title.split('—')[0].trim());
     this.arcHud = new ArcHudComponent(this.wrapper, projectTitles, {
@@ -255,6 +266,7 @@ export class CylinderCarouselEngine {
         this.overlay.updateSoundState(isMuted);
       }
     });
+    this.overlay.updateSoundState(this.synth.isMuted);
 
     if (this.projects.length > 0) {
       this.overlay.updateActiveCenterProject(this.projects[0]);
@@ -348,8 +360,11 @@ export class CylinderCarouselEngine {
     const gl = this.gl;
     const cfg = this.config;
 
+    // Direct render passes into offscreen FBO for Phase 5 Optical Shaders
+    const isPostActive = this.postProcessing.bind();
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
+    // Restore original dynamic clear color transition: dark obsidian (#080808) in gallery -> warm cream paper (#f5f3ec) in case study
     const bgR = 0.031 + (0.961 - 0.031) * this.heroOpenAmount;
     const bgG = 0.031 + (0.953 - 0.031) * this.heroOpenAmount;
     const bgB = 0.031 + (0.925 - 0.031) * this.heroOpenAmount;
@@ -365,6 +380,9 @@ export class CylinderCarouselEngine {
     if (Math.abs(this.velocity) < 0.0001) {
       this.velocity = 0;
     }
+
+    // Phase 5: Modulate generative ambient audio drone with momentum and pan
+    this.synth.updateDrone(this.velocity, -this.tiltCurrentX);
 
     const tiltTargetXNow = this.heroOpenAmount > 0.5 ? 0 : this.tiltTargetX;
     const tiltTargetYNow = this.heroOpenAmount > 0.5 ? 0 : this.tiltTargetY;
@@ -460,6 +478,9 @@ export class CylinderCarouselEngine {
     mat4RotateY(this.viewMat, this.viewMat, this.tiltCurrentX + this.tiltOffsetAngleY);
 
     // Render Dedicated Passes with Decoupled Shaders
+    // Explicitly re-bind 3D plane mesh geometry to prevent state clobbering from full-screen quad blit
+    this.bindGeometryBuffers(this.carouselProgramInfo.attribs);
+
     this.carouselPass.render({
       projects: this.projects,
       pos: this.pos,
@@ -479,6 +500,7 @@ export class CylinderCarouselEngine {
     }, this.numIndices, this.projMat, this.viewMat);
 
     if (this.activeProject) {
+      this.bindGeometryBuffers(this.galleryProgramInfo.attribs);
       this.galleryPass.render({
         activeProject: this.activeProject,
         galleryPos: this.galleryPos,
@@ -502,6 +524,20 @@ export class CylinderCarouselEngine {
         }
         this.lastGalleryCardIdx = currentCardIdx;
       }
+    }
+
+    // Phase 5: Execute optical post-processing blit (Film Grain, Chromatic Aberration, Vignette)
+    // Vignette and grain gracefully ease out when entering light cream case study view
+    if (isPostActive) {
+      this.postProcessing.unbind();
+      const openDamp = Math.max(0.0, 1.0 - this.heroOpenAmount);
+      this.postProcessing.render({
+        time: now * 0.001,
+        velocity: this.velocity,
+        grainIntensity: this.prefersReducedMotion ? 0.0 : cfg.grainIntensity * openDamp,
+        aberrationScale: this.prefersReducedMotion ? 0.0 : cfg.aberrationScale * openDamp,
+        vignette: cfg.vignetteStrength * openDamp
+      });
     }
 
     this.rafId = requestAnimationFrame(this.tick);
@@ -666,6 +702,9 @@ export class CylinderCarouselEngine {
 
     if (this.gl) {
       this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+      if (this.postProcessing) {
+        this.postProcessing.resize(this.canvas.width, this.canvas.height);
+      }
     }
   }
 
@@ -756,6 +795,7 @@ export class CylinderCarouselEngine {
     this.synth.destroy();
     this.arcHud.destroy();
     this.overlay.destroy();
+    this.postProcessing?.dispose();
 
     const gl = this.gl;
     if (gl) {

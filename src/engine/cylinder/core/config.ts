@@ -51,6 +51,13 @@ export interface CylinderConfig {
   dampGallery: number;
   /** Amplitude multiplier for the elastic pull bulge */
   pullDistance: number;
+
+  /** Optical Post-Processing: Film grain intensity (0.0 to 0.1) */
+  grainIntensity: number;
+  /** Optical Post-Processing: Velocity chromatic aberration multiplier */
+  aberrationScale: number;
+  /** Optical Post-Processing: Atmospheric vignette edge shading */
+  vignetteStrength: number;
 }
 
 /**
@@ -89,7 +96,11 @@ export const DEFAULT_CONFIG: Readonly<CylinderConfig> = {
   dampTilt: 5.33,
   dampLight: 5.33,
   dampGallery: 5.33,
-  pullDistance: 0.85
+  pullDistance: 0.85,
+
+  grainIntensity: 0.035,
+  aberrationScale: 0.0075,
+  vignetteStrength: 0.35
 };
 
 export const DEFAULT_BRAND: Readonly<BrandConfig> = {

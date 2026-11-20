@@ -116,11 +116,58 @@ export class SpatialRouter {
   }
 
   private updateMetadata(matched: MatchedRoute): void {
-    if (matched.route.title) {
-      document.title = matched.route.title;
+    const fullUrl = `https://showcase3d.cloud${matched.pathname === '/' ? '' : matched.pathname}`;
+    const title = matched.route.title || 'Showcase3D.cloud — Custom Interactive 3D Websites & Spatial Web Design';
+    const desc = matched.route.description || 'We design and engineer bespoke, high-performance 3D websites and WebGL experiences that turn ordinary brand visits into unforgettable interactive spaces.';
+
+    // 1. Document Title
+    document.title = title;
+
+    // 2. Meta Description
+    if (this.metaDescriptionEl) {
+      this.metaDescriptionEl.content = desc;
     }
-    if (this.metaDescriptionEl && matched.route.description) {
-      this.metaDescriptionEl.content = matched.route.description;
+
+    // 3. Canonical Link
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = fullUrl;
+
+    // 4. Open Graph Tags
+    const setMetaProp = (prop: string, val: string) => {
+      let el = document.querySelector(`meta[property="${prop}"]`) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('property', prop);
+        document.head.appendChild(el);
+      }
+      el.content = val;
+    };
+    setMetaProp('og:title', title);
+    setMetaProp('og:description', desc);
+    setMetaProp('og:url', fullUrl);
+
+    // 5. Twitter Tags
+    const setMetaName = (name: string, val: string) => {
+      let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('name', name);
+        document.head.appendChild(el);
+      }
+      el.content = val;
+    };
+    setMetaName('twitter:title', title);
+    setMetaName('twitter:description', desc);
+
+    // 6. Accessible Screen Reader Announcement
+    const ariaLive = document.getElementById('maAriaLive');
+    if (ariaLive) {
+      ariaLive.textContent = `Navigated to ${matched.route.name.replace(/-/g, ' ')}: ${title}`;
     }
   }
 }

@@ -1,0 +1,22 @@
+# Robots.txt for Showcase3D.cloud
+User-agent: *
+Allow: /
+
+# Generative Engine Optimization (GEO) AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# XML Sitemap
+Sitemap: https://showcase3d.cloud/sitemap.xml

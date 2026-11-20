@@ -1,21 +1,156 @@
 /**
- * Spatial / UI Sound Synthesizer via Web Audio API
+ * SoundSynthesizer — Spatial / UI Sound Synthesizer via Web Audio API (Phase 5)
+ * 
+ * Features:
+ * - Mechanical rotary dial click with dual transient detent
+ * - Generative ambient harmonic drone (triad chord oscillator bank)
+ * - Velocity-driven biquad low-pass filter resonance sweep
+ * - Real-time stereo spatial panning
+ * - Persistent mute preference in localStorage
  */
 
 export class SoundSynthesizer {
   private audioCtx: AudioContext | null = null;
   public isMuted = false;
 
+  // Generative Ambient Drone Nodes
+  private droneInitialized = false;
+  private droneGain: GainNode | null = null;
+  private droneFilter: BiquadFilterNode | null = null;
+  private dronePanner: StereoPannerNode | null = null;
+  private droneOscs: OscillatorNode[] = [];
+
+  constructor() {
+    // Restore saved user preference from localStorage
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('showcase3d_audio_muted');
+      if (saved !== null) {
+        this.isMuted = saved === 'true';
+      }
+    }
+  }
+
+  private ensureContext(): AudioContext | null {
+    if (!this.audioCtx && typeof window !== 'undefined') {
+      const AudioCtxClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (AudioCtxClass) {
+        this.audioCtx = new AudioCtxClass();
+      }
+    }
+    if (this.audioCtx && this.audioCtx.state === 'suspended') {
+      this.audioCtx.resume().catch(() => {});
+    }
+    return this.audioCtx;
+  }
+
+  /**
+   * Initializes the generative ambient harmonic drone on first user interaction.
+   */
+  public initDrone(): void {
+    if (this.droneInitialized) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    try {
+      const now = ctx.currentTime;
+
+      // 1. Master Drone Gain
+      this.droneGain = ctx.createGain();
+      const targetGain = this.isMuted ? 0.0001 : 0.022;
+      this.droneGain.gain.setValueAtTime(0.0001, now);
+      this.droneGain.gain.exponentialRampToValueAtTime(targetGain, now + 1.2);
+
+      // 2. Dynamic Resonant Low-Pass Filter
+      this.droneFilter = ctx.createBiquadFilter();
+      this.droneFilter.type = 'lowpass';
+      this.droneFilter.frequency.setValueAtTime(180, now);
+      this.droneFilter.Q.setValueAtTime(2.2, now);
+
+      // 3. Stereo Spatial Panner
+      if (typeof ctx.createStereoPanner === 'function') {
+        this.dronePanner = ctx.createStereoPanner();
+        this.dronePanner.pan.setValueAtTime(0, now);
+        this.droneGain.connect(this.droneFilter);
+        this.droneFilter.connect(this.dronePanner);
+        this.dronePanner.connect(ctx.destination);
+      } else {
+        this.droneGain.connect(this.droneFilter);
+        this.droneFilter.connect(ctx.destination);
+      }
+
+      // 4. Harmonic Triad Bank: Root (55 Hz A1), Fifth (82.4 Hz E2), Octave (110 Hz A2)
+      const freqs = [
+        { freq: 55.0, type: 'sine' as OscillatorType, vol: 0.65 },
+        { freq: 82.4, type: 'triangle' as OscillatorType, vol: 0.45 },
+        { freq: 110.0, type: 'sine' as OscillatorType, vol: 0.35 }
+      ];
+
+      this.droneOscs = freqs.map(({ freq, type, vol }) => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        g.gain.setValueAtTime(vol, now);
+        osc.connect(g);
+        g.connect(this.droneGain!);
+        osc.start(now);
+        return osc;
+      });
+
+      this.droneInitialized = true;
+    } catch {
+      // Autoplay restrictions
+    }
+  }
+
+  /**
+   * Modulates ambient drone filter cutoff and stereo pan in response to carousel velocity and position.
+   */
+  public updateDrone(velocity: number, panRatio = 0): void {
+    if (!this.droneInitialized || !this.audioCtx) return;
+    const now = this.audioCtx.currentTime;
+
+    // Modulate filter cutoff frequency: idle 180 Hz swells up to 720 Hz under rapid rotation
+    if (this.droneFilter) {
+      const speed = Math.abs(velocity);
+      const targetCutoff = 180 + Math.min(540, speed * 480);
+      this.droneFilter.frequency.setTargetAtTime(targetCutoff, now, 0.08);
+    }
+
+    // Modulate stereo panner smoothly (-0.6 to +0.6)
+    if (this.dronePanner) {
+      const targetPan = Math.max(-0.6, Math.min(0.6, panRatio * 0.45));
+      this.dronePanner.pan.setTargetAtTime(targetPan, now, 0.12);
+    }
+  }
+
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('showcase3d_audio_muted', String(this.isMuted));
+    }
+
+    const ctx = this.ensureContext();
+    if (ctx && this.droneGain) {
+      const now = ctx.currentTime;
+      const target = this.isMuted ? 0.0001 : 0.022;
+      this.droneGain.gain.cancelScheduledValues(now);
+      this.droneGain.gain.setValueAtTime(this.droneGain.gain.value, now);
+      this.droneGain.gain.exponentialRampToValueAtTime(target, now + 0.35);
+    }
+
     if (!this.isMuted) {
+      this.initDrone();
       this.playTone(560, 'sine', 0.05, 0.08);
     }
     return this.isMuted;
   }
 
   public setMute(muted: boolean): void {
-    this.isMuted = muted;
+    if (this.isMuted === muted) return;
+    this.toggleMute();
   }
 
   public playTone(
@@ -25,72 +160,61 @@ export class SoundSynthesizer {
     vol = 0.06
   ): void {
     if (this.isMuted) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
     try {
-      if (!this.audioCtx) {
-        const AudioCtxClass =
-          window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        this.audioCtx = new AudioCtxClass();
-      }
-      if (this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume();
-      }
-      const osc = this.audioCtx.createOscillator();
-      const gain = this.audioCtx.createGain();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = type;
-      osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
-      gain.gain.setValueAtTime(vol, this.audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + duration);
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(vol, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
       osc.connect(gain);
-      gain.connect(this.audioCtx.destination);
-      osc.start();
-      osc.stop(this.audioCtx.currentTime + duration);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration);
     } catch {
-      // Fail silently if browser blocks autoplay or Web Audio is unavailable
+      // Autoplay fallback
     }
   }
 
   /**
-   * Synthesizes an authentic mechanical rotary dial detent tick (Leica dial / precision encoder)
-   * with dual-component transient click and low-frequency tactile body.
+   * Synthesizes an authentic mechanical rotary dial detent tick (precision encoder)
    */
   public playDialClick(speed = 1.0): void {
     if (this.isMuted) return;
-    try {
-      if (!this.audioCtx) {
-        const AudioCtxClass =
-          window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        this.audioCtx = new AudioCtxClass();
-      }
-      if (this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume();
-      }
+    const ctx = this.ensureContext();
+    if (!ctx) return;
 
-      const now = this.audioCtx.currentTime;
+    this.initDrone();
+
+    try {
+      const now = ctx.currentTime;
       const baseVol = Math.min(0.09, 0.035 + speed * 0.015);
 
       // 1. High crisp mechanical transient (rotary tooth notch)
-      const oscHigh = this.audioCtx.createOscillator();
-      const gainHigh = this.audioCtx.createGain();
+      const oscHigh = ctx.createOscillator();
+      const gainHigh = ctx.createGain();
       oscHigh.type = 'triangle';
       oscHigh.frequency.setValueAtTime(1950 + Math.min(500, speed * 120), now);
       gainHigh.gain.setValueAtTime(baseVol * 0.85, now);
       gainHigh.gain.exponentialRampToValueAtTime(0.0001, now + 0.014);
       oscHigh.connect(gainHigh);
-      gainHigh.connect(this.audioCtx.destination);
+      gainHigh.connect(ctx.destination);
       oscHigh.start(now);
       oscHigh.stop(now + 0.016);
 
       // 2. Low tactile body detent
-      const oscLow = this.audioCtx.createOscillator();
-      const gainLow = this.audioCtx.createGain();
+      const oscLow = ctx.createOscillator();
+      const gainLow = ctx.createGain();
       oscLow.type = 'sine';
       oscLow.frequency.setValueAtTime(210, now);
       gainLow.gain.setValueAtTime(baseVol * 0.55, now);
       gainLow.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
       oscLow.connect(gainLow);
-      gainLow.connect(this.audioCtx.destination);
+      gainLow.connect(ctx.destination);
       oscLow.start(now);
       oscLow.stop(now + 0.024);
     } catch {
@@ -106,7 +230,7 @@ export class SoundSynthesizer {
       try {
         navigator.vibrate(duration);
       } catch {
-        // Unsupported device or restricted context
+        // Unsupported device
       }
     }
   }
@@ -116,20 +240,15 @@ export class SoundSynthesizer {
    */
   public playWaypointTransition(waypoint: string): void {
     if (this.isMuted) return;
-    try {
-      if (!this.audioCtx) {
-        const AudioCtxClass =
-          window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        this.audioCtx = new AudioCtxClass();
-      }
-      if (this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume();
-      }
+    const ctx = this.ensureContext();
+    if (!ctx) return;
 
-      const now = this.audioCtx.currentTime;
-      const osc = this.audioCtx.createOscillator();
-      const gain = this.audioCtx.createGain();
+    this.initDrone();
+
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
 
       switch (waypoint) {
         case 'STUDIO': {
@@ -166,7 +285,7 @@ export class SoundSynthesizer {
       }
 
       osc.connect(gain);
-      gain.connect(this.audioCtx.destination);
+      gain.connect(ctx.destination);
       osc.start(now);
       osc.stop(now + 0.24);
     } catch {
@@ -175,10 +294,13 @@ export class SoundSynthesizer {
   }
 
   public destroy(): void {
+    this.droneOscs.forEach(o => {
+      try { o.stop(); o.disconnect(); } catch {}
+    });
+    this.droneOscs = [];
     if (this.audioCtx) {
       this.audioCtx.close().catch(() => {});
       this.audioCtx = null;
     }
   }
 }
-

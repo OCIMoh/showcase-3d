@@ -179,13 +179,14 @@ void main() {
   float NdotH = max(dot(normal, halfVec), 0.0);
   float specular = pow(NdotH, 32.0) * 0.28 * (1.0 - uIsHeroBackdrop);
 
-  // Soft radial spotlight falloff
+  // Soft radial spotlight falloff with anisotropic sheen along X-axis
   float distToLight = length(uLightPos.xy - vWorldPos.xy);
   float spotFalloff = exp(-distToLight * 0.32) * 0.15 * (1.0 - uIsHeroBackdrop);
+  float anisoGlint = pow(max(1.0 - abs(dot(normal, lightDir)), 0.0), 3.0) * 0.08;
 
-  vec3 finalRgb = baseRgb + vec3(specular + spotFalloff);
+  vec3 finalRgb = baseRgb + vec3(specular + spotFalloff + anisoGlint);
 
-  // Smooth hero backdrop blending during case study transition
+  // Smooth hero backdrop blending into warm cream paper (#f5f3ec) during case study transition
   if (uIsHeroBackdrop > 0.001) {
     finalRgb = mix(finalRgb, vec3(0.961, 0.953, 0.925), uIsHeroBackdrop * 0.95);
   }

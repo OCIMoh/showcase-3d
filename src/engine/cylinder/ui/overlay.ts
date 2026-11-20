@@ -280,12 +280,21 @@ export class OverlayComponent {
     if (this.navWorkLink) {
       this.navWorkLink.setAttribute('title', `Active Project: ${proj.title.split('—')[0].trim()}`);
     }
+    const ariaLive = document.getElementById('maAriaLive');
+    if (ariaLive) {
+      ariaLive.textContent = `Viewing ${proj.title.split('—')[0].trim()} — ${proj.category.split('//')[0].trim()}`;
+    }
   }
 
   public updateCaseStudy(proj: ShowcaseProject, direction: 'next' | 'prev' | 'none' = 'none'): void {
     if (this.catEl) this.catEl.textContent = proj.category.split('//')[0].trim();
     if (this.roleEl) this.roleEl.textContent = 'Frontend Engineering';
     // if (this.agencyEl) this.agencyEl.textContent = `Client: ${proj.client}`;
+
+    const ariaLive = document.getElementById('maAriaLive');
+    if (ariaLive) {
+      ariaLive.textContent = `Case study opened: ${proj.title.split('—')[0].trim()} — ${proj.category.split('//')[0].trim()}`;
+    }
 
     if (this.viewLink) {
       if (proj.isLive && proj.liveUrl && !proj.liveUrl.includes('github.com')) {

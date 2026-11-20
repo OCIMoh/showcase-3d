@@ -15,6 +15,7 @@ export class StudioView implements SpatialView {
   private visible = false;
   private onCloseCallback?: () => void;
   private onHireCallback?: () => void;
+  private keydownHandler?: (e: KeyboardEvent) => void;
 
   constructor(options: { onClose?: () => void; onHire?: () => void } = {}) {
     this.onCloseCallback = options.onClose;
@@ -256,12 +257,25 @@ export class StudioView implements SpatialView {
       { opacity: 0, y: 24 },
       { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' }
     );
+
+    this.keydownHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.onCloseCallback?.();
+      }
+    };
+    window.addEventListener('keydown', this.keydownHandler);
   }
 
   public async exit(): Promise<void> {
     if (!this.root || !this.visible) return;
     this.visible = false;
     this.root.setAttribute('aria-hidden', 'true');
+
+    if (this.keydownHandler) {
+      window.removeEventListener('keydown', this.keydownHandler);
+      this.keydownHandler = undefined;
+    }
 
     gsap.killTweensOf(this.root);
     await new Promise<void>((resolve) => {
@@ -279,6 +293,9 @@ export class StudioView implements SpatialView {
   }
 
   public destroy(): void {
+    if (this.keydownHandler) {
+      window.removeEventListener('keydown', this.keydownHandler);
+    }
     if (this.root && this.root.parentElement) {
       this.root.parentElement.removeChild(this.root);
     }
