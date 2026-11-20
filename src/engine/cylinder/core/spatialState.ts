@@ -51,31 +51,31 @@ export const WAYPOINT_CONFIGS: Record<SpatialWaypoint, CameraWaypointConfig> = {
     interactiveCylinder: false
   },
   STUDIO: {
-    camOffsetX: 0.0,
-    camOffsetY: 0.28,
-    camOffsetZ: -0.90,
-    tiltAngleX: 0.05,
-    tiltAngleY: 0.0,
-    fovDegrees: 55.0,
-    spatialBlur: 1.0,
-    vignetteStrength: 0.85,
-    atmosphereDim: 0.65,
-    targetFps: 20,
+    camOffsetX: 0.38,
+    camOffsetY: 0.04,
+    camOffsetZ: -0.72,
+    tiltAngleX: 0.0,
+    tiltAngleY: -0.16,
+    fovDegrees: 50.0,
+    spatialBlur: 0.65,
+    vignetteStrength: 0.08,
+    atmosphereDim: 0.0,
+    targetFps: 60,
     hudVisible: false,
-    interactiveCylinder: false
+    interactiveCylinder: true
   },
   DRAWER: {
-    camOffsetX: -0.65,
-    camOffsetY: 0.0,
-    camOffsetZ: -0.55,
-    tiltAngleX: 0.0,
-    tiltAngleY: 0.09,
-    fovDegrees: 51.0,
-    spatialBlur: 0.75,
-    vignetteStrength: 0.70,
-    atmosphereDim: 0.55,
-    targetFps: 20,
+    camOffsetX: 0.0,
+    camOffsetY: 0.22,
+    camOffsetZ: -1.25,
+    tiltAngleX: 0.04,
+    tiltAngleY: 0.0,
+    fovDegrees: 50.0,
+    spatialBlur: 0.12,
+    vignetteStrength: 0.22,
+    atmosphereDim: 0.0,
+    targetFps: 60,
     hudVisible: false,
-    interactiveCylinder: false
+    interactiveCylinder: true
   }
 };

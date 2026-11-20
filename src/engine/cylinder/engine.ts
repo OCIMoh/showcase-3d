@@ -288,6 +288,12 @@ export class CylinderCarouselEngine {
         }
       },
       onTap: (cx, cy) => {
+        if (this.currentWaypoint === 'STUDIO') {
+          if (cx > window.innerWidth * 0.44) {
+            this.onNavigate?.('/');
+            return;
+          }
+        }
         if (this.currentWaypoint !== 'STAGE') return;
         if (this.heroOpenAmount < 0.2) {
           const hit = this.carouselPass.hitTest(
