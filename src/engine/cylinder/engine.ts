@@ -28,7 +28,7 @@ export interface CylinderCarouselOptions {
   config?: Partial<CylinderConfig>;
 }
 
-export type MathiasCylinderOptions = CylinderCarouselOptions;
+export type ShowcaseCylinderOptions = CylinderCarouselOptions;
 
 export class CylinderCarouselEngine {
   public heroOpenAmount = 0.0;
@@ -810,4 +810,4 @@ export class CylinderCarouselEngine {
   }
 }
 
-export { CylinderCarouselEngine as MathiasCylinderEngine };
+export { CylinderCarouselEngine as ShowcaseCylinderEngine };

@@ -2,7 +2,7 @@
  * Gallery 3D Shaders — Dedicated to the 3D Vertical Cylinder Barrel Gallery
  * 
  * Features:
- * - Mathias Adolfsson / Codrops continuous horizontal cylinder roller
+ * - Showcase-3D continuous horizontal cylinder roller
  * - Velocity-dependent curvature: flat at rest (uCurveAmount = 0.0), a barrel when scrolling
  * - Entrance second-curve relaxation
  * - Transparent pixel discard (enables pure floating 3D typography without card backgrounds)
@@ -31,7 +31,7 @@ void main() {
   vUv = aUv;
   vec3 pos = aPosition;
 
-  // The Barrel Gallery (Mathias Adolfsson continuous horizontal cylinder)
+  // The Barrel Gallery (Showcase-3D continuous horizontal cylinder)
   // Flat at rest (uCurveAmount = 0.0), a barrel when scrolling or arriving
   float worldY = pos.y + uMeshOffsetY;
   float effRadius = uBarrelRadius;

@@ -1,10 +1,10 @@
 /**
- * Mathias Adolfsson '26 Design System Tokens
+ * Showcase-3D Design System Tokens
  * Reference Width 1536px, Minimalist Obsidian Palette
  */
 
 :root {
-  /* Mathias Adolfsson Core Palette */
+  /* Showcase-3D Core Palette */
   --bc: rgb(8, 8, 8);
   --tc: rgb(247, 247, 247);
   --size-canvas: 1536;

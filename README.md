@@ -6,7 +6,7 @@ An award-winning interactive 3D WebGL portfolio replication inspired by **Showca
 
 ## 🌟 Key Architecture & Capabilities
 
-1. **Native WebGL 3D Cylindrical Reel (`src/engine/mathiasCylinderEngine.ts`):**
+1. **Native WebGL 3D Cylindrical Reel (`src/engine/cylinder/engine.ts`):**
    - **Zero external 3D libraries** — pure, ultra-fast native WebGL shaders and math.
    - **32-segment curved cylinder quad meshes** conforming dynamically to a radius of 6.8 units with realistic barrel curvature.
    - **Delta-based infinite rotation loop** allowing endless fluid scrubbing in both directions without hard boundaries or jumps.

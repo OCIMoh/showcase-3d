@@ -1,5 +1,5 @@
 /**
- * Projects Dataset for Mathias Adolfsson '26 Portfolio Carousel
+ * Projects Dataset for Showcase-3D Portfolio Carousel
  * Powered strictly by `projects.json` with deep extracted domain metadata
  */
 

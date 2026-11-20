@@ -35,7 +35,7 @@
 
 /* --------------------------------------------------------------------------
    App Root & Fixed Canvas Viewport Setup
-   Mathias Adolfsson '26 Architecture:
+   Showcase-3D Architecture:
    "html and body are fixed, and each route is a different state of the same scene."
    -------------------------------------------------------------------------- */
 #app, #viewMount {
@@ -355,7 +355,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   In-Situ Case Study 3D Barrel Gallery Overlay (Mathias Adolfsson Exact Match)
+   In-Situ Case Study 3D Barrel Gallery Overlay (Showcase-3D)
    -------------------------------------------------------------------------- */
 .ma-minimal-header.is-hidden {
   opacity: 0;
