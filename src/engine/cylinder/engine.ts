@@ -16,6 +16,7 @@ import { SoundSynthesizer } from './audio/synth';
 import { CarouselPass } from './renderer/carouselPass';
 import { GalleryPass } from './renderer/galleryPass';
 import { ShowcaseProject, SHOWCASE_PROJECTS } from '../../data/showcaseProjects';
+import { SpatialWaypoint, WAYPOINT_CONFIGS } from './core/spatialState';
 
 export interface CylinderCarouselOptions {
   container: HTMLElement;
@@ -95,6 +96,16 @@ export class CylinderCarouselEngine {
   private rafId: number | null = null;
   private prefersReducedMotion = false;
   private onResize = () => this.resize();
+
+  // Spatial Routing Waypoint & Scene Blurring State
+  private currentWaypoint: SpatialWaypoint = 'STAGE';
+  private camOffsetX = 0.0;
+  private camOffsetY = 0.0;
+  private camOffsetZ = 0.0;
+  private tiltOffsetAngleX = 0.0;
+  private tiltOffsetAngleY = 0.0;
+  private blurAmountPx = 0.0;
+  private brightness = 1.0;
 
   constructor(options: CylinderCarouselOptions) {
     this.container = options.container;
@@ -247,10 +258,12 @@ export class CylinderCarouselEngine {
 
     this.inputController = new InputController(this.canvas, this.wrapper, {
       onDragMove: (dx, dy) => {
+        if (this.currentWaypoint !== 'STAGE' && this.heroOpenAmount < 0.2) return;
         if (this.heroOpenAmount > 0.5) this.galleryTargetPos += dy * 0.012 * this.responsiveScale;
         else this.targetPos += dx * 0.018 * this.responsiveScale;
       },
       onFling: (vx, vy) => {
+        if (this.currentWaypoint !== 'STAGE' && this.heroOpenAmount < 0.2) return;
         if (this.heroOpenAmount < 0.2) {
           if (Math.abs(vx) > 1.2) this.targetPos += vx * 0.12 * this.responsiveScale;
           this.snapToNearestCard();
@@ -259,6 +272,7 @@ export class CylinderCarouselEngine {
         }
       },
       onTap: (cx, cy) => {
+        if (this.currentWaypoint !== 'STAGE') return;
         if (this.heroOpenAmount < 0.2) {
           const hit = this.carouselPass.hitTest(
             cx, cy, this.projects, this.pos, this.projMat, this.viewMat, this.canvas.width, this.canvas.height, this.responsiveScale
@@ -267,6 +281,7 @@ export class CylinderCarouselEngine {
         }
       },
       onWheel: (dx, dy) => {
+        if (this.currentWaypoint !== 'STAGE' && this.heroOpenAmount < 0.2) return;
         if (this.heroOpenAmount > 0.5) {
           this.galleryTargetPos -= dy * 0.0055;
         } else {
@@ -275,7 +290,7 @@ export class CylinderCarouselEngine {
         }
       },
       onWheelEnd: () => {
-        if (this.heroOpenAmount < 0.2) this.snapToNearestCard();
+        if (this.currentWaypoint === 'STAGE' && this.heroOpenAmount < 0.2) this.snapToNearestCard();
       },
       onPointerParallax: (nx, ny) => {
         this.tiltTargetX = nx * 0.08;
@@ -421,9 +436,13 @@ export class CylinderCarouselEngine {
 
     mat4Perspective(this.projMat, (cfg.fovDegrees * Math.PI) / 180, aspect, 0.1, 50.0);
     mat4Identity(this.viewMat);
-    mat4Translate(this.viewMat, this.viewMat, [0, 0, camZ]);
-    mat4RotateX(this.viewMat, this.viewMat, this.tiltCurrentY);
-    mat4RotateY(this.viewMat, this.viewMat, this.tiltCurrentX);
+    mat4Translate(this.viewMat, this.viewMat, [
+      this.camOffsetX,
+      this.camOffsetY,
+      camZ + this.camOffsetZ
+    ]);
+    mat4RotateX(this.viewMat, this.viewMat, this.tiltCurrentY + this.tiltOffsetAngleX);
+    mat4RotateY(this.viewMat, this.viewMat, this.tiltCurrentX + this.tiltOffsetAngleY);
 
     // Render Dedicated Passes with Decoupled Shaders
     this.carouselPass.render({
@@ -630,6 +649,72 @@ export class CylinderCarouselEngine {
     if (this.gl) {
       this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     }
+  }
+
+  /**
+   * Smoothly transitions camera and scene post-processing to a named spatial waypoint.
+   */
+  public setWaypoint(waypoint: SpatialWaypoint, duration = 0.85): void {
+    this.currentWaypoint = waypoint;
+    const cfg = WAYPOINT_CONFIGS[waypoint as keyof typeof WAYPOINT_CONFIGS];
+    if (!cfg) return;
+
+    this.arcHud.setVisible(cfg.hudVisible);
+
+    const d = this.prefersReducedMotion ? 0.2 : duration;
+    gsap.killTweensOf(this, 'camOffsetX,camOffsetY,camOffsetZ,tiltOffsetAngleX,tiltOffsetAngleY,blurAmountPx,brightness');
+    gsap.to(this, {
+      camOffsetX: cfg.camOffsetX,
+      camOffsetY: cfg.camOffsetY,
+      camOffsetZ: cfg.camOffsetZ,
+      tiltOffsetAngleX: cfg.tiltAngleX,
+      tiltOffsetAngleY: cfg.tiltAngleY,
+      blurAmountPx: cfg.blurAmountPx,
+      brightness: cfg.brightness,
+      duration: d,
+      ease: 'power3.out',
+      onUpdate: () => {
+        if (this.canvas) {
+          if (this.blurAmountPx > 0.1 || this.brightness < 0.98) {
+            this.canvas.style.filter = `blur(${this.blurAmountPx.toFixed(1)}px) brightness(${this.brightness.toFixed(2)})`;
+          } else {
+            this.canvas.style.filter = 'none';
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Opens a project by its slug identifier. Returns true if project found and opened.
+   */
+  public openProjectBySlug(slug: string): boolean {
+    const found = this.projects.find(p => p.slug === slug);
+    if (found) {
+      this.openProject(found, window.innerWidth / 2, window.innerHeight / 2);
+      return true;
+    }
+    return false;
+  }
+
+  public getCurrentWaypoint(): SpatialWaypoint {
+    return this.currentWaypoint;
+  }
+
+  public getProjects(): ShowcaseProject[] {
+    return this.projects;
+  }
+
+  public getActiveProject(): ShowcaseProject | null {
+    return this.activeProject;
+  }
+
+  public getOverlay(): OverlayComponent {
+    return this.overlay;
+  }
+
+  public getSoundSynthesizer(): SoundSynthesizer {
+    return this.synth;
   }
 
   /**

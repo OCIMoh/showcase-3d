@@ -1,9 +1,13 @@
 /**
- * Application Bootstrap & Routing Host
+ * Application Bootstrap & Spatial Routing Host — Showcase3D.cloud
  * 
- * - html & body are fixed with zero document scroll
- * - Single full-screen 3D scene handles both Carousel and 3D Barrel Gallery Case Studies
- * - Host router manages browser history state via popstate and onNavigate
+ * - Persistent Single WebGL Canvas: Context is permanently preserved across all routes
+ * - Decoupled Spatial Router: Coordinates URL history with 3D camera waypoints and DOM views
+ * - Views:
+ *   /              -> Active 3D Cylindrical Stage (Waypoint: STAGE)
+ *   /work/:slug    -> In-Situ 3D Barrel Case Study (Waypoint: CASE_STUDY)
+ *   /studio        -> Luxury Editorial Studio & Services (Waypoint: STUDIO)
+ *   /hire          -> Commission Terminal Drawer (Waypoint: DRAWER)
  */
 
 import './style/main.css';
@@ -11,6 +15,9 @@ import { CustomCursor } from './engine/cursor';
 import { CylinderCarouselEngine } from './engine/cylinder/engine';
 import { SHOWCASE_PROJECTS } from './data/showcaseProjects';
 import { AnimaxLoader } from './engine/cylinder/ui/animaxLoader';
+import { SpatialRouter } from './router/spatialRouter';
+import { StudioView } from './views/studioView';
+import { HireView } from './views/hireView';
 
 document.addEventListener('DOMContentLoaded', () => {
   const viewMount = document.getElementById('viewMount');
@@ -23,11 +30,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Initialize Magnetic Contextual Cursor
   const cursor = new CustomCursor();
 
-  // 3. Parse initial route for deep linking
-  const path = window.location.pathname;
+  // 3. Initialize Spatial Router & Parse Initial Route
+  const router = new SpatialRouter();
+  const initialRoute = router.getCurrentRoute();
   let initialSlug: string | undefined = undefined;
-  if (path.startsWith('/projects/') || path.startsWith('/project/')) {
-    initialSlug = path.split('/').filter(Boolean).pop();
+
+  if (
+    initialRoute.route.name === 'project-detail' ||
+    initialRoute.route.name === 'project-detail-alias'
+  ) {
+    initialSlug = initialRoute.params.slug;
   }
 
   // 4. Initialize Single Persistent 3D WebGL Engine
@@ -36,27 +48,110 @@ document.addEventListener('DOMContentLoaded', () => {
     projects: SHOWCASE_PROJECTS,
     initialSlug,
     onNavigate: (newPath) => {
-      if (window.location.pathname !== newPath) {
-        window.history.pushState({ path: newPath }, '', newPath);
-      }
-      if (newPath === '/') {
-        document.title = 'Studio — 3D Interactive Portfolio';
-      } else {
-        const slug = newPath.split('/').filter(Boolean).pop();
-        const p = SHOWCASE_PROJECTS.find(item => item.slug === slug);
-        document.title = p ? `${p.title.split('—')[0].trim()} — Case Study` : 'Case Study — Portfolio';
-      }
+      // Sync engine-driven navigation (clicking a card, closing case study) with router
+      router.navigate(newPath);
     }
   });
 
-  // 5. Track Real Asset Loading & Buffer Progress with Fail-Safe Timeout
-  const minLoadTimePromise = new Promise(res => setTimeout(res, 2000));
-  const maxTimeoutPromise = new Promise(res => setTimeout(res, 4500));
+  // 5. Mount Spatial Route Overlay Views
+  const studioView = new StudioView({
+    onClose: () => router.navigate('/'),
+    onHire: () => router.navigate('/hire')
+  });
+  studioView.mount(viewMount);
 
-  const assetPreloadPromise = engine.preloadAssets((loaded, total, name) => {
-    const rawPct = 15 + Math.round((loaded / total) * 82);
-    loader.setProgress(rawPct, `BUFFERING: ${name}`);
-  }).catch(() => {});
+  const hireView = new HireView({
+    onClose: () => {
+      const prev = router.getPreviousRoute();
+      if (prev && prev.pathname !== '/hire' && prev.pathname !== '/contact') {
+        router.navigate(prev.pathname);
+      } else {
+        router.navigate('/');
+      }
+    }
+  });
+  hireView.mount(viewMount);
+
+  // 6. Connect Spatial Router to 3D Waypoints & DOM Overlays
+  router.onRoute((current, previous) => {
+    const overlay = engine.getOverlay();
+    overlay.setActiveNav(current.pathname);
+
+    switch (current.route.name) {
+      case 'home': {
+        if (engine.heroOpenAmount > 0.5) {
+          engine.closeProject();
+        }
+        engine.setWaypoint('STAGE');
+        studioView.exit();
+        hireView.exit();
+        break;
+      }
+
+      case 'studio':
+      case 'about-alias':
+      case 'services-alias': {
+        if (engine.heroOpenAmount > 0.5) {
+          engine.closeProject();
+        }
+        engine.setWaypoint('STUDIO');
+        studioView.enter();
+        hireView.exit();
+        break;
+      }
+
+      case 'hire':
+      case 'contact-alias': {
+        engine.setWaypoint('DRAWER');
+        hireView.enter();
+        // Keep studio underneath if arriving from /studio
+        if (previous?.route.name !== 'studio' && previous?.route.name !== 'about-alias' && previous?.route.name !== 'services-alias') {
+          studioView.exit();
+        }
+        break;
+      }
+
+      case 'project-detail':
+      case 'project-detail-alias': {
+        studioView.exit();
+        hireView.exit();
+        engine.setWaypoint('CASE_STUDY');
+        const targetSlug = current.params.slug;
+        const activeProj = engine.getActiveProject();
+        if (!activeProj || activeProj.slug !== targetSlug) {
+          engine.openProjectBySlug(targetSlug);
+        }
+        break;
+      }
+
+      default: {
+        engine.setWaypoint('STAGE');
+        studioView.exit();
+        hireView.exit();
+        break;
+      }
+    }
+
+    // Refresh dynamic cursor attachments for new interactive elements
+    setTimeout(() => {
+      cursor.bindInteractive(document.querySelectorAll('a, button, input, textarea, summary'), 'EXPLORE');
+      cursor.bindInteractive(document.querySelectorAll('.ma-studio-close-btn, .ma-hire-close-btn, .ma-case-close-btn'), 'CLOSE');
+      cursor.bindInteractive(document.querySelectorAll('.ma-nav-cta, .ma-cta-hire-btn, .ma-submit-btn'), 'START');
+      cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link, .ma-call-link'), 'VISIT');
+      cursor.bindInteractive(document.querySelectorAll('.ma-sound-toggle, .ma-case-sound-btn'), 'AUDIO');
+    }, 100);
+  });
+
+  // 7. Track Real Asset Loading & Buffer Progress with Fail-Safe Timeout
+  const minLoadTimePromise = new Promise((res) => setTimeout(res, 1800));
+  const maxTimeoutPromise = new Promise((res) => setTimeout(res, 4000));
+
+  const assetPreloadPromise = engine
+    .preloadAssets((loaded, total, name) => {
+      const rawPct = 15 + Math.round((loaded / total) * 82);
+      loader.setProgress(rawPct, `BUFFERING: ${name}`);
+    })
+    .catch(() => {});
 
   Promise.race([
     Promise.all([assetPreloadPromise, minLoadTimePromise]),
@@ -64,25 +159,4 @@ document.addEventListener('DOMContentLoaded', () => {
   ]).finally(() => {
     loader.finish();
   });
-
-  // 6. Host History Router Adapter (handles browser back/forward buttons)
-  window.addEventListener('popstate', () => {
-    const curPath = window.location.pathname;
-    if (curPath.startsWith('/projects/') || curPath.startsWith('/project/')) {
-      const slug = curPath.split('/').filter(Boolean).pop();
-      const found = SHOWCASE_PROJECTS.find(p => p.slug === slug);
-      if (found) {
-        engine.openProject(found, window.innerWidth / 2, window.innerHeight / 2);
-      }
-    } else if (engine.heroOpenAmount > 0.5) {
-      engine.closeProject();
-    }
-  });
-
-  // 7. Bind interactive cursor triggers
-  cursor.bindInteractive(document.querySelectorAll('a, button'), 'EXPLORE');
-  cursor.bindInteractive(document.querySelectorAll('.ma-case-close-btn'), 'CLOSE');
-  cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link, .ma-bento-btn'), 'VISIT');
-  cursor.bindInteractive(document.querySelectorAll('.ma-case-sound-btn, .ma-sound-toggle'), 'AUDIO');
-  cursor.bindInteractive(document.querySelectorAll('.ma-about-link'), 'VISIT');
 });

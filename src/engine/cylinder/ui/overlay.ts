@@ -103,7 +103,9 @@ export class OverlayComponent {
   public soundToggleBtn: HTMLButtonElement;
   public caseSoundBtn: HTMLButtonElement;
   public accessibleNavEl: HTMLElement;
-  public aboutLink: HTMLAnchorElement;
+  public navWorkLink: HTMLAnchorElement | null = null;
+  public navStudioLink: HTMLAnchorElement | null = null;
+  public navHireLink: HTMLAnchorElement | null = null;
 
   private catEl: HTMLElement;
   private roleEl: HTMLElement;
@@ -136,15 +138,17 @@ export class OverlayComponent {
     this.root.innerHTML = `
       <!-- Minimal Top Header -->
       <header class="ma-minimal-header" id="maHeader">
-        <div class="ma-minimal-header__brand">
-          <div class="ma-brand-line-1">${escapeHtml(brand.brandLine1)}</div>
-          <div class="ma-brand-line-2">${escapeHtml(brand.brandLine2)}</div>
-        </div>
+        <a class="ma-minimal-header__brand" href="/" aria-label="Showcase3D Home">
+          <div class="ma-brand-line-1">Showcase3D.cloud</div>
+          <div class="ma-brand-line-2">Creative Technology Studio</div>
+        </a>
 
-        <div class="ma-minimal-header__nav">
+        <nav class="ma-minimal-header__nav" aria-label="Main Navigation">
+          <a class="ma-nav-link is-active" id="navWork" href="/">Work</a>
+          <a class="ma-nav-link" id="navStudio" href="/studio">Studio</a>
           <button class="ma-sound-toggle" id="maSoundToggle" type="button" aria-label="Toggle Spatial Audio">SOUND ON</button>
-          <a class="ma-about-link" id="maAboutBtn" href="#" target="_blank" rel="noopener noreferrer" aria-label="Visit Project Website">About</a>
-        </div>
+          <a class="ma-nav-cta" id="navHire" href="/hire">Start a Project ↗</a>
+        </nav>
       </header>
 
       <!-- Case Study In-Situ 3D Barrel HUD Overlay -->
@@ -225,7 +229,9 @@ export class OverlayComponent {
     this.titleWrapEl = this.root.querySelector('#maCaseTitleWrap')!;
     this.activeTitleEl = this.root.querySelector('#maCaseNavTitle')!;
     this.viewLink = this.root.querySelector('#maCaseViewLink')!;
-    this.aboutLink = this.root.querySelector('#maAboutBtn') as HTMLAnchorElement;
+    this.navWorkLink = this.root.querySelector('#navWork') as HTMLAnchorElement;
+    this.navStudioLink = this.root.querySelector('#navStudio') as HTMLAnchorElement;
+    this.navHireLink = this.root.querySelector('#navHire') as HTMLAnchorElement;
     this.closeBtn = this.root.querySelector('#maCaseCloseBtn')!;
     this.prevBtn = this.root.querySelector('#maCasePrevBtn')!;
     this.nextBtn = this.root.querySelector('#maCaseNextBtn')!;
@@ -250,22 +256,29 @@ export class OverlayComponent {
     this.cleanupFns.push(attachMagneticEffect(this.nextBtn, { maxDistance: 40, pullFactor: 0.32 }));
     this.cleanupFns.push(attachMagneticEffect(this.caseSoundBtn, { maxDistance: 45, pullFactor: 0.35 }));
     this.cleanupFns.push(attachMagneticEffect(this.soundToggleBtn, { maxDistance: 45, pullFactor: 0.28 }));
-    if (this.aboutLink) this.cleanupFns.push(attachMagneticEffect(this.aboutLink, { maxDistance: 45, pullFactor: 0.28 }));
+    if (this.navWorkLink) this.cleanupFns.push(attachMagneticEffect(this.navWorkLink, { maxDistance: 45, pullFactor: 0.28 }));
+    if (this.navStudioLink) this.cleanupFns.push(attachMagneticEffect(this.navStudioLink, { maxDistance: 45, pullFactor: 0.28 }));
+    if (this.navHireLink) this.cleanupFns.push(attachMagneticEffect(this.navHireLink, { maxDistance: 45, pullFactor: 0.32 }));
   }
 
   /**
-   * Updates the About header button link to point directly to the currently centered project's live website.
+   * Updates active state classes on top navigation links based on current route.
+   */
+  public setActiveNav(path: string): void {
+    if (this.navWorkLink) {
+      this.navWorkLink.classList.toggle('is-active', path === '/' || path.startsWith('/work') || path.startsWith('/project'));
+    }
+    if (this.navStudioLink) {
+      this.navStudioLink.classList.toggle('is-active', path.startsWith('/studio') || path.startsWith('/about') || path.startsWith('/services'));
+    }
+  }
+
+  /**
+   * Updates center project preview metadata.
    */
   public updateActiveCenterProject(proj: ShowcaseProject): void {
-    if (this.aboutLink) {
-      if (proj.liveUrl && !proj.liveUrl.includes('github.com')) {
-        this.aboutLink.href = proj.liveUrl;
-        this.aboutLink.target = '_blank';
-      } else {
-        this.aboutLink.href = `/projects/${proj.slug}`;
-        this.aboutLink.removeAttribute('target');
-      }
-      this.aboutLink.setAttribute('title', `Visit ${proj.title.split('—')[0].trim()}`);
+    if (this.navWorkLink) {
+      this.navWorkLink.setAttribute('title', `Active Project: ${proj.title.split('—')[0].trim()}`);
     }
   }
 
