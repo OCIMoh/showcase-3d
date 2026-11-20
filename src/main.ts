@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cursor.bindInteractive(document.querySelectorAll('a, button, input, textarea, summary'), 'EXPLORE');
       cursor.bindInteractive(document.querySelectorAll('.ma-studio-close-btn, .ma-contact-close-btn, .ma-case-close-btn'), 'CLOSE');
       cursor.bindInteractive(document.querySelectorAll('.ma-nav-cta, .ma-cta-contact-btn, .ma-submit-btn'), 'START');
-      cursor.bindInteractive(document.querySelectorAll('#dispatchPillEmail'), 'COPY');
+      cursor.bindInteractive(document.querySelectorAll('#dispatchMainBtn, #dispatchCopyBtn, #dispatchPillEmail'), 'CONTACT');
       cursor.bindInteractive(document.querySelectorAll('.ma-case-view-link, .ma-call-link'), 'VISIT');
       cursor.bindInteractive(document.querySelectorAll('.ma-sound-toggle, .ma-case-sound-btn'), 'AUDIO');
     }, 100);

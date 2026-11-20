@@ -46,11 +46,10 @@ export class ContactView implements SpatialView {
         <!-- Top Bar: Monospace Identity & Return Trigger -->
         <header class="ma-dispatch-header">
           <div class="ma-dispatch-badge">
-            <span class="ma-status-dot"></span>
-            <span>02 // DIRECT ATELIER DISPATCH · SHOWCASE-3D</span>
+            <span class="ma-dispatch-badge-title">CONTACT US</span>
           </div>
           <button class="ma-dispatch-close-btn ma-contact-close-btn" id="contactCloseBtn" type="button" aria-label="Return to Archive">
-            <span class="ma-dispatch-close-text">RETURN TO WORK</span>
+            <span class="ma-dispatch-close-text">RETURN</span>
             <span class="ma-dispatch-close-key">[ ESC ]</span>
           </button>
         </header>
@@ -68,52 +67,24 @@ export class ContactView implements SpatialView {
 
           <div class="ma-mask-line">
             <p class="ma-dispatch-subhead">
-              Direct atelier communication. We accept four bespoke WebGL commissions per quarter to preserve uncompromising visual fidelity and 60 FPS mobile performance.
+              We accept four bespoke WebGL commissions per quarter for forward-thinking maisons, architecture practices, and creative agencies.
             </p>
           </div>
 
-          <!-- Single Centered Magnetic Dispatch Action Pill -->
+          <!-- Single Direct Action Button (Show Nothing Just Say Contact Us) -->
           <div class="ma-dispatch-actions" id="dispatchActions">
-            <button class="ma-dispatch-pill" id="dispatchPillEmail" type="button" aria-label="Copy atelier email to clipboard">
-              <span class="ma-pill-icon">✉</span>
-              <span class="ma-pill-label">johndoe.@example.com</span>
-              <span class="ma-pill-tag" id="dispatchPillStatus">[ COPY ]</span>
+            <button class="ma-dispatch-pill" id="dispatchMainBtn" type="button" aria-label="Contact Us">
+              <span class="ma-pill-label">Contact Us</span>
+              <span class="ma-pill-icon">↗</span>
             </button>
           </div>
         </main>
-
-        <!-- Understated Human Editorial Colophon (Zero Marketing Slop) -->
-        <footer class="ma-dispatch-footer" role="contentinfo">
-          <span class="ma-footer-colophon">SHOWCASE-3D ATELIER</span>
-          <span class="ma-footer-dot">·</span>
-          <span class="ma-footer-colophon" id="dispatchParisTime">PARIS 17:45 CET</span>
-          <span class="ma-footer-dot">·</span>
-          <span class="ma-footer-colophon">COMMISSIONS OPEN FOR 2027</span>
-        </footer>
 
       </div>
     `;
 
     this.container.appendChild(this.root);
-    this.updateParisTime();
     this.bindEvents();
-  }
-
-  private updateParisTime(): void {
-    const el = this.root?.querySelector('#dispatchParisTime');
-    if (!el) return;
-    try {
-      const now = new Date();
-      const parisFormatter = new Intl.DateTimeFormat('en-GB', {
-        timeZone: 'Europe/Paris',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
-      el.textContent = `PARIS ${parisFormatter.format(now)} CET`;
-    } catch {
-      el.textContent = 'PARIS 17:45 CET';
-    }
   }
 
   private bindEvents(): void {
@@ -129,27 +100,30 @@ export class ContactView implements SpatialView {
     const scrim = this.root.querySelector('#dispatchScrim');
     scrim?.addEventListener('click', () => this.onCloseCallback?.());
 
-    // Single Magnetic Email Dispatch Pill (tactile pull + feedback)
-    const emailPill = this.root.querySelector<HTMLButtonElement>('#dispatchPillEmail');
-    const pillStatus = this.root.querySelector<HTMLElement>('#dispatchPillStatus');
-    if (emailPill) {
-      this.cleanupFns.push(attachMagneticEffect(emailPill, { maxDistance: 40, pullFactor: 0.22 }));
-    }
+    // Single Magnetic Atelier Dispatch Button
+    const mainBtn = (this.root.querySelector<HTMLButtonElement>('#dispatchMainBtn') ||
+      this.root.querySelector<HTMLButtonElement>('#dispatchCopyBtn') ||
+      this.root.querySelector<HTMLButtonElement>('#dispatchPillEmail')) as HTMLButtonElement | null;
+    const btnLabel = mainBtn?.querySelector<HTMLElement>('.ma-pill-label');
 
-    if (emailPill && pillStatus) {
-      emailPill.addEventListener('click', async () => {
+    if (mainBtn) {
+      this.cleanupFns.push(attachMagneticEffect(mainBtn, { maxDistance: 45, pullFactor: 0.28 }));
+
+      mainBtn.addEventListener('click', async () => {
         const emailAddress = 'johndoe.@example.com';
         try {
           await navigator.clipboard.writeText(emailAddress);
-          emailPill.classList.add('is-copied');
-          pillStatus.textContent = '✓ COPIED';
+          mainBtn.classList.add('is-copied');
+          if (btnLabel) btnLabel.textContent = '✓ Email Copied';
 
           const ariaLive = document.getElementById('maAriaLive');
-          if (ariaLive) ariaLive.textContent = 'Atelier email copied to clipboard.';
+          if (ariaLive) ariaLive.textContent = 'Atelier inquiry initiated. Direct email copied to clipboard.';
+
+          window.location.href = `mailto:${emailAddress}?subject=Showcase-3D%20Commission%20Inquiry`;
 
           setTimeout(() => {
-            emailPill.classList.remove('is-copied');
-            pillStatus.textContent = '[ COPY ]';
+            mainBtn.classList.remove('is-copied');
+            if (btnLabel) btnLabel.textContent = 'Contact Us';
           }, 2400);
         } catch {
           window.location.href = `mailto:${emailAddress}?subject=Showcase-3D%20Commission%20Inquiry`;
@@ -163,7 +137,6 @@ export class ContactView implements SpatialView {
     this.visible = true;
     this.root.style.display = 'block';
     this.root.setAttribute('aria-hidden', 'false');
-    this.updateParisTime();
 
     this.previouslyFocusedElement = document.activeElement as HTMLElement | null;
 
@@ -171,11 +144,10 @@ export class ContactView implements SpatialView {
     const shell = this.root.querySelector<HTMLElement>('.ma-dispatch-shell');
     const maskLines = this.root.querySelectorAll<HTMLElement>('.ma-mask-line span, .ma-mask-line p');
     const actions = this.root.querySelector<HTMLElement>('#dispatchActions');
-    const footer = this.root.querySelector<HTMLElement>('.ma-dispatch-footer');
     const header = this.root.querySelector<HTMLElement>('.ma-dispatch-header');
 
     // CRITICAL: Kill any existing/pending tweens on ALL containers to prevent race conditions
-    gsap.killTweensOf([this.root, scrim, shell, header, actions, footer, ...Array.from(maskLines)]);
+    gsap.killTweensOf([this.root, scrim, shell, header, actions, ...Array.from(maskLines)]);
 
     // 1. Scrim fade in
     if (scrim) {
@@ -206,22 +178,13 @@ export class ContactView implements SpatialView {
       });
     }
 
-    // 5. Staggered emergence of single action pill and calm footer
+    // 5. Staggered emergence of single action pill
     if (actions) {
       gsap.fromTo(actions, { opacity: 0, y: 14 }, {
         opacity: 1,
         y: 0,
         duration: 0.65,
         delay: 0.18,
-        ease: 'power2.out'
-      });
-    }
-
-    if (footer) {
-      gsap.fromTo(footer, { opacity: 0 }, {
-        opacity: 1,
-        duration: 0.7,
-        delay: 0.28,
         ease: 'power2.out'
       });
     }

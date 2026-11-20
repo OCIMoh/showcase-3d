@@ -73,7 +73,11 @@ export class CarouselPass {
     const numItems = params.projects.length;
     const spacing = cfg.spacing * rScale;
     const radiusX = cfg.radiusX * rScale;
-    const radiusZ = cfg.radiusZ * rScale;
+    let radiusZ = cfg.radiusZ * rScale;
+    // On portrait screens, enrich cylinder depth so the barrel curvature is dramatic and tactile
+    if (rScale < 0.85) {
+      radiusZ *= 1.0 + (0.85 - rScale) * 0.55;
+    }
     const loopWidth = numItems * spacing;
 
     // 1. Activate dedicated Carousel Shader Program
@@ -82,7 +86,8 @@ export class CarouselPass {
     // 2. Bind Camera Matrices & Carousel Radius
     gl.uniformMatrix4fv(u.uProjection, false, projMat);
     gl.uniformMatrix4fv(u.uView, false, viewMat);
-    gl.uniform1f(u.uPanelRadius, radiusX);
+    // Bind base unscaled radius to preserve proportional, smooth mesh curvature across card width
+    gl.uniform1f(u.uPanelRadius, cfg.radiusX);
 
     // 3. Dynamic Cursor Spotlight Light Position (for Satin Specular Sheen)
     const lx = params.lightPos ? params.lightPos[0] : 0.0;
@@ -203,7 +208,7 @@ export class CarouselPass {
       mat4Identity(this.modelMat);
       mat4Translate(this.modelMat, this.modelMat, [card.x, 0, card.z]);
       mat4RotateY(this.modelMat, this.modelMat, card.rotY);
-      mat4Scale(this.modelMat, this.modelMat, [card.scale, card.scale, 1.0]);
+      mat4Scale(this.modelMat, this.modelMat, [card.scale, card.scale, card.scale]);
       gl.uniformMatrix4fv(u.uModel, false, this.modelMat);
 
       // Bind Textures: Texture 0 = Current Slide, Texture 1 = Incoming Slide
@@ -243,7 +248,10 @@ export class CarouselPass {
     const numItems = projects.length;
     const spacing = cfg.spacing * rScale;
     const radiusX = cfg.radiusX * rScale;
-    const radiusZ = cfg.radiusZ * rScale;
+    let radiusZ = cfg.radiusZ * rScale;
+    if (rScale < 0.85) {
+      radiusZ *= 1.0 + (0.85 - rScale) * 0.55;
+    }
     const loopWidth = numItems * spacing;
     const halfW = (cfg.cardWidth * rScale) / 2;
     const halfH = (cfg.cardHeight * rScale) / 2;
@@ -272,7 +280,7 @@ export class CarouselPass {
       mat4Identity(this.modelMat);
       mat4Translate(this.modelMat, this.modelMat, [x, 0, z]);
       mat4RotateY(this.modelMat, this.modelMat, rotY);
-      mat4Scale(this.modelMat, this.modelMat, [scale, scale, 1.0]);
+      mat4Scale(this.modelMat, this.modelMat, [scale, scale, scale]);
 
       mat4Multiply(this.mvpMat, viewMat, this.modelMat);
       mat4Multiply(this.mvpMat, projMat, this.mvpMat);

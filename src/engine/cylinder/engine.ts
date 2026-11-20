@@ -440,7 +440,7 @@ export class CylinderCarouselEngine {
     // Smooth responsive mesh scaling: adapts cards gracefully from 1080p desktop down to mobile portrait
     let rScale = 1.0;
     if (aspect < 1.77) {
-      rScale = Math.min(1.0, Math.max(0.38, 0.38 + (aspect - 0.45) * ((1.0 - 0.38) / (1.77 - 0.45))));
+      rScale = Math.min(1.0, Math.max(0.46, 0.46 + (aspect - 0.45) * ((1.0 - 0.46) / (1.77 - 0.45))));
     }
     this.responsiveScale = rScale;
 
@@ -463,24 +463,41 @@ export class CylinderCarouselEngine {
       this.synth.triggerHaptic(10);
     });
 
-    // Dynamic Camera Distance:
-    // Gentle pull back on mobile portrait for comfortable vertical margins,
-    // and gentle push forward on ultrawides (aspect > 2.0) for panoramic immersion.
+    // Dynamic Camera Framing & Barrel Perspective:
+    // On mobile portrait (aspect < 1.0), pull camera back, lift slightly, and pitch downwards
+    // to reveal the sweeping 3D elliptical barrel rim with prominent side-card curvature.
+    // Flattens out cleanly when opening a case study (heroOpenAmount -> 1).
     let camZ = cfg.cameraZ;
+    let camY = this.camOffsetY;
+    let tiltX = this.tiltCurrentY + this.tiltOffsetAngleX;
+    let fov = this.currentFovDegrees;
+
     if (aspect < 1.0) {
-      camZ = cfg.cameraZ - (1.0 - aspect) * 0.8;
+      // Smooth interpolation factor: 0.0 at aspect >= 1.0, 1.0 at aspect <= 0.48 (tall phone)
+      const portraitFactor = Math.min(1.0, Math.max(0.0, (1.0 - aspect) / 0.52));
+      const heroEase = 1.0 - this.heroOpenAmount;
+
+      // 1. Pull back camera so cylinder barrel has horizontal breathing room and side cards lead into depth
+      camZ = cfg.cameraZ - portraitFactor * 2.6 * heroEase;
+
+      // 2. Elevate camera slightly and pitch downwards by ~7.5° (0.13 rad) to reveal true 3D barrel rim
+      camY += portraitFactor * 0.52 * heroEase;
+      tiltX += portraitFactor * 0.13 * heroEase;
+
+      // 3. Gentle FOV expansion to prevent horizontal telephoto flattening on portrait screens
+      fov = this.currentFovDegrees + portraitFactor * 7.0 * heroEase;
     } else if (aspect > 2.0) {
       camZ = Math.min(-5.8, cfg.cameraZ + (aspect - 1.77) * 0.4);
     }
 
-    mat4Perspective(this.projMat, (this.currentFovDegrees * Math.PI) / 180, aspect, 0.1, 50.0);
+    mat4Perspective(this.projMat, (fov * Math.PI) / 180, aspect, 0.1, 50.0);
     mat4Identity(this.viewMat);
     mat4Translate(this.viewMat, this.viewMat, [
       this.camOffsetX,
-      this.camOffsetY,
+      camY,
       camZ + this.camOffsetZ
     ]);
-    mat4RotateX(this.viewMat, this.viewMat, this.tiltCurrentY + this.tiltOffsetAngleX);
+    mat4RotateX(this.viewMat, this.viewMat, tiltX);
     mat4RotateY(this.viewMat, this.viewMat, this.tiltCurrentX + this.tiltOffsetAngleY);
 
     // Render Dedicated Passes with Decoupled Shaders
