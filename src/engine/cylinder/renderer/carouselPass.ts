@@ -22,6 +22,9 @@ export interface CarouselDrawParams {
   responsiveScale?: number;
   lightPos?: [number, number, number];
   now?: number;
+  spatialBlur?: number;
+  vignette?: number;
+  atmosphereDim?: number;
 }
 
 interface CardDraw {
@@ -86,6 +89,11 @@ export class CarouselPass {
     const ly = params.lightPos ? params.lightPos[1] : 0.0;
     const lz = params.lightPos ? params.lightPos[2] : 2.5;
     gl.uniform3f(u.uLightPos, lx, ly, lz);
+
+    // 4. Native GPU Spatial Shader Uniforms (Depth-of-field, Vignette, Atmosphere)
+    gl.uniform1f(u.uSpatialBlur, params.spatialBlur ?? 0.0);
+    gl.uniform1f(u.uVignette, params.vignette ?? 0.0);
+    gl.uniform1f(u.uAtmosphereDim, params.atmosphereDim ?? 0.0);
 
     const cardsToDraw: CardDraw[] = [];
 

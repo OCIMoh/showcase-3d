@@ -104,8 +104,12 @@ export class CylinderCarouselEngine {
   private camOffsetZ = 0.0;
   private tiltOffsetAngleX = 0.0;
   private tiltOffsetAngleY = 0.0;
-  private blurAmountPx = 0.0;
-  private brightness = 1.0;
+  private currentFovDegrees = 48.0;
+  private spatialBlur = 0.0;
+  private vignetteStrength = 0.0;
+  private atmosphereDim = 0.0;
+  private targetFps = 60;
+  private lastRenderTime = 0;
 
   constructor(options: CylinderCarouselOptions) {
     this.container = options.container;
@@ -322,6 +326,17 @@ export class CylinderCarouselEngine {
   private tick(): void {
     if (!this.isRunning || this.isContextLost) return;
     const now = performance.now();
+
+    // Adaptive Frame Budget Governor: Throttles background WebGL loop to targetFps when overlays are active
+    if (this.targetFps < 55) {
+      const frameInterval = 1000 / this.targetFps;
+      if (now - this.lastRenderTime < frameInterval - 1.5) {
+        this.rafId = requestAnimationFrame(this.tick);
+        return;
+      }
+    }
+    this.lastRenderTime = now;
+
     const dt = Math.min((now - this.lastTickTime) / 1000, 0.05);
     this.lastTickTime = now;
 
@@ -434,7 +449,7 @@ export class CylinderCarouselEngine {
       camZ = Math.min(-5.8, cfg.cameraZ + (aspect - 1.77) * 0.4);
     }
 
-    mat4Perspective(this.projMat, (cfg.fovDegrees * Math.PI) / 180, aspect, 0.1, 50.0);
+    mat4Perspective(this.projMat, (this.currentFovDegrees * Math.PI) / 180, aspect, 0.1, 50.0);
     mat4Identity(this.viewMat);
     mat4Translate(this.viewMat, this.viewMat, [
       this.camOffsetX,
@@ -457,7 +472,10 @@ export class CylinderCarouselEngine {
       reducedMotion: this.prefersReducedMotion,
       responsiveScale: rScale,
       lightPos: [this.lightCurrentX, this.lightCurrentY, 2.5],
-      now
+      now,
+      spatialBlur: this.spatialBlur,
+      vignette: this.vignetteStrength,
+      atmosphereDim: this.atmosphereDim
     }, this.numIndices, this.projMat, this.viewMat);
 
     if (this.activeProject) {
@@ -659,29 +677,28 @@ export class CylinderCarouselEngine {
     const cfg = WAYPOINT_CONFIGS[waypoint as keyof typeof WAYPOINT_CONFIGS];
     if (!cfg) return;
 
+    this.targetFps = cfg.targetFps;
     this.arcHud.setVisible(cfg.hudVisible);
+    this.synth.playWaypointTransition(waypoint);
+
+    if (this.canvas) {
+      this.canvas.style.filter = 'none';
+    }
 
     const d = this.prefersReducedMotion ? 0.2 : duration;
-    gsap.killTweensOf(this, 'camOffsetX,camOffsetY,camOffsetZ,tiltOffsetAngleX,tiltOffsetAngleY,blurAmountPx,brightness');
+    gsap.killTweensOf(this, 'camOffsetX,camOffsetY,camOffsetZ,tiltOffsetAngleX,tiltOffsetAngleY,currentFovDegrees,spatialBlur,vignetteStrength,atmosphereDim');
     gsap.to(this, {
       camOffsetX: cfg.camOffsetX,
       camOffsetY: cfg.camOffsetY,
       camOffsetZ: cfg.camOffsetZ,
       tiltOffsetAngleX: cfg.tiltAngleX,
       tiltOffsetAngleY: cfg.tiltAngleY,
-      blurAmountPx: cfg.blurAmountPx,
-      brightness: cfg.brightness,
+      currentFovDegrees: cfg.fovDegrees,
+      spatialBlur: cfg.spatialBlur,
+      vignetteStrength: cfg.vignetteStrength,
+      atmosphereDim: cfg.atmosphereDim,
       duration: d,
-      ease: 'power3.out',
-      onUpdate: () => {
-        if (this.canvas) {
-          if (this.blurAmountPx > 0.1 || this.brightness < 0.98) {
-            this.canvas.style.filter = `blur(${this.blurAmountPx.toFixed(1)}px) brightness(${this.brightness.toFixed(2)})`;
-          } else {
-            this.canvas.style.filter = 'none';
-          }
-        }
-      }
+      ease: 'power3.out'
     });
   }
 

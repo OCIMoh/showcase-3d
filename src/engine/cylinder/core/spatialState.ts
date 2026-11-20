@@ -1,6 +1,6 @@
 /**
  * Spatial State Machine — Camera Waypoints & Scene Configurations
- * Maps abstract route names to physical WebGL camera coordinates and post-processing properties.
+ * Maps abstract route names to physical WebGL camera coordinates, FOV, and GLSL shader post-processing.
  */
 
 import { SpatialWaypoint } from '../../../router/routes';
@@ -12,8 +12,11 @@ export interface CameraWaypointConfig {
   camOffsetZ: number;
   tiltAngleX: number;
   tiltAngleY: number;
-  blurAmountPx: number;
-  brightness: number;
+  fovDegrees: number;
+  spatialBlur: number;
+  vignetteStrength: number;
+  atmosphereDim: number;
+  targetFps: number;
   hudVisible: boolean;
   interactiveCylinder: boolean;
 }
@@ -25,8 +28,11 @@ export const WAYPOINT_CONFIGS: Record<SpatialWaypoint, CameraWaypointConfig> = {
     camOffsetZ: 0.0,
     tiltAngleX: 0.0,
     tiltAngleY: 0.0,
-    blurAmountPx: 0.0,
-    brightness: 1.0,
+    fovDegrees: 48.0,
+    spatialBlur: 0.0,
+    vignetteStrength: 0.0,
+    atmosphereDim: 0.0,
+    targetFps: 60,
     hudVisible: true,
     interactiveCylinder: true
   },
@@ -36,30 +42,39 @@ export const WAYPOINT_CONFIGS: Record<SpatialWaypoint, CameraWaypointConfig> = {
     camOffsetZ: 0.0,
     tiltAngleX: 0.0,
     tiltAngleY: 0.0,
-    blurAmountPx: 0.0,
-    brightness: 1.0,
+    fovDegrees: 48.0,
+    spatialBlur: 0.0,
+    vignetteStrength: 0.15,
+    atmosphereDim: 0.0,
+    targetFps: 60,
     hudVisible: false,
     interactiveCylinder: false
   },
   STUDIO: {
     camOffsetX: 0.0,
-    camOffsetY: 0.22,
-    camOffsetZ: -0.75,
-    tiltAngleX: 0.04,
+    camOffsetY: 0.28,
+    camOffsetZ: -0.90,
+    tiltAngleX: 0.05,
     tiltAngleY: 0.0,
-    blurAmountPx: 16.0,
-    brightness: 0.4,
+    fovDegrees: 55.0,
+    spatialBlur: 1.0,
+    vignetteStrength: 0.85,
+    atmosphereDim: 0.65,
+    targetFps: 20,
     hudVisible: false,
     interactiveCylinder: false
   },
   DRAWER: {
-    camOffsetX: -0.55,
+    camOffsetX: -0.65,
     camOffsetY: 0.0,
-    camOffsetZ: -0.45,
+    camOffsetZ: -0.55,
     tiltAngleX: 0.0,
-    tiltAngleY: 0.08,
-    blurAmountPx: 12.0,
-    brightness: 0.45,
+    tiltAngleY: 0.09,
+    fovDegrees: 51.0,
+    spatialBlur: 0.75,
+    vignetteStrength: 0.70,
+    atmosphereDim: 0.55,
+    targetFps: 20,
     hudVisible: false,
     interactiveCylinder: false
   }

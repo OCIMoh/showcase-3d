@@ -111,6 +111,69 @@ export class SoundSynthesizer {
     }
   }
 
+  /**
+   * Synthesizes an acoustic waypoint glide tone.
+   */
+  public playWaypointTransition(waypoint: string): void {
+    if (this.isMuted) return;
+    try {
+      if (!this.audioCtx) {
+        const AudioCtxClass =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        this.audioCtx = new AudioCtxClass();
+      }
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+
+      const now = this.audioCtx.currentTime;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+
+      switch (waypoint) {
+        case 'STUDIO': {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(320, now + 0.18);
+          gain.gain.setValueAtTime(0.045, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+          break;
+        }
+        case 'DRAWER': {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(580, now + 0.12);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+          break;
+        }
+        case 'STAGE': {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.exponentialRampToValueAtTime(160, now + 0.14);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+          break;
+        }
+        default: {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(330, now);
+          gain.gain.setValueAtTime(0.03, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+          break;
+        }
+      }
+
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.24);
+    } catch {
+      // Autoplay fallback
+    }
+  }
+
   public destroy(): void {
     if (this.audioCtx) {
       this.audioCtx.close().catch(() => {});

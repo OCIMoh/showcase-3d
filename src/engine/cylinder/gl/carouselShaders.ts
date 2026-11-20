@@ -84,6 +84,9 @@ uniform float uIsHeroBackdrop;    // Smooth blend to warm cream background (0.0 
 uniform float uVelocity;          // Speed of carousel motion
 uniform float uReducedMotion;     // 1.0 disables chromatic aberration
 uniform vec3 uLightPos;           // Dynamic cursor light position in world coords
+uniform float uSpatialBlur;       // 0.0 to 1.0 (Native optical depth-of-field blur)
+uniform float uVignette;          // 0.0 to 1.0 (Radial edge shadow)
+uniform float uAtmosphereDim;     // 0.0 to 1.0 (Dark ambient blend for reading overlays)
 
 varying vec2 vUv;
 varying vec3 vWorldPos;
@@ -151,6 +154,19 @@ void main() {
     }
   }
 
+  // Native GPU Optical Depth-of-Field Poisson dispersion when blurred
+  if (uSpatialBlur > 0.005) {
+    float bRadius = uSpatialBlur * 0.016;
+    vec4 s1 = texture2D(uTexture, clamp(uv + vec2(-bRadius, -bRadius * 0.7), 0.001, 0.999));
+    vec4 s2 = texture2D(uTexture, clamp(uv + vec2(bRadius, -bRadius * 0.7), 0.001, 0.999));
+    vec4 s3 = texture2D(uTexture, clamp(uv + vec2(-bRadius * 0.7, bRadius), 0.001, 0.999));
+    vec4 s4 = texture2D(uTexture, clamp(uv + vec2(bRadius * 0.7, bRadius), 0.001, 0.999));
+    vec4 s5 = texture2D(uTexture, clamp(uv + vec2(0.0, -bRadius * 1.2), 0.001, 0.999));
+    vec4 s6 = texture2D(uTexture, clamp(uv + vec2(0.0, bRadius * 1.2), 0.001, 0.999));
+    vec4 blurred = (texColor * 0.30) + ((s1 + s2 + s3 + s4) * 0.14) + ((s5 + s6) * 0.07);
+    texColor = mix(texColor, blurred, smoothstep(0.0, 1.0, uSpatialBlur));
+  }
+
   vec3 baseRgb = texColor.rgb * uDimFactor;
 
   // 2. Card Surface Specular Sheen (Soft, luxury satin spotlight tracking cursor)
@@ -172,6 +188,20 @@ void main() {
   // Smooth hero backdrop blending during case study transition
   if (uIsHeroBackdrop > 0.001) {
     finalRgb = mix(finalRgb, vec3(0.961, 0.953, 0.925), uIsHeroBackdrop * 0.95);
+  }
+
+  // 3. Radial Spatial Vignette
+  if (uVignette > 0.005) {
+    vec2 vCenter = (vUv - vec2(0.5)) * vec2(1.5, 1.0);
+    float vDist = length(vCenter);
+    float vig = smoothstep(0.95, 0.20, vDist * uVignette);
+    finalRgb *= mix(1.0, vig, uVignette * 0.85);
+  }
+
+  // 4. Atmospheric Dimming for overlay legibility
+  if (uAtmosphereDim > 0.005) {
+    vec3 ambientTone = vec3(0.035, 0.035, 0.045);
+    finalRgb = mix(finalRgb, ambientTone, uAtmosphereDim * 0.90);
   }
 
   gl_FragColor = vec4(finalRgb, texColor.a * uOpacity);
