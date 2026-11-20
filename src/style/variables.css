@@ -25,8 +25,9 @@
   --color-accent-green: #00ff88;
 
   /* Typography */
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: 'Space Mono', 'SF Mono', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono: 'JetBrains Mono', 'Space Mono', Menlo, Monaco, Consolas, monospace;
 
   /* Motion & Easing */
   --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);

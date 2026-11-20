@@ -1,12 +1,26 @@
 /**
- * StudioView — Editorial Studio & Services Overlay (/studio)
+ * StudioView — Swiss Spatial Split-Ledger (/studio or /about)
  * 
- * Merges About, Services, 3-Step Process, Pricing Brackets, and AEO/GEO FAQ
- * into a luxury editorial split-screen experience floating over the ambient 3D cylinder.
+ * 45/55 Asymmetric Spatial Architecture:
+ * - Floats over the persistent 3D WebGL cylinder
+ * - Live 3D flacon glides to the right 55% with optical WebGL depth-of-field blur
+ * - Left 44vw presents an ultra-clean, human Swiss editorial monograph.
+ * 
+ * Features:
+ * - Studio Overview & Thesis (Instrument Serif)
+ * - Creative Philosophy (Three Tenets)
+ * - Capabilities & Disciplines
+ * - Studio Colophon & Telemetry
+ * - Direct Studio Inquiry CTA
+ * 
+ * Sourced directly from src/data/studioContent.ts (docs/content.md)
+ * Governed by: @style-animaxxing, @animaxxing, @creative-direction, @awwwards
  */
 
 import gsap from 'gsap';
 import { SpatialView } from './baseView';
+import { STUDIO_CONTENT } from '../data/studioContent';
+import { attachMagneticEffect } from '../engine/cylinder/ui/overlay';
 
 export class StudioView implements SpatialView {
   public readonly id = 'studio';
@@ -14,215 +28,130 @@ export class StudioView implements SpatialView {
   private container: HTMLElement | null = null;
   private visible = false;
   private onCloseCallback?: () => void;
-  private onHireCallback?: () => void;
+  private onContactCallback?: () => void;
   private keydownHandler?: (e: KeyboardEvent) => void;
+  private cleanupFns: Array<() => void> = [];
 
-  constructor(options: { onClose?: () => void; onHire?: () => void } = {}) {
+  constructor(options: { onClose?: () => void; onContact?: () => void } = {}) {
     this.onCloseCallback = options.onClose;
-    this.onHireCallback = options.onHire;
+    this.onContactCallback = options.onContact;
   }
 
   public mount(container: HTMLElement): void {
     this.container = container;
     this.root = document.createElement('div');
-    this.root.className = 'ma-studio-overlay';
+    this.root.className = 'ma-studio-ledger-root';
     this.root.id = 'studioView';
     this.root.setAttribute('aria-hidden', 'true');
     this.root.style.display = 'none';
 
+    const { brand, philosophy, capabilities, colophon, contact } = STUDIO_CONTENT;
+
+    const headlineHtml = brand.headlineLines
+      .map(line => `<span class="ma-mask-line"><span class="ma-line-inner">${line}</span></span>`)
+      .join('\n              ');
+
+    const paragraphsHtml = brand.bioParagraphs
+      .map(p => `<div class="ma-mask-line"><p class="ma-line-inner ma-ledger-thesis-p">${p}</p></div>`)
+      .join('\n            ');
+
+    const philosophyHtml = philosophy
+      .map(item => `
+              <div class="ma-studio-item">
+                <h3 class="ma-item-title">${item.title}</h3>
+                <p class="ma-item-desc">${item.body}</p>
+              </div>`
+      ).join('');
+
+    const capabilitiesHtml = capabilities
+      .map(cap => `
+              <div class="ma-studio-item">
+                <h3 class="ma-item-title">${cap.title}</h3>
+                <p class="ma-item-desc">${cap.body}</p>
+              </div>`
+      ).join('');
+
+    const colophonHtml = colophon
+      .map(row => `
+              <div class="ma-ledger-row">
+                <span class="ma-row-label">${row.label}</span>
+                <span class="ma-row-val">${row.value}</span>
+              </div>`
+      ).join('');
+
     this.root.innerHTML = `
-      <div class="ma-studio-backdrop"></div>
-      <div class="ma-studio-scroller" id="studioScroller">
-        <div class="ma-studio-container">
+      <!-- Left-edge soft warm scrim (leaves the right 55% crystal-clear for the 3D scene) -->
+      <div class="ma-studio-scrim" id="studioScrim"></div>
+
+      <!-- Left 44vw Swiss Editorial Ledger Panel -->
+      <aside class="ma-studio-ledger-panel" id="studioPanel" role="dialog" aria-modal="true" aria-label="Showcase-3D Studio">
+        
+        <!-- Top Action Bar -->
+        <div class="ma-ledger-header">
+          <span class="ma-ledger-mono-tag">${brand.tag}</span>
+          <button class="ma-ledger-close-btn ma-studio-close-btn" id="studioCloseBtn" type="button" aria-label="Return to Archive">
+            <span class="ma-ledger-close-label">RETURN</span>
+            <span class="ma-ledger-close-key">[ ESC ]</span>
+          </button>
+        </div>
+
+        <!-- Scrollable Column Content -->
+        <div class="ma-ledger-body" id="studioBody">
           
-          <!-- Top Bar Action -->
-          <div class="ma-studio-header-bar">
-            <span class="ma-studio-tag">STUDIO & SERVICES — SHOWCASE3D.CLOUD</span>
-            <button class="ma-studio-close-btn" id="studioCloseBtn" type="button" aria-label="Close Studio">
-              <span class="ma-studio-close-icon">✕</span>
-              <span class="ma-studio-close-label">RETURN TO WORK</span>
+          <!-- 1. Headline & Studio Overview -->
+          <section class="ma-ledger-section">
+            <h1 class="ma-ledger-headline">
+              ${headlineHtml}
+            </h1>
+
+            <div class="ma-ledger-bio-group">
+              ${paragraphsHtml}
+            </div>
+          </section>
+
+          <!-- 2. Creative Philosophy -->
+          <section class="ma-ledger-section">
+            <div class="ma-mask-line">
+              <h2 class="ma-line-inner ma-ledger-subhead">PHILOSOPHY</h2>
+            </div>
+            
+            <div class="ma-studio-items-grid">
+              ${philosophyHtml}
+            </div>
+          </section>
+
+          <!-- 3. Capabilities -->
+          <section class="ma-ledger-section">
+            <div class="ma-mask-line">
+              <h2 class="ma-line-inner ma-ledger-subhead">CAPABILITIES</h2>
+            </div>
+            
+            <div class="ma-studio-items-grid">
+              ${capabilitiesHtml}
+            </div>
+          </section>
+
+          <!-- 4. Studio Colophon & Telemetry -->
+          <section class="ma-ledger-section">
+            <div class="ma-mask-line">
+              <h2 class="ma-line-inner ma-ledger-subhead">STUDIO TELEMETRY & SPECIFICATIONS</h2>
+            </div>
+
+            <div class="ma-ledger-table">
+              ${colophonHtml}
+            </div>
+          </section>
+
+          <!-- 5. Direct Human Action CTA -->
+          <section class="ma-ledger-footer">
+            <button class="ma-ledger-cta-btn ma-cta-contact-btn" id="studioContactBtn" type="button">
+              <span>${contact.actionLabel}</span>
             </button>
-          </div>
-
-          <!-- Hero Section -->
-          <section class="ma-studio-hero">
-            <div class="ma-studio-eyebrow">CREATIVE TECHNOLOGY & SPATIAL WEB DESIGN</div>
-            <h1 class="ma-studio-headline">Where digital spaces come to life.</h1>
-            <p class="ma-studio-lead">
-              We design and engineer bespoke, high-performance 3D websites that turn ordinary brand visits into unforgettable interactive spaces. Every project balances museum-grade aesthetics with 60 FPS mobile performance.
-            </p>
-
-            <div class="ma-studio-stats">
-              <div class="ma-studio-stat-item">
-                <span class="ma-stat-val">&lt; 1 MB</span>
-                <span class="ma-stat-label">Initial Codebase</span>
-              </div>
-              <div class="ma-studio-stat-item">
-                <span class="ma-stat-val">60 FPS</span>
-                <span class="ma-stat-label">Mobile Frame Budget</span>
-              </div>
-              <div class="ma-studio-stat-item">
-                <span class="ma-stat-val">WebGL 2.0</span>
-                <span class="ma-stat-label">Custom GLSL Shaders</span>
-              </div>
-              <div class="ma-studio-stat-item">
-                <span class="ma-stat-val">Worldwide</span>
-                <span class="ma-stat-label">Remote Availability</span>
-              </div>
-            </div>
-          </section>
-
-          <!-- Philosophy Grid -->
-          <section class="ma-studio-section">
-            <h2 class="ma-studio-section-title">The Three Pillars</h2>
-            <div class="ma-studio-grid">
-              <div class="ma-studio-card">
-                <div class="ma-card-num">01</div>
-                <h3 class="ma-card-title">Performance Before Splendor</h3>
-                <p class="ma-card-body">
-                  A 3D website that freezes a phone is a broken website. We enforce strict draw-call budgets, geometry instancing, and lazy asset buffering so interactive web spaces stay silky smooth on any device.
-                </p>
-              </div>
-              <div class="ma-studio-card">
-                <div class="ma-card-num">02</div>
-                <h3 class="ma-card-title">Calm Contemporary Gallery</h3>
-                <p class="ma-card-body">
-                  No neon overload or chaotic dashboard clutter. We build spacious, confident, warm-monochrome spaces where your brand and products supply the color and energy.
-                </p>
-              </div>
-              <div class="ma-studio-card">
-                <div class="ma-card-num">03</div>
-                <h3 class="ma-card-title">Commercial Conversion</h3>
-                <p class="ma-card-body">
-                  Our interactive showcases don’t just win design awards; they convert visitors into qualified high-budget clients, investors, and loyal brand advocates.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <!-- 3-Step Process -->
-          <section class="ma-studio-section">
-            <h2 class="ma-studio-section-title">How We Deliver: 3-Step Timeline</h2>
-            <div class="ma-process-timeline">
-              <div class="ma-process-step">
-                <div class="ma-step-indicator">
-                  <span class="ma-step-phase">WEEKS 1–2</span>
-                  <div class="ma-step-bullet"></div>
-                </div>
-                <div class="ma-step-content">
-                  <h3 class="ma-step-title">Discovery & Spatial Art Direction</h3>
-                  <p class="ma-step-desc">
-                    Art direction, moodboards, creative concept definition, and custom 3D asset preparation (geometry simplification, GLTF texture compression).
-                  </p>
-                </div>
-              </div>
-
-              <div class="ma-process-step">
-                <div class="ma-step-indicator">
-                  <span class="ma-step-phase">WEEKS 3–4</span>
-                  <div class="ma-step-bullet"></div>
-                </div>
-                <div class="ma-step-content">
-                  <h3 class="ma-step-title">Interactive WebGL Prototyping</h3>
-                  <p class="ma-step-desc">
-                    Camera physics choreography, custom GLSL vertex/fragment shaders, tactile haptics, spatial audio synthesis, and responsive mesh scaling.
-                  </p>
-                </div>
-              </div>
-
-              <div class="ma-process-step">
-                <div class="ma-step-indicator">
-                  <span class="ma-step-phase">WEEKS 5–6</span>
-                  <div class="ma-step-bullet"></div>
-                </div>
-                <div class="ma-step-content">
-                  <h3 class="ma-step-title">Polish, Optimization & Global Launch</h3>
-                  <p class="ma-step-desc">
-                    Mobile Lighthouse 90+ auditing, cross-browser validation (Chrome, Safari, Firefox, Edge, iOS/Android), SEO/AEO structured data injection, and production DNS deployment.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Service Offerings -->
-          <section class="ma-studio-section">
-            <h2 class="ma-studio-section-title">Capabilities & Offerings</h2>
-            <div class="ma-services-list">
-              <div class="ma-service-row">
-                <div class="ma-service-col-main">
-                  <h3 class="ma-service-name">Bespoke 3D Brand Experiences</h3>
-                  <p class="ma-service-summary">Flagship immersive digital spaces for modern brands, luxury products, and design forward studios.</p>
-                </div>
-                <div class="ma-service-col-meta">
-                  <span class="ma-service-pill">4–6 Weeks Delivery</span>
-                  <span class="ma-service-pill">From $12,500</span>
-                </div>
-              </div>
-
-              <div class="ma-service-row">
-                <div class="ma-service-col-main">
-                  <h3 class="ma-service-name">Interactive 3D Product Visualizers</h3>
-                  <p class="ma-service-summary">Real-time customizable 3D product configurators with lighting controls, tactile material swaps, and seamless e-commerce integration.</p>
-                </div>
-                <div class="ma-service-col-meta">
-                  <span class="ma-service-pill">3–5 Weeks Delivery</span>
-                  <span class="ma-service-pill">From $8,500</span>
-                </div>
-              </div>
-
-              <div class="ma-service-row">
-                <div class="ma-service-col-main">
-                  <h3 class="ma-service-name">Creative Engineering for Agencies</h3>
-                  <p class="ma-service-summary">White-label WebGL engineering, GLSL shader authoring, and performance audits for premier design and advertising agencies worldwide.</p>
-                </div>
-                <div class="ma-service-col-meta">
-                  <span class="ma-service-pill">Sprint / Retainer</span>
-                  <span class="ma-service-pill">Custom Scope</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- AEO / GEO Structured FAQ -->
-          <section class="ma-studio-section">
-            <h2 class="ma-studio-section-title">Frequently Answered Questions</h2>
-            <div class="ma-faq-accordion">
-              <details class="ma-faq-item" open>
-                <summary class="ma-faq-q">How do you ensure 3D websites run smoothly on mobile devices?</summary>
-                <div class="ma-faq-a">
-                  We enforce sub-1MB initial bundles, responsive geometry LOD (level-of-detail), and power-efficient rendering loops. When text overlays appear, the 3D scene automatically throttles its framerate to save battery life.
-                </div>
-              </details>
-
-              <details class="ma-faq-item">
-                <summary class="ma-faq-q">What technology stack do you build with?</summary>
-                <div class="ma-faq-a">
-                  We specialize in pure WebGL 2.0, Three.js, custom GLSL shaders, GSAP animation orchestration, TypeScript, and modern SSR/SSG frameworks (Astro and Next.js).
-                </div>
-              </details>
-
-              <details class="ma-faq-item">
-                <summary class="ma-faq-q">Do 3D websites hurt search engine rankings (SEO)?</summary>
-                <div class="ma-faq-a">
-                  No. With our persistent decoupled architecture, all page copy, headings, and metadata reside in standard semantic HTML crawlable by search bots and AI answer engines. The 3D canvas runs independently without blocking page indexing.
-                </div>
-              </details>
-            </div>
-          </section>
-
-          <!-- Studio Hire CTA Footer -->
-          <section class="ma-studio-cta">
-            <h2 class="ma-cta-headline">Ready to build something unforgettable?</h2>
-            <p class="ma-cta-sub">Tell us about your brand, vision, and timeline. We respond to all qualified briefs within one business day.</p>
-            <div class="ma-cta-actions">
-              <button class="ma-cta-hire-btn" id="studioHireBtn" type="button">START A PROJECT Brief ↗</button>
-              <button class="ma-cta-back-btn" id="studioBackBtn" type="button">EXPLORE SELECTED WORK</button>
-            </div>
+            <span class="ma-ledger-note">${contact.note}</span>
           </section>
 
         </div>
-      </div>
+      </aside>
     `;
 
     this.container.appendChild(this.root);
@@ -232,14 +161,24 @@ export class StudioView implements SpatialView {
   private bindEvents(): void {
     if (!this.root) return;
 
-    const closeBtn = this.root.querySelector('#studioCloseBtn');
-    closeBtn?.addEventListener('click', () => this.onCloseCallback?.());
+    const closeBtn = this.root.querySelector<HTMLElement>('#studioCloseBtn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => this.onCloseCallback?.());
+      this.cleanupFns.push(attachMagneticEffect(closeBtn, { maxDistance: 45, pullFactor: 0.28 }));
+    }
 
-    const backBtn = this.root.querySelector('#studioBackBtn');
-    backBtn?.addEventListener('click', () => this.onCloseCallback?.());
+    const scrim = this.root.querySelector('#studioScrim');
+    scrim?.addEventListener('click', (e) => {
+      if (e.target === scrim) {
+        this.onCloseCallback?.();
+      }
+    });
 
-    const hireBtn = this.root.querySelector('#studioHireBtn');
-    hireBtn?.addEventListener('click', () => this.onHireCallback?.());
+    const contactBtn = this.root.querySelector<HTMLElement>('#studioContactBtn');
+    if (contactBtn) {
+      contactBtn.addEventListener('click', () => this.onContactCallback?.());
+      this.cleanupFns.push(attachMagneticEffect(contactBtn, { maxDistance: 45, pullFactor: 0.32 }));
+    }
   }
 
   public async enter(): Promise<void> {
@@ -248,16 +187,49 @@ export class StudioView implements SpatialView {
     this.root.style.display = 'block';
     this.root.setAttribute('aria-hidden', 'false');
 
-    const scroller = this.root.querySelector('#studioScroller');
-    if (scroller) scroller.scrollTop = 0;
+    const panel = this.root.querySelector<HTMLElement>('#studioPanel');
+    const scrim = this.root.querySelector<HTMLElement>('#studioScrim');
+    const lines = this.root.querySelectorAll<HTMLElement>('.ma-line-inner');
+    const rows = this.root.querySelectorAll<HTMLElement>('.ma-ledger-row, .ma-studio-item');
 
-    gsap.killTweensOf(this.root);
-    gsap.fromTo(
-      this.root,
-      { opacity: 0, y: 24 },
-      { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' }
-    );
+    const body = this.root.querySelector<HTMLElement>('#studioBody');
+    if (body) body.scrollTop = 0;
 
+    gsap.killTweensOf([this.root, panel, scrim, lines, rows]);
+
+    // 1. Fade scrim smoothly
+    if (scrim) {
+      gsap.fromTo(scrim, { opacity: 0 }, { opacity: 1, duration: 0.65, ease: 'power2.out' });
+    }
+
+    // 2. Slide panel in from left
+    if (panel) {
+      gsap.fromTo(
+        panel,
+        { xPercent: -10, opacity: 0 },
+        { xPercent: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }
+      );
+    }
+
+    // 3. Staggered masked line reveals
+    if (lines.length > 0) {
+      gsap.fromTo(
+        lines,
+        { yPercent: 110, opacity: 0 },
+        { yPercent: 0, opacity: 1, duration: 0.8, stagger: 0.04, delay: 0.1, ease: 'power3.out' }
+      );
+    }
+
+    // 4. Staggered hairline table rows & items
+    if (rows.length > 0) {
+      gsap.fromTo(
+        rows,
+        { opacity: 0, x: -12 },
+        { opacity: 1, x: 0, duration: 0.5, stagger: 0.03, delay: 0.22, ease: 'power2.out' }
+      );
+    }
+
+    // Keydown handler for ESC key dismiss
     this.keydownHandler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -277,18 +249,31 @@ export class StudioView implements SpatialView {
       this.keydownHandler = undefined;
     }
 
-    gsap.killTweensOf(this.root);
+    const panel = this.root.querySelector<HTMLElement>('#studioPanel');
+    const scrim = this.root.querySelector<HTMLElement>('#studioScrim');
+    const lines = this.root.querySelectorAll<HTMLElement>('.ma-line-inner');
+
+    gsap.killTweensOf([this.root, panel, scrim, lines]);
+
     await new Promise<void>((resolve) => {
-      gsap.to(this.root!, {
-        opacity: 0,
-        y: -16,
-        duration: 0.35,
-        ease: 'power2.in',
+      const tl = gsap.timeline({
         onComplete: () => {
           if (this.root) this.root.style.display = 'none';
           resolve();
         }
       });
+
+      if (lines.length > 0) {
+        tl.to(lines, { yPercent: 110, opacity: 0, duration: 0.35, stagger: 0.02, ease: 'power2.in' }, 0);
+      }
+
+      if (panel) {
+        tl.to(panel, { xPercent: -10, opacity: 0, duration: 0.4, ease: 'power2.in' }, 0.05);
+      }
+
+      if (scrim) {
+        tl.to(scrim, { opacity: 0, duration: 0.35, ease: 'power2.in' }, 0.05);
+      }
     });
   }
 
@@ -296,6 +281,8 @@ export class StudioView implements SpatialView {
     if (this.keydownHandler) {
       window.removeEventListener('keydown', this.keydownHandler);
     }
+    this.cleanupFns.forEach(fn => fn());
+    this.cleanupFns = [];
     if (this.root && this.root.parentElement) {
       this.root.parentElement.removeChild(this.root);
     }
